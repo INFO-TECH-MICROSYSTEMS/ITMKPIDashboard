@@ -46,8 +46,8 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
-                <a href="mailto:sudarsha.wijenayake@gmail.com" className="hover:text-cyan-400 transition-colors">
-                  sudarsha.wijenayake@gmail.com
+                <a href="mailto:info.tech.microsystems.ca@gmail.com" className="hover:text-cyan-400 transition-colors">
+                  info.tech.microsystems.ca@gmail.com
                 </a>
               </div>
             </div>
@@ -171,7 +171,7 @@ export const Footer: React.FC = () => {
             <span>•</span>
             <span>Phone: +1 613 266 5285</span>
             <span>•</span>
-            <span className="text-cyan-400">sudarsha.wijenayake@gmail.com</span>
+            <span className="text-cyan-400">info.tech.microsystems.ca@gmail.com</span>
           </div>
         </div>
       </div>

@@ -71,23 +71,44 @@ export const ContactPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Email */}
+            {/* Company Email */}
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
                 <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
-                  Direct Email
+                  Company Inquiries Email
+                </span>
+                <a 
+                  href="mailto:info.tech.microsystems.ca@gmail.com"
+                  className="text-sm font-semibold text-cyan-300 hover:text-cyan-200 mt-1 inline-block transition-colors break-all"
+                >
+                  info.tech.microsystems.ca@gmail.com
+                </a>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  General & Project Inquiries
+                </p>
+              </div>
+            </div>
+
+            {/* Principal Consultant Email */}
+            <div className="flex items-start space-x-4">
+              <div className="w-10 h-10 rounded-xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                  Principal Consultant Direct
                 </span>
                 <a 
                   href="mailto:sudarsha.wijenayake@gmail.com"
-                  className="text-sm font-semibold text-cyan-300 hover:text-cyan-200 mt-1 inline-block transition-colors break-all"
+                  className="text-sm font-semibold text-purple-300 hover:text-purple-200 mt-1 inline-block transition-colors break-all"
                 >
                   sudarsha.wijenayake@gmail.com
                 </a>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Attn: Sudarsha Wijenayake
+                  Attn: Sudarsha Wijenayake (Founder)
                 </p>
               </div>
             </div>

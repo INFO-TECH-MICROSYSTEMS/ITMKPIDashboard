@@ -79,7 +79,7 @@ export const ToolsPage: React.FC = () => {
       });
       report += `\n`;
     });
-    report += `Contact INFO TECH MICROSYSTEMS at sudarsha.wijenayake@gmail.com / +1 613 266 5285 for remediation.\n`;
+    report += `Contact INFO TECH MICROSYSTEMS at info.tech.microsystems.ca@gmail.com (CC: sudarsha.wijenayake@gmail.com) / +1 613 266 5285 for remediation.\n`;
 
     navigator.clipboard.writeText(report);
     setAuditReportCopied(true);

@@ -29,7 +29,7 @@ An elegant, modern, high-performance website and interactive KPI tools suite for
 - **Dedicated Contact Us Page (`/contact`):**
   - Physical Address: **113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7**
   - Phone: **+1 613 266 5285** (Canadian phone number)
-  - Direct inquiry form configured to route to **`sudarsha.wijenayake@gmail.com`** with mailto fallback and 1-click clipboard copy.
+  - Direct inquiry form configured to route to **`info.tech.microsystems.ca@gmail.com`** (CC: `sudarsha.wijenayake@gmail.com`) with mailto fallback and 1-click clipboard copy.
 
 ---
 
@@ -66,5 +66,6 @@ npm.cmd run preview
 **INFO TECH MICROSYSTEMS**  
 - **Location:** 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7  
 - **Telephone:** +1 613 266 5285  
-- **Email:** [sudarsha.wijenayake@gmail.com](mailto:sudarsha.wijenayake@gmail.com)  
-- **Founder & Principal Consultant:** Sudarsha Wijenayake  
+- **Company Email:** [info.tech.microsystems.ca@gmail.com](mailto:info.tech.microsystems.ca@gmail.com)  
+- **Founder & Principal Consultant:** Sudarsha Wijenayake ([sudarsha.wijenayake@gmail.com](mailto:sudarsha.wijenayake@gmail.com))  
+

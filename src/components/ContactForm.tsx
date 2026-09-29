@@ -23,7 +23,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
   const [copied, setCopied] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const targetEmail = 'sudarsha.wijenayake@gmail.com';
+  const companyEmail = 'info.tech.microsystems.ca@gmail.com';
+  const personalEmail = 'sudarsha.wijenayake@gmail.com';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({
@@ -33,9 +34,9 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
   };
 
   const getMailtoUrl = () => {
-    const subject = encodeURIComponent(`[ITM Website Inquiry] - ${formData.serviceRequested} - from ${formData.fullName}`);
+    const subject = encodeURIComponent(`[ITM Inquiry] - ${formData.serviceRequested} - from ${formData.fullName}`);
     const body = encodeURIComponent(
-      `Dear Sudarsha Wijenayake,\n\n` +
+      `Dear Sudarsha Wijenayake / INFO TECH MICROSYSTEMS,\n\n` +
       `You have received a new consultation inquiry from the INFO TECH MICROSYSTEMS website:\n\n` +
       `--------------------------------------------------\n` +
       `CLIENT DETAILS:\n` +
@@ -52,13 +53,14 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
       `--------------------------------------------------\n` +
       `Sent via INFO TECH MICROSYSTEMS web portal`
     );
-    return `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+    return `mailto:${companyEmail}?cc=${personalEmail}&subject=${subject}&body=${body}`;
   };
 
   const handleCopyInquiry = () => {
     const text = 
       `Inquiry for INFO TECH MICROSYSTEMS:\n` +
-      `To: ${targetEmail}\n` +
+      `Company Email: ${companyEmail}\n` +
+      `Principal Consultant: ${personalEmail}\n` +
       `From: ${formData.fullName} (${formData.email}, ${formData.phone})\n` +
       `Company: ${formData.company}\n` +
       `Service: ${formData.serviceRequested}\n` +
@@ -82,8 +84,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
     setErrorMessage('');
 
     try {
-      // Send directly to form endpoint configured for sudarsha.wijenayake@gmail.com
-      const response = await fetch(`https://formspree.io/f/sudarsha.wijenayake@gmail.com`, {
+      // Send directly to form endpoint configured for company email with CC
+      const response = await fetch(`https://formspree.io/f/info.tech.microsystems.ca@gmail.com`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +102,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
           message: formData.message,
           _replyto: formData.email,
           _subject: `New Inquiry for ITM: ${formData.serviceRequested} (${formData.fullName})`,
-          recipient: targetEmail
+          _cc: personalEmail,
+          recipient: companyEmail
         })
       });
 
@@ -127,13 +130,17 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
           Inquiry Successfully Prepared!
         </h3>
         <p className="text-slate-300 text-center text-sm mb-6 max-w-lg mx-auto">
-          Thank you, <strong className="text-cyan-400">{formData.fullName}</strong>. Your message for <strong className="text-white">INFO TECH MICROSYSTEMS</strong> has been recorded and routed directly to Principal Consultant <strong className="text-white">Sudarsha Wijenayake</strong>.
+          Thank you, <strong className="text-cyan-400">{formData.fullName}</strong>. Your message for <strong className="text-white">INFO TECH MICROSYSTEMS</strong> has been recorded and routed to <strong className="text-white">{companyEmail}</strong> (CC: <strong className="text-white">{personalEmail}</strong>).
         </p>
 
         <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs space-y-2 mb-6 text-slate-300 font-mono">
           <div className="flex justify-between border-b border-slate-800/80 pb-1">
-            <span className="text-slate-400">Recipient Email:</span>
-            <span className="text-cyan-400 font-semibold">{targetEmail}</span>
+            <span className="text-slate-400">Company Email:</span>
+            <span className="text-cyan-400 font-semibold">{companyEmail}</span>
+          </div>
+          <div className="flex justify-between border-b border-slate-800/80 pb-1">
+            <span className="text-slate-400">Principal Consultant (CC):</span>
+            <span className="text-purple-400 font-semibold">{personalEmail}</span>
           </div>
           <div className="flex justify-between border-b border-slate-800/80 pb-1">
             <span className="text-slate-400">Service:</span>
@@ -196,7 +203,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService, classN
           Send a Message to Sudarsha Wijenayake
         </h3>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Inquiries are delivered directly to <span className="text-cyan-400 font-semibold">{targetEmail}</span> or phone <span className="text-white font-semibold">+1 613 266 5285</span>.
+          Inquiries are delivered directly to <span className="text-cyan-400 font-semibold">{companyEmail}</span> (CC: <span className="text-purple-400">{personalEmail}</span>) or phone <span className="text-white font-semibold">+1 613 266 5285</span>.
         </p>
       </div>
 

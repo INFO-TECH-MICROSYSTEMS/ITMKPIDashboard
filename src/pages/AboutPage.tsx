@@ -83,8 +83,14 @@ export const AboutPage: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <a href="mailto:sudarsha.wijenayake@gmail.com" className="hover:text-cyan-400 transition-colors">
-                    sudarsha.wijenayake@gmail.com
+                  <a href="mailto:info.tech.microsystems.ca@gmail.com" className="hover:text-cyan-400 text-white font-semibold transition-colors">
+                    info.tech.microsystems.ca@gmail.com (Company)
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-purple-400 shrink-0" />
+                  <a href="mailto:sudarsha.wijenayake@gmail.com" className="hover:text-purple-400 text-slate-300 transition-colors">
+                    sudarsha.wijenayake@gmail.com (Direct)
                   </a>
                 </div>
               </div>

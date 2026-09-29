@@ -51,11 +51,11 @@ export const Navbar: React.FC = () => {
               <span className="font-semibold">+1 613 266 5285</span>
             </a>
             <a 
-              href="mailto:sudarsha.wijenayake@gmail.com" 
+              href="mailto:info.tech.microsystems.ca@gmail.com" 
               className="flex items-center space-x-1.5 text-slate-300 hover:text-cyan-400 transition-colors"
             >
               <Mail className="w-3.5 h-3.5 text-cyan-400" />
-              <span>sudarsha.wijenayake@gmail.com</span>
+              <span>info.tech.microsystems.ca@gmail.com</span>
             </a>
           </div>
         </div>
@@ -317,7 +317,7 @@ export const Navbar: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="w-3.5 h-3.5 text-cyan-400" />
-              <a href="mailto:sudarsha.wijenayake@gmail.com" className="text-slate-200">sudarsha.wijenayake@gmail.com</a>
+              <a href="mailto:info.tech.microsystems.ca@gmail.com" className="text-slate-200">info.tech.microsystems.ca@gmail.com</a>
             </div>
             <div className="text-slate-400 pt-1">
               113 Whernside Terrace, Ottawa, ON, Canada K2W0C7
