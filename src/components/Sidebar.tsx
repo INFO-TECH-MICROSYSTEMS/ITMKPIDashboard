@@ -336,18 +336,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Link
               to="/contact"
               title={isCollapsed ? 'Request Consultation' : undefined}
-              className={`relative block group overflow-hidden rounded-xl p-[1px] font-semibold text-xs uppercase tracking-wider shadow-sm hover:shadow-cyan-500/25 transition-all ${
-                isCollapsed ? 'lg:p-0' : ''
+              className={`flex items-center justify-center gap-2 rounded-xl font-semibold text-xs uppercase tracking-wider shadow-sm transition-all duration-200 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:via-blue-500 hover:to-purple-500 text-white shadow-cyan-600/20 hover:shadow-md cursor-pointer ${
+                isCollapsed ? 'p-2.5 lg:w-10 lg:h-10 lg:mx-auto' : 'px-4 py-2.5 w-full'
               }`}
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 rounded-xl animate-gradient"></span>
-              <span className={`relative flex items-center justify-center gap-2 px-3 py-2.5 rounded-[11px] bg-slate-900 text-white dark:bg-slate-950 dark:text-cyan-300 group-hover:bg-transparent group-hover:text-white transition-all duration-200 ${
-                isCollapsed ? 'lg:w-10 lg:h-10 lg:p-0 lg:mx-auto' : ''
-              }`}>
-                <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-                  Consultation
-                </span>
+              <Sparkles className="w-4 h-4 text-white shrink-0" />
+              <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>
+                Request Consultation
               </span>
             </Link>
           </div>
