@@ -7,15 +7,15 @@ export const ContactPage: React.FC = () => {
     <div className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 mb-3 font-mono">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan-50 border border-cyan-200 text-cyan-700 dark:bg-cyan-950/80 dark:text-cyan-400 dark:border-cyan-500/30 mb-3 font-mono">
           <Sparkles className="w-3.5 h-3.5" />
           <span>DIRECT EXECUTIVE COMMUNICATION</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] mb-4">
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-['Outfit'] mb-4">
           Contact INFO TECH MICROSYSTEMS
         </h1>
-        <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-          Reach out directly to Principal Consultant <strong className="text-white">Sudarsha Wijenayake</strong> to discuss your software engineering, 
+        <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
+          Reach out directly to Principal Consultant <strong className="text-slate-900 dark:text-white">Sudarsha Wijenayake</strong> to discuss your software engineering, 
           quality assurance, training, staffing, or audit requirements.
         </p>
       </div>
@@ -24,27 +24,27 @@ export const ContactPage: React.FC = () => {
         {/* Left Column: Direct Contact Information Cards */}
         <div className="lg:col-span-5 space-y-6">
           {/* Main Contact Card */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-[#0a0f25] border border-cyan-500/30 shadow-xl space-y-6">
-            <h2 className="text-xl font-bold text-white font-['Outfit'] border-b border-slate-800 pb-3">
+          <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-900/90 dark:to-[#0a0f25] border border-slate-200 dark:border-cyan-500/30 shadow-xl space-y-6">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] border-b border-slate-200 dark:border-slate-800 pb-3">
               Corporate Contact Information
             </h2>
 
             {/* Address */}
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400 shrink-0">
                 <MapPin className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                <span className="text-xs uppercase font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">
                   Office Address
                 </span>
-                <p className="text-sm font-semibold text-white mt-1 leading-snug">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white mt-1 leading-snug">
                   113 Whernside Terrace
                 </p>
-                <p className="text-sm text-slate-300">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
                   Ottawa, Ontario, Canada
                 </p>
-                <p className="text-xs font-mono text-cyan-400 mt-0.5">
+                <p className="text-xs font-mono text-cyan-700 dark:text-cyan-400 mt-0.5">
                   Postal Code: K2W0C7
                 </p>
               </div>
@@ -52,20 +52,20 @@ export const ContactPage: React.FC = () => {
 
             {/* Phone */}
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400 shrink-0">
                 <Phone className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                <span className="text-xs uppercase font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">
                   Telephone (Canada)
                 </span>
                 <a 
                   href="tel:+16132665285"
-                  className="text-base font-bold text-cyan-300 hover:text-cyan-200 mt-1 inline-block transition-colors font-mono"
+                  className="text-base font-bold text-cyan-700 dark:text-cyan-300 hover:underline mt-1 inline-block transition-colors font-mono"
                 >
                   +1 613 266 5285
                 </a>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Country Code: +1 (Canadian Domestic & International)
                 </p>
               </div>
@@ -73,20 +73,20 @@ export const ContactPage: React.FC = () => {
 
             {/* Company Email */}
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400 shrink-0">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                <span className="text-xs uppercase font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">
                   Company Inquiries Email
                 </span>
                 <a 
                   href="mailto:info.tech.microsystems.ca@gmail.com"
-                  className="text-sm font-semibold text-cyan-300 hover:text-cyan-200 mt-1 inline-block transition-colors break-all"
+                  className="text-sm font-semibold text-cyan-700 dark:text-cyan-300 hover:underline mt-1 inline-block transition-colors break-all"
                 >
                   info.tech.microsystems.ca@gmail.com
                 </a>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   General & Project Inquiries
                 </p>
               </div>
@@ -94,42 +94,42 @@ export const ContactPage: React.FC = () => {
 
             {/* Principal Consultant Email */}
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-500/30 flex items-center justify-center text-purple-700 dark:text-purple-400 shrink-0">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-xs uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                <span className="text-xs uppercase font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">
                   Principal Consultant Direct
                 </span>
                 <a 
                   href="mailto:sudarsha.wijenayake@gmail.com"
-                  className="text-sm font-semibold text-purple-300 hover:text-purple-200 mt-1 inline-block transition-colors break-all"
+                  className="text-sm font-semibold text-purple-700 dark:text-purple-300 hover:underline mt-1 inline-block transition-colors break-all"
                 >
                   sudarsha.wijenayake@gmail.com
                 </a>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Attn: Sudarsha Wijenayake (Founder)
                 </p>
               </div>
             </div>
 
             {/* Hours & Timezone */}
-            <div className="flex items-start space-x-4 pt-2 border-t border-slate-800">
-              <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-purple-400 shrink-0">
+            <div className="flex items-start space-x-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div className="text-xs space-y-1">
-                <span className="uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+                <span className="uppercase font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold block">
                   Operating Timezone
                 </span>
-                <p className="text-white font-medium">
+                <p className="text-slate-900 dark:text-white font-medium">
                   Eastern Standard Time (EST / EDT) • Ottawa, ON
                 </p>
-                <p className="text-slate-400">
+                <p className="text-slate-600 dark:text-slate-400">
                   Monday – Friday: 8:30 AM – 6:00 PM EST
                 </p>
-                <div className="inline-flex items-center space-x-1.5 text-[11px] text-emerald-400 font-mono pt-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div className="inline-flex items-center space-x-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-mono pt-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   <span>24/7 SLA Emergency Support available for contracted clients</span>
                 </div>
               </div>
@@ -137,25 +137,25 @@ export const ContactPage: React.FC = () => {
           </div>
 
           {/* Ottawa Location Map Preview Card */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase text-slate-400 font-bold">Location Preview</span>
+              <span className="text-xs font-mono uppercase text-slate-500 dark:text-slate-400 font-bold">Location Preview</span>
               <a 
                 href="https://maps.google.com/?q=113+Whernside+Terrace,+Ottawa,+Ontario,+Canada,+K2W0C7" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-xs text-cyan-400 hover:underline flex items-center space-x-1 font-mono"
+                className="text-xs text-cyan-700 dark:text-cyan-400 hover:underline flex items-center space-x-1 font-mono"
               >
                 <span>Open in Google Maps</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
             
-            <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4 text-center">
-              <div className="p-4 rounded-lg bg-slate-900 border border-cyan-500/20 text-xs text-slate-300">
-                <div className="font-bold text-white mb-1">INFO TECH MICROSYSTEMS Headquarters</div>
-                <div className="text-slate-400">113 Whernside Terrace, Ottawa, ON K2W0C7, Canada</div>
-                <div className="mt-2 text-cyan-400 font-mono">Latitude / Longitude: Kanata North Technology Corridor</div>
+            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-center">
+              <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/20 text-xs text-slate-700 dark:text-slate-300 shadow-sm">
+                <div className="font-bold text-slate-900 dark:text-white mb-1">INFO TECH MICROSYSTEMS Headquarters</div>
+                <div className="text-slate-600 dark:text-slate-400">113 Whernside Terrace, Ottawa, ON K2W0C7, Canada</div>
+                <div className="mt-2 text-cyan-700 dark:text-cyan-400 font-mono">Kanata North Technology Corridor</div>
               </div>
             </div>
           </div>

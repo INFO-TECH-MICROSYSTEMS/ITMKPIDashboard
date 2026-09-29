@@ -4,18 +4,11 @@
 
 @layer base {
   :root {
-    --bg-page: #070913;
-    --text-primary: #f8fafc;
+    color-scheme: light;
   }
 
-  html.light, body.light, [data-theme="light"] {
-    --bg-page: #f8fafc;
-    --text-primary: #0f172a;
-  }
-
-  html.dark, body.dark, [data-theme="dark"] {
-    --bg-page: #070913;
-    --text-primary: #f8fafc;
+  html.dark {
+    color-scheme: dark;
   }
 
   html {
@@ -26,198 +19,28 @@
   body {
     min-height: 100vh;
     overflow-x: hidden;
-    background-color: var(--bg-page);
-    color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-.app-container {
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  min-height: 100vh;
+/* Custom Cyber & Glow Utilities */
+.glow-cyan {
+  box-shadow: 0 0 35px -5px rgba(0, 210, 255, 0.35);
 }
 
-/* =========================================================================
-   LIGHT THEME OVERRIDES (Triggered when html or body has .light)
-   ========================================================================= */
-
-html.light, body.light {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+.glow-purple {
+  box-shadow: 0 0 35px -5px rgba(138, 43, 226, 0.35);
 }
 
-html.light .app-container {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-}
-
-/* Text Colors in Light Mode */
-html.light .text-white {
-  color: #0f172a !important;
-}
-
-html.light .text-slate-100,
-html.light .text-slate-200,
-html.light .text-slate-300 {
-  color: #334155 !important;
-}
-
-html.light .text-slate-400 {
-  color: #64748b !important;
-}
-
-html.light .text-cyan-400,
-html.light .text-cyan-300 {
-  color: #0284c7 !important;
-}
-
-html.light .text-purple-400,
-html.light .text-purple-300 {
-  color: #7c3aed !important;
-}
-
-/* Headings in Light Mode */
-html.light h1,
-html.light h2,
-html.light h3,
-html.light h4,
-html.light h5,
-html.light h6 {
-  color: #0f172a !important;
-}
-
-/* Backgrounds & Cards in Light Mode */
-html.light .bg-slate-900,
-html.light .bg-slate-950,
-html.light [class*="bg-slate-900"],
-html.light [class*="bg-slate-950"],
-html.light [class*="bg-[#070913]"],
-html.light [class*="bg-[#080c1d]"],
-html.light [class*="bg-[#060814]"],
-html.light [class*="bg-[#090d1f]"],
-html.light [class*="bg-[#0c1226]"],
-html.light [class*="bg-[#0a0e20]"],
-html.light [class*="bg-[#0d1428]"],
-html.light [class*="bg-[#0d1326]"] {
-  background-color: #ffffff !important;
-  background-image: none !important;
-}
-
-html.light .border-slate-800,
-html.light .border-slate-700,
-html.light [class*="border-slate-800"],
-html.light [class*="border-slate-700"] {
-  border-color: #e2e8f0 !important;
-}
-
-html.light [class*="border-cyan-500/"] {
-  border-color: rgba(2, 132, 199, 0.25) !important;
-}
-
-/* Header & Navigation in Light Mode */
-html.light header {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-bottom-color: #e2e8f0 !important;
-  color: #0f172a !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
-}
-
-html.light header .bg-gradient-to-r {
-  background: #f1f5f9 !important;
-}
-
-html.light header nav a {
-  color: #334155 !important;
-}
-
-html.light header nav a:hover {
-  color: #0284c7 !important;
-  background-color: #f1f5f9 !important;
-}
-
-/* Badges & Pills in Light Mode */
-html.light [class*="bg-cyan-950"] {
-  background-color: #e0f2fe !important;
-  color: #0369a1 !important;
-  border-color: #7dd3fc !important;
-}
-
-html.light [class*="bg-purple-950"] {
-  background-color: #f3e8ff !important;
-  color: #6b21a8 !important;
-  border-color: #d8b4fe !important;
-}
-
-html.light [class*="bg-emerald-950"] {
-  background-color: #dcfce7 !important;
-  color: #15803d !important;
-  border-color: #86efac !important;
-}
-
-/* Buttons in Light Mode */
-html.light button[class*="bg-slate-900"],
-html.light button[class*="bg-slate-800"],
-html.light a[class*="bg-slate-900"],
-html.light a[class*="bg-slate-950"] {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-}
-
-html.light button[class*="bg-slate-900"]:hover,
-html.light button[class*="bg-slate-800"]:hover,
-html.light a[class*="bg-slate-900"]:hover,
-html.light a[class*="bg-slate-950"]:hover {
-  background-color: #f8fafc !important;
-  color: #0284c7 !important;
-}
-
-/* Inputs & Form Controls in Light Mode */
-html.light input,
-html.light select,
-html.light textarea {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-html.light input:focus,
-html.light select:focus,
-html.light textarea:focus {
-  border-color: #0284c7 !important;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
-}
-
-/* Footer in Light Mode */
-html.light footer {
-  background-color: #0f172a !important;
-  color: #94a3b8 !important;
-}
-
-html.light footer .text-white {
-  color: #ffffff !important;
-}
-
-html.light footer .text-slate-400 {
-  color: #94a3b8 !important;
-}
-
-html.light footer .text-slate-300 {
-  color: #cbd5e1 !important;
-}
-
-/* Patterns */
 .circuit-pattern {
-  background-image: radial-gradient(rgba(0, 210, 255, 0.08) 1px, transparent 1px),
-                    radial-gradient(rgba(138, 43, 226, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(2, 132, 199, 0.12) 1px, transparent 1px),
+                    radial-gradient(rgba(124, 58, 237, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
   background-position: 0 0, 16px 16px;
 }
 
-html.light .circuit-pattern {
-  background-image: radial-gradient(rgba(2, 132, 199, 0.12) 1px, transparent 1px),
-                    radial-gradient(rgba(124, 58, 237, 0.08) 1px, transparent 1px);
+.dark .circuit-pattern {
+  background-image: radial-gradient(rgba(0, 210, 255, 0.08) 1px, transparent 1px),
+                    radial-gradient(rgba(138, 43, 226, 0.08) 1px, transparent 1px);
 }
 
 /* Custom Scrollbar */
@@ -225,11 +48,17 @@ html.light .circuit-pattern {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-page);
+  background: #f1f5f9;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #090d1a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #00d2ff;

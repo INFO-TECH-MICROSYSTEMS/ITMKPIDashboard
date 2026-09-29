@@ -16,7 +16,7 @@ export function App() {
     <ThemeProvider>
       <BrowserRouter>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col transition-colors duration-300 app-container">
+        <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-[#070913] dark:text-slate-100 transition-colors duration-300">
           <Navbar />
           <main className="flex-grow">
             <Routes>
