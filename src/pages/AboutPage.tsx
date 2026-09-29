@@ -1,0 +1,176 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Award, ShieldCheck, MapPin, Phone, Mail, 
+  Target, Code2, Users, ArrowRight 
+} from 'lucide-react';
+
+export const AboutPage: React.FC = () => {
+  return (
+    <div className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Hero Header */}
+      <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 mb-3 font-mono">
+          <Award className="w-3.5 h-3.5" />
+          <span>ABOUT INFO TECH MICROSYSTEMS</span>
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] mb-4">
+          Architectural Rigor. Measurable Engineering ROI.
+        </h1>
+        <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          INFO TECH MICROSYSTEMS was founded to close the gap between high-level technology strategy 
+          and production-grade software delivery. Based in Ottawa, Ontario, Canada, we partner with enterprises, 
+          startups, and public agencies to engineer enduring software solutions.
+        </p>
+      </div>
+
+      {/* Founder Spotlight Card */}
+      <section id="founder" className="mb-20">
+        <div className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-slate-900/95 via-[#0d1428]/95 to-slate-900/95 border border-cyan-500/30 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Portrait Image */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative group">
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-3xl blur opacity-60 group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative rounded-2xl overflow-hidden bg-slate-950 p-1.5 border border-cyan-400/50 shadow-2xl">
+                  <img 
+                    src="/assets/sudarsha-wijenayake.jpg" 
+                    alt="Sudarsha Wijenayake - Founder of INFO TECH MICROSYSTEMS" 
+                    className="w-72 h-84 sm:w-80 sm:h-96 object-cover rounded-xl"
+                  />
+                  <div className="p-4 bg-slate-950 text-center border-t border-slate-800">
+                    <h3 className="text-xl font-bold text-white font-['Outfit']">Sudarsha Wijenayake</h3>
+                    <p className="text-xs text-cyan-400 font-mono font-semibold mt-0.5">
+                      Founder & Principal Technology Consultant
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">INFO TECH MICROSYSTEMS</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Founder Narrative */}
+            <div className="lg:col-span-7 space-y-5">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-500/30 text-xs font-mono">
+                <span>FOUNDER'S MISSION & PHILOSOPHY</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+                A Practitioner's Commitment to Quality
+              </h2>
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                "Throughout my career in software engineering, architecture, and technology leadership, I have observed a recurring industry pitfall: organizations frequently overpay for bloated, brittle software systems because they lack disciplined architectural guidance, shift-left quality assurance, and objective performance metrics."
+              </p>
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                "I established <strong className="text-white">INFO TECH MICROSYSTEMS</strong> to provide a different paradigm. 
+                When we partner with a client, we do not simply advise from the sidelines—we embed hands-on technical excellence. 
+                Whether we are developing modern microservices, authoring automated test suites, training your development team, 
+                or placing high-caliber engineers, our work is governed by verifiable data and transparent accountability."
+              </p>
+
+              {/* Direct Founder Contact Strip */}
+              <div className="pt-4 border-t border-slate-800/90 space-y-2 text-xs sm:text-sm text-slate-300">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span>113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <a href="tel:+16132665285" className="hover:text-cyan-400 text-white font-semibold transition-colors">
+                    +1 613 266 5285 (Direct)
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <a href="mailto:sudarsha.wijenayake@gmail.com" className="hover:text-cyan-400 transition-colors">
+                    sudarsha.wijenayake@gmail.com
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values / 4 Pillars */}
+      <section className="mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="text-xs font-mono uppercase text-cyan-400 tracking-wider">FOUNDATIONAL PRINCIPLES</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit'] mt-1">
+            How INFO TECH MICROSYSTEMS Operates
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              title: 'Engineering Rigor',
+              desc: 'We do not take shortcuts. Every codebase, microservice, and test harness is built for maintainability, security, and low total cost of ownership.',
+              icon: Code2
+            },
+            {
+              title: 'Quality as a Culture',
+              desc: 'Quality is not an afterthought handled at the end of a sprint. We embed automated testing and shift-left verification into every developer workflow.',
+              icon: ShieldCheck
+            },
+            {
+              title: 'Measurable KPIs',
+              desc: 'We replace subjective feelings with quantifiable benchmarks: DORA metrics, Defect Escape Rates, automated code coverage, and sprint predictability.',
+              icon: Target
+            },
+            {
+              title: 'Workforce Elevation',
+              desc: 'We leave every client team stronger than we found it through hands-on pairing, comprehensive documentation, and structured training programs.',
+              icon: Users
+            }
+          ].map((pillar, idx) => {
+            const Icon = pillar.icon;
+            return (
+              <div key={idx} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white font-['Outfit']">
+                  {pillar.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  {pillar.desc}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Ottawa Headquarters Card */}
+      <section className="p-8 sm:p-10 rounded-3xl bg-slate-900/80 border border-slate-800">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-8 space-y-3">
+            <span className="text-xs font-mono uppercase text-cyan-400 font-bold">CANADIAN OPERATIONS</span>
+            <h3 className="text-2xl font-bold text-white font-['Outfit']">
+              Headquartered in Canada's Technology Capital
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Situated in Ottawa, Ontario—one of North America’s premier tech hubs—INFO TECH MICROSYSTEMS combines local, 
+              in-person accountability with seamless remote delivery across Canada, the United States, and international enterprises.
+            </p>
+            <div className="text-xs text-slate-400 font-mono pt-2">
+              Corporate Office: 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 flex justify-start lg:justify-end">
+            <Link
+              to="/contact"
+              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-cyan-500/20 transition-all"
+            >
+              <span>Schedule an In-Person or Virtual Meeting</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
