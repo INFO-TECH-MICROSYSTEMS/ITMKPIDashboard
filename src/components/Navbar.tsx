@@ -30,31 +30,31 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 transition-colors duration-300 backdrop-blur-xl border-b border-cyan-500/15 bg-[#070913]/90 text-slate-100 dark:bg-[#070913]/90 dark:text-slate-100 light:bg-white/95 light:text-slate-900 light:border-slate-200 shadow-lg shadow-cyan-950/20">
+    <header className="sticky top-0 z-50 transition-colors duration-300 backdrop-blur-xl border-b border-slate-200 bg-white/95 text-slate-900 shadow-sm dark:border-cyan-500/20 dark:bg-[#070913]/95 dark:text-slate-100 dark:shadow-cyan-950/20">
       {/* Top Banner with Contact & Location */}
-      <div className="bg-gradient-to-r from-slate-950 via-cyan-950/40 to-slate-950 text-xs py-1.5 px-4 border-b border-cyan-500/10 hidden md:block">
-        <div className="max-w-7xl mx-auto flex justify-between items-center text-slate-300">
+      <div className="bg-slate-100 border-b border-slate-200 text-slate-600 dark:bg-gradient-to-r dark:from-slate-950 dark:via-cyan-950/40 dark:to-slate-950 dark:border-cyan-500/10 dark:text-slate-300 text-xs py-1.5 px-4 hidden md:block">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-6">
-            <span className="flex items-center space-x-2 text-cyan-400 font-medium">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 font-medium">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Ottawa, Ontario, Canada (EST/EDT)</span>
             </span>
             <span className="text-slate-400 hidden lg:inline">|</span>
-            <span className="text-slate-400 hidden lg:inline">113 Whernside Terrace, Ottawa, ON K2W0C7</span>
+            <span className="text-slate-500 dark:text-slate-400 hidden lg:inline">113 Whernside Terrace, Ottawa, ON K2W0C7</span>
           </div>
           <div className="flex items-center space-x-6">
             <a 
               href="tel:+16132665285" 
-              className="flex items-center space-x-1.5 text-slate-300 hover:text-cyan-400 transition-colors"
+              className="flex items-center space-x-1.5 text-slate-700 hover:text-cyan-600 dark:text-slate-300 dark:hover:text-cyan-400 transition-colors"
             >
-              <Phone className="w-3.5 h-3.5 text-cyan-400" />
+              <Phone className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               <span className="font-semibold">+1 613 266 5285</span>
             </a>
             <a 
               href="mailto:info.tech.microsystems.ca@gmail.com" 
-              className="flex items-center space-x-1.5 text-slate-300 hover:text-cyan-400 transition-colors"
+              className="flex items-center space-x-1.5 text-slate-700 hover:text-cyan-600 dark:text-slate-300 dark:hover:text-cyan-400 transition-colors"
             >
-              <Mail className="w-3.5 h-3.5 text-cyan-400" />
+              <Mail className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               <span>info.tech.microsystems.ca@gmail.com</span>
             </a>
           </div>
@@ -81,10 +81,10 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
             <div className="hidden sm:flex flex-col">
-              <span className="text-lg font-black tracking-wider text-slate-100 group-hover:text-cyan-400 transition-colors font-['Outfit']">
+              <span className="text-lg font-black tracking-wider text-slate-900 dark:text-slate-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors font-['Outfit']">
                 INFO TECH MICROSYSTEMS
               </span>
-              <span className="text-[11px] tracking-widest uppercase text-cyan-400 font-semibold font-mono">
+              <span className="text-[11px] tracking-widest uppercase text-cyan-600 dark:text-cyan-400 font-semibold font-mono">
                 Enterprise Software • QA • Consulting • KPIs
               </span>
             </div>
@@ -96,8 +96,8 @@ export const Navbar: React.FC = () => {
               to="/"
               className={`px-3.5 py-2 rounded-lg transition-all ${
                 location.pathname === '/' 
-                  ? 'text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 shadow-sm' 
-                  : 'text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50'
+                  ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-500/30 shadow-sm' 
+                  : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
               }`}
             >
               Home
@@ -110,28 +110,28 @@ export const Navbar: React.FC = () => {
               onMouseLeave={() => setServicesDropdownOpen(false)}
             >
               <button
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all ${
+                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
                   isActive('/services')
-                    ? 'text-cyan-400 bg-cyan-950/40 border border-cyan-500/30'
-                    : 'text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50'
+                    ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-500/30'
+                    : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
                 }`}
                 onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
               >
                 <span>Services (7)</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180 text-cyan-500' : ''}`} />
               </button>
 
               {/* Mega-menu dropdown */}
               {servicesDropdownOpen && (
-                <div className="absolute left-0 mt-1 w-[460px] rounded-xl p-3 shadow-2xl backdrop-blur-2xl border border-cyan-500/30 bg-[#0a0e1f]/95 text-slate-200 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <div className="px-3 py-2 border-b border-slate-800 flex justify-between items-center mb-1">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-cyan-400 font-mono">
+                <div className="absolute left-0 mt-1 w-[460px] rounded-xl p-3 shadow-2xl backdrop-blur-2xl border border-slate-200 bg-white text-slate-800 dark:border-cyan-500/30 dark:bg-[#0a0e1f]/95 dark:text-slate-200 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center mb-1">
+                    <span className="text-xs uppercase tracking-wider font-semibold text-cyan-600 dark:text-cyan-400 font-mono">
                       Specialized Engineering Services
                     </span>
                     <Link 
                       to="/services" 
                       onClick={() => setServicesDropdownOpen(false)}
-                      className="text-xs text-purple-400 hover:text-purple-300 underline font-medium"
+                      className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium"
                     >
                       Overview Grid →
                     </Link>
@@ -144,16 +144,16 @@ export const Navbar: React.FC = () => {
                           key={service.id}
                           to={`/services/${service.slug}`}
                           onClick={() => setServicesDropdownOpen(false)}
-                          className="flex items-start space-x-3 p-2.5 rounded-lg hover:bg-cyan-950/50 hover:border-cyan-500/20 border border-transparent transition-all group"
+                          className="flex items-start space-x-3 p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-cyan-950/50 hover:border-cyan-300 dark:hover:border-cyan-500/20 border border-transparent transition-all group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform shrink-0 mt-0.5">
+                          <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400 group-hover:scale-110 transition-transform shrink-0 mt-0.5">
                             <IconComponent className="w-4 h-4" />
                           </div>
                           <div>
-                            <div className="text-sm font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors flex items-center space-x-2">
+                            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors flex items-center space-x-2">
                               <span>{idx + 1}. {service.shortTitle}</span>
                             </div>
-                            <p className="text-xs text-slate-400 line-clamp-1 mt-0.5 font-normal">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-normal">
                               {service.tagline}
                             </p>
                           </div>
@@ -186,8 +186,8 @@ export const Navbar: React.FC = () => {
               to="/about"
               className={`px-3.5 py-2 rounded-lg transition-all ${
                 isActive('/about')
-                  ? 'text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 shadow-sm'
-                  : 'text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50'
+                  ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-500/30 shadow-sm'
+                  : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
               }`}
             >
               Leadership & About
@@ -198,8 +198,8 @@ export const Navbar: React.FC = () => {
               to="/contact"
               className={`px-3.5 py-2 rounded-lg transition-all ${
                 isActive('/contact')
-                  ? 'text-cyan-400 bg-cyan-950/40 border border-cyan-500/30 shadow-sm'
-                  : 'text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50'
+                  ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-950/40 dark:border-cyan-500/30 shadow-sm'
+                  : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
               }`}
             >
               Contact Us
@@ -212,10 +212,10 @@ export const Navbar: React.FC = () => {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Dark/Light Mode"
-              className="p-2 rounded-lg border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-cyan-300 bg-slate-900/60 transition-colors"
+              className="p-2 rounded-lg border border-slate-300 hover:border-cyan-500 text-slate-700 hover:text-cyan-600 bg-slate-100 dark:border-slate-700 dark:hover:border-cyan-400 dark:text-slate-300 dark:hover:text-cyan-300 dark:bg-slate-900/60 transition-colors cursor-pointer"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-500" />}
             </button>
 
             {/* Consultation CTA */}
@@ -223,8 +223,8 @@ export const Navbar: React.FC = () => {
               to="/contact"
               className="relative group overflow-hidden rounded-xl p-[1px] font-semibold text-xs uppercase tracking-wider shadow-md hover:shadow-cyan-500/25 transition-all"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-xl animate-gradient"></span>
-              <span className="relative block px-4 py-2.5 rounded-[11px] bg-slate-950 text-cyan-300 group-hover:bg-transparent group-hover:text-white transition-all duration-200">
+              <span className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 rounded-xl animate-gradient"></span>
+              <span className="relative block px-4 py-2.5 rounded-[11px] bg-slate-900 text-white dark:bg-slate-950 dark:text-cyan-300 group-hover:bg-transparent group-hover:text-white transition-all duration-200">
                 Request Consultation
               </span>
             </Link>
@@ -234,13 +234,14 @@ export const Navbar: React.FC = () => {
           <div className="flex lg:hidden items-center space-x-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg border border-slate-700 text-slate-300 bg-slate-900/60"
+              className="p-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 cursor-pointer"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-500" />}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg border border-slate-700 text-slate-300 hover:text-cyan-400 bg-slate-900/60"
+              className="p-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 bg-slate-100 dark:bg-slate-900/60"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
