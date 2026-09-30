@@ -16,6 +16,7 @@ import type {
 import { MetricCard } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
+import { KPI_STATUS_THEMES } from '../../../constants/kpiConstants';
 
 interface GovernanceSlaViewProps {
   scorecard: ReleaseQualityScorecard;
@@ -168,24 +169,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             const isWarning = !isOptimal && sla.rateNum >= sla.targetNum - 10;
             const statusColor = isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose';
             const statusLabel = isOptimal ? 'Compliant' : isWarning ? 'At Risk' : 'Breached';
-
-            const cardClasses = statusColor === 'emerald'
-              ? 'bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border-emerald-300/90 dark:border-emerald-500/40'
-              : statusColor === 'amber'
-              ? 'bg-gradient-to-br from-amber-50/80 via-white to-yellow-50/30 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-950 border-amber-300/90 dark:border-amber-500/40'
-              : 'bg-gradient-to-br from-rose-50/80 via-white to-red-50/30 dark:from-rose-950/40 dark:via-slate-900 dark:to-slate-950 border-rose-300/90 dark:border-rose-500/40';
-
-            const badgeClasses = statusColor === 'emerald'
-              ? 'bg-emerald-100/90 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40'
-              : statusColor === 'amber'
-              ? 'bg-amber-100/90 dark:bg-amber-950/90 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-500/40'
-              : 'bg-rose-100/90 dark:bg-rose-950/90 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-500/40';
-
-            const adherenceColor = statusColor === 'emerald'
-              ? 'text-emerald-600 dark:text-emerald-400'
-              : statusColor === 'amber'
-              ? 'text-amber-600 dark:text-amber-400'
-              : 'text-rose-600 dark:text-rose-400';
+            const slaTheme = KPI_STATUS_THEMES[statusColor];
 
             return (
               <div 
@@ -202,18 +186,18 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                     ? 'Compliance target met. Continue daily monitoring.' 
                     : 'Allocate dedicated QE and engineering triage capacity to address SLA bottlenecks.'
                 })}
-                className={`p-4 rounded-xl border shadow-xs transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${cardClasses}`}
+                className={`p-4 rounded-xl border transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${slaTheme.card}`}
                 title="Click for SLA justification and compliance audit"
               >
                 <div className="flex justify-between items-start gap-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold shrink-0 shadow-2xs flex items-center gap-1 ${badgeClasses}`}>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 ${slaTheme.badge}`}>
                     <span>{statusLabel}</span>
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
-                <div className="flex justify-between items-center pt-2 border-t border-slate-200/60 dark:border-slate-800/80 text-xs font-mono">
-                  <span className="text-slate-500 dark:text-slate-400">Adherence: <strong className={adherenceColor}>{sla.rate}</strong></span>
+                <div className={`flex justify-between items-center pt-2 border-t text-xs font-mono ${slaTheme.footerBorder}`}>
+                  <span className="text-slate-500 dark:text-slate-400">Adherence: <strong className={slaTheme.value}>{sla.rate}</strong></span>
                   <span className="text-slate-500 dark:text-slate-400">Target: {sla.target}</span>
                 </div>
               </div>

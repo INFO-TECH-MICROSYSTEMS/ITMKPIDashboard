@@ -7,6 +7,7 @@
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
+import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 
 // ==========================================
 // 1. CIRCULAR GAUGE METER
@@ -371,48 +372,10 @@ export const MetricCard: React.FC<{
   icon,
   onJustify
 }) => {
-  const statusThemeMap = {
-    rose: {
-      card: 'bg-gradient-to-br from-rose-50/80 via-white to-red-50/30 dark:from-rose-950/40 dark:via-slate-900 dark:to-slate-950 border-rose-300/90 dark:border-rose-500/40 hover:border-rose-400',
-      badge: 'text-rose-800 dark:text-rose-300 bg-rose-100/90 dark:bg-rose-950/90 border-rose-300 dark:border-rose-500/40',
-      value: 'text-rose-600 dark:text-rose-400',
-      icon: 'text-rose-600 dark:text-rose-400',
-      footerBorder: 'border-rose-100 dark:border-rose-900/30'
-    },
-    amber: {
-      card: 'bg-gradient-to-br from-amber-50/80 via-white to-yellow-50/30 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-950 border-amber-300/90 dark:border-amber-500/40 hover:border-amber-400',
-      badge: 'text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950/90 border-amber-300 dark:border-amber-500/40',
-      value: 'text-amber-600 dark:text-amber-400',
-      icon: 'text-amber-600 dark:text-amber-400',
-      footerBorder: 'border-amber-100 dark:border-amber-900/30'
-    },
-    emerald: {
-      card: 'bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border-emerald-300/90 dark:border-emerald-500/40 hover:border-emerald-400',
-      badge: 'text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/90 border-emerald-300 dark:border-emerald-500/40',
-      value: 'text-emerald-600 dark:text-emerald-400',
-      icon: 'text-emerald-600 dark:text-emerald-400',
-      footerBorder: 'border-emerald-100 dark:border-emerald-900/30'
-    },
-    cyan: {
-      card: 'bg-gradient-to-br from-cyan-50/70 via-white to-blue-50/30 dark:from-cyan-950/40 dark:via-slate-900 dark:to-slate-950 border-cyan-300/90 dark:border-cyan-500/40 hover:border-cyan-400',
-      badge: 'text-cyan-800 dark:text-cyan-300 bg-cyan-100/90 dark:bg-cyan-950/90 border-cyan-300 dark:border-cyan-500/40',
-      value: 'text-cyan-700 dark:text-cyan-400',
-      icon: 'text-cyan-600 dark:text-cyan-400',
-      footerBorder: 'border-cyan-100 dark:border-cyan-900/30'
-    },
-    purple: {
-      card: 'bg-gradient-to-br from-purple-50/70 via-white to-indigo-50/30 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-950 border-purple-300/90 dark:border-purple-500/40 hover:border-purple-400',
-      badge: 'text-purple-800 dark:text-purple-300 bg-purple-100/90 dark:bg-purple-950/90 border-purple-300 dark:border-purple-500/40',
-      value: 'text-purple-700 dark:text-purple-400',
-      icon: 'text-purple-600 dark:text-purple-400',
-      footerBorder: 'border-purple-100 dark:border-purple-900/30'
-    }
-  };
-
-  const theme = statusThemeMap[statusColor];
+  const theme = KPI_STATUS_THEMES[statusColor];
 
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between ${theme.card}`}>
+    <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${theme.card}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">

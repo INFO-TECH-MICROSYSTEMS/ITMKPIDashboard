@@ -2,6 +2,7 @@
  * Component: MetricJustificationModal
  * Provides in-depth audit trail, mathematical formulas, rule violations,
  * root causes, and recommended actions for any KPI in the platform.
+ * Consistently styled using centralized KPI_STATUS_THEMES.
  */
 
 import React, { useEffect } from 'react';
@@ -10,6 +11,7 @@ import {
   HelpCircle, Lightbulb 
 } from 'lucide-react';
 import type { KPIJustification } from '../../types/kpiPlatform';
+import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 
 interface MetricJustificationModalProps {
   justification: KPIJustification | null;
@@ -33,52 +35,34 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
   if (!isOpen || !justification) return null;
 
-  const headerStatusStyles = {
-    rose: {
-      border: 'border-rose-300 dark:border-rose-500/40',
-      badge: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-300 dark:border-rose-500/40',
-      icon: <AlertOctagon className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
-    },
-    amber: {
-      border: 'border-amber-300 dark:border-amber-500/40',
-      badge: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-500/40',
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-    },
-    emerald: {
-      border: 'border-emerald-300 dark:border-emerald-500/40',
-      badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40',
-      icon: <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-    },
-    cyan: {
-      border: 'border-cyan-300 dark:border-cyan-500/40',
-      badge: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border-cyan-300 dark:border-cyan-500/40',
-      icon: <HelpCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-    },
-    purple: {
-      border: 'border-purple-300 dark:border-purple-500/40',
-      badge: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border-purple-300 dark:border-purple-500/40',
-      icon: <HelpCircle className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
-    }
+  const theme = KPI_STATUS_THEMES[justification.statusColor] || KPI_STATUS_THEMES.cyan;
+
+  const statusIcons = {
+    rose: <AlertOctagon className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />,
+    amber: <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />,
+    emerald: <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />,
+    cyan: <HelpCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0" />,
+    purple: <HelpCircle className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
   };
 
-  const currentTheme = headerStatusStyles[justification.statusColor] || headerStatusStyles.cyan;
+  const currentIcon = statusIcons[justification.statusColor] || statusIcons.cyan;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-xs animate-fadeIn">
       {/* Click outside backdrop */}
       <div className="fixed inset-0" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Modal Header */}
-        <div className={`p-6 border-b flex items-start justify-between gap-4 bg-slate-50/70 dark:bg-slate-800/40 ${currentTheme.border}`}>
+        <div className={`p-6 flex items-start justify-between gap-4 ${theme.headerBg}`}>
           <div className="flex items-start gap-3">
-            {currentTheme.icon}
+            {currentIcon}
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">
                   KPI Decision Audit & Justification
                 </span>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold shadow-2xs ${currentTheme.badge}`}>
+                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${theme.badge}`}>
                   {justification.statusBadge}
                 </span>
               </div>
@@ -89,7 +73,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            className="p-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -98,23 +82,23 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
         {/* Modal Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6 text-sm">
-          {/* Status & Values Overview Banner */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 font-mono text-xs">
+          {/* Status & Values Overview Banner - Styled using theme */}
+          <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl border ${theme.calloutBg} ${theme.calloutBorder} font-mono text-xs`}>
             <div>
-              <span className="text-slate-500 dark:text-slate-400 block">Current Telemetry</span>
-              <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Current Telemetry</span>
+              <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
                 {justification.currentValue}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400 block">Governance Target</span>
-              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Governance Target</span>
+              <span className={`text-base sm:text-lg mt-0.5 block ${theme.target}`}>
                 {justification.targetValue}
               </span>
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <span className="text-slate-500 dark:text-slate-400 block">Status Verdict</span>
-              <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Status Verdict</span>
+              <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
                 {justification.statusBadge}
               </span>
             </div>
@@ -125,7 +109,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <span>Why Is This Status / Grade Assigned?</span>
             </h4>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+            <div className={`p-4 rounded-2xl border leading-relaxed text-slate-800 dark:text-slate-200 text-xs sm:text-sm ${theme.calloutBg} ${theme.calloutBorder}`}>
               {justification.rationale}
             </div>
           </div>
@@ -135,7 +119,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
               Governing Rule & Metric Formula
             </h4>
-            <pre className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 text-cyan-400 text-xs font-mono overflow-x-auto border border-slate-800 whitespace-pre-wrap">
+            <pre className={`p-4 rounded-xl text-xs font-mono overflow-x-auto whitespace-pre-wrap ${theme.codeBlock}`}>
               {justification.formulaOrRule}
             </pre>
           </div>
@@ -147,28 +131,29 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                 Evaluation Factors & Score Penalties
               </h4>
               <div className="space-y-2">
-                {justification.factors.map((f, i) => (
-                  <div 
-                    key={i} 
-                    className="p-3.5 rounded-xl border flex items-start justify-between gap-3 text-xs bg-white dark:bg-slate-900/90 border-slate-200 dark:border-slate-800"
-                  >
-                    <div className="space-y-1">
-                      <span className="font-bold text-slate-900 dark:text-white block font-['Outfit']">
-                        {f.factor}
+                {justification.factors.map((f, i) => {
+                  const factorTheme = f.status === 'critical' 
+                    ? KPI_STATUS_THEMES.rose 
+                    : f.status === 'warning' 
+                    ? KPI_STATUS_THEMES.amber 
+                    : KPI_STATUS_THEMES.emerald;
+                  return (
+                    <div 
+                      key={i} 
+                      className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 text-xs ${factorTheme.card}`}
+                    >
+                      <div className="space-y-1">
+                        <span className="font-bold text-slate-900 dark:text-white block font-['Outfit']">
+                          {f.factor}
+                        </span>
+                        <p className="text-slate-600 dark:text-slate-400 leading-snug">{f.details}</p>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-md text-[11px] shrink-0 ${factorTheme.badge}`}>
+                        {f.impact}
                       </span>
-                      <p className="text-slate-600 dark:text-slate-400">{f.details}</p>
                     </div>
-                    <span className={`px-2.5 py-1 rounded-md font-mono font-bold text-[11px] shrink-0 ${
-                      f.status === 'critical'
-                        ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                        : f.status === 'warning'
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                    }`}>
-                      {f.impact}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -196,7 +181,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                       </span>
                     </div>
                     {item.severityOrStatus && (
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 font-bold shrink-0">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-500/40 font-bold shrink-0">
                         {item.severityOrStatus}
                       </span>
                     )}
@@ -207,7 +192,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           )}
 
           {/* Actionable Path to Green */}
-          <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/30 space-y-2">
+          <div className={`p-4 rounded-2xl border space-y-2 ${KPI_STATUS_THEMES.emerald.calloutBg} ${KPI_STATUS_THEMES.emerald.calloutBorder}`}>
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
               <Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Recommended Remediation (Path to Green)</span>
@@ -222,7 +207,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-mono text-xs font-bold transition-all shadow-sm"
+            className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${theme.buttonAccent}`}
           >
             Acknowledge & Close
           </button>
