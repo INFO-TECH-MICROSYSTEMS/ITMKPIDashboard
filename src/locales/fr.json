@@ -879,8 +879,8 @@
   },
   "servicesContent": {
     "s1": {
-      "tagline": "End-to-end engineering of modern web, n-tier, enterprise, cloud SaaS, mobile, and microservices architectures.",
-      "summary": "From initial prototype to mission-critical multi-tenant cloud platforms, INFO TECH MICROSYSTEMS designs, builds, optimizes, and sustains high-performance software systems tailored to your business objectives.",
+      "tagline": "Ingénierie de bout en bout d'architectures web modernes, n-tiers, d'entreprise, SaaS cloud, mobiles et microservices.",
+      "summary": "Du prototype initial aux plateformes cloud multi-locataires critiques, INFO TECH MICROSYSTEMS conçoit, développe, optimise et maintient des systèmes logiciels haute performance adaptés à vos ambitions.",
       "fullDescription": [
         "INFO TECH MICROSYSTEMS delivers cutting-edge software engineering across the entire application lifecycle. Whether architecting resilient cloud-native microservices from the ground up, refactoring legacy monolithic systems into modular n-tier layers, or delivering responsive cross-platform web and mobile experiences, we apply rigorous engineering standards and modern toolchains.",
         "Our engineering capability spans responsive progressive web applications, enterprise ERP/CRM extensions, secure SaaS multi-tenant portals, scalable microservices networks, and native/hybrid iOS and Android apps. We don't merely deploy code; we guarantee maintainability, observability, robust automated test harnesses, and predictable continuous delivery.",
@@ -961,12 +961,12 @@
         }
       ],
       "keyDeliverables": [
-        "Full Source Code with Comprehensive Git History & Licensing",
-        "Architecture Decision Records (ADRs) & System Design Schematics",
-        "Automated CI/CD Pipeline Configurations (GitHub Actions / GitLab / Azure DevOps)",
-        "Automated Unit, Integration, and End-to-End Test Suites",
-        "API Documentation with OpenAPI / Swagger Interactive Specs",
-        "Deployment Guides, Runbooks & Operational Maintenance Manuals"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -992,8 +992,8 @@
       ]
     },
     "s2": {
-      "tagline": "Expert advisory and hands-on execution across requirement elicitation, architecture, testing, support, and maintenance.",
-      "summary": "INFO TECH MICROSYSTEMS embeds seasoned leadership and strategic consulting into your software initiatives to eliminate costly blind spots, accelerate time-to-market, and guarantee architectural excellence.",
+      "tagline": "Conseil expert et exécution pratique sur l'expression des besoins, l'architecture, les tests et la maintenance.",
+      "summary": "INFO TECH MICROSYSTEMS intègre un leadership technique chevronné et du conseil stratégique dans vos projets logiciels pour éliminer les angles morts et garantir l'excellence architecturale.",
       "fullDescription": [
         "Software project success requires more than writing code; it demands rigorous cross-functional orchestration from the very first discovery session through long-term production sustainability. INFO TECH MICROSYSTEMS provides senior-level consultative leadership that bridges executive business vision with deep technical execution.",
         "Our consultants participate directly in or steer every lifecycle discipline: facilitating requirement elicitation workshops with stakeholders, formulating resilient architectural blueprints, establishing standardized testing paradigms, and designing frontline customer support workflows.",
@@ -1064,12 +1064,12 @@
         }
       ],
       "keyDeliverables": [
-        "Comprehensive Software Requirements Specification (SRS) & User Stories",
-        "System Architecture Blueprint & Data Flow Schematics",
-        "Technology Stack Evaluation & Total Cost of Ownership Report",
-        "Project Risk Register & Mitigation Strategy Document",
-        "Customer Support Escalation & Runbook Documentation Framework",
-        "Project Turnaround & Milestone Delivery Roadmap"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -1095,8 +1095,8 @@
       ]
     },
     "s3": {
-      "tagline": "Practical, hands-on masterclasses designed to upskill teams in modern requirements, coding, test automation, and support.",
-      "summary": "Empower your engineering teams with industry-proven software development capabilities. We deliver targeted, real-world curriculum covering modern development, QA automation, customer support engineering, and requirement gathering.",
+      "tagline": "Renforcez vos équipes d'ingénierie avec des formations ciblées et axées sur la pratique du développement moderne.",
+      "summary": "Nous formons vos équipes avec des programmes concrets couvrant les architectures modernes, le développement piloté par les tests (TDD), l'automatisation CI/CD et la sécurité.",
       "fullDescription": [
         "Technology evolves at a blistering pace, and the single highest-ROI investment a company can make is elevating the technical proficiency of its workforce. INFO TECH MICROSYSTEMS delivers immersive, role-specific training programs engineered for real enterprise impact.",
         "Unlike generic online courses, our curriculums are tailored directly to your organization's domain, tech stack, and workflow bottlenecks. We train developers in modern clean architecture and cloud patterns, upskill QA testers into high-velocity test automation engineers, instruct business analysts in disciplined requirement elicitation, and train support personnel in technical triage and observability.",
@@ -1167,12 +1167,12 @@
         }
       ],
       "keyDeliverables": [
-        "Custom Courseware, Code Repositories & Interactive Lab Sandboxes",
-        "Step-by-Step Training Reference Manuals & Cheatsheets",
-        "Pre- and Post-Training Competency Assessment Matrix",
-        "Individual & Team Certification of Mastery",
-        "Recorded Workshop Sessions for Internal Organizational Knowledge Bases",
-        "30-Day Post-Workshop Q&A and Code Review Support"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -1198,8 +1198,8 @@
       ]
     },
     "s4": {
-      "tagline": "Defect prevention through shift-left QA, automated testing frameworks, and multi-layered quality governance.",
-      "summary": "Elevate your software reliability with robust QA strategies. INFO TECH MICROSYSTEMS designs, implements, and executes automated test harnesses, continuous integration checks, and comprehensive quality roadmaps.",
+      "tagline": "Améliorez la fiabilité de vos logiciels grâce à des stratégies QA robustes et des suites de tests automatisés.",
+      "summary": "Nous assurons une fiabilité logicielle maximale grâce à des tests automatisés de bout en bout, des tests de charge et une gouvernance stricte des déploiements.",
       "fullDescription": [
         "In today’s competitive digital landscape, software quality is not an afterthought—it is your brand's primary defense. INFO TECH MICROSYSTEMS helps organizations replace fragmented, manual testing with disciplined, automated, and continuous Quality Assurance strategies.",
         "We institute the \"Shift-Left\" philosophy, integrating quality verification at every milestone: from static code analysis and unit test harnesses in the developer's IDE, to containerized API contract validation, comprehensive end-to-end browser and mobile automation, performance load testing, and security scanning.",
@@ -1270,12 +1270,12 @@
         }
       ],
       "keyDeliverables": [
-        "Master Quality Assurance Strategy (QAS) Document",
-        "Production-Ready Test Automation Framework Repository with Full Documentation",
-        "End-to-End Automated Regression & Sanity Test Suites",
-        "Automated API Contract Verification Test Harness",
-        "Performance Benchmark & Scalability Load Test Report",
-        "Defect Tracking & Triage Standard Operating Procedure (SOP)"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -1301,8 +1301,8 @@
       ]
     },
     "s5": {
-      "tagline": "Vetted, high-impact engineers, managers, QA specialists, and writers selected through rigorous technical evaluation.",
-      "summary": "Eliminate hiring friction and costly mis-hires. INFO TECH MICROSYSTEMS recruits elite software professionals—from project managers and full-stack developers to test automation engineers and technical document writers.",
+      "tagline": "Éliminez les frictions de recrutement avec la sélection de talents techniques d'élite dirigée par des architectes.",
+      "summary": "Nous recrutons des développeurs seniors, ingénieurs SDET et managers pré-évalués par des tests de code approfondis et des revues d'architecture réelles.",
       "fullDescription": [
         "Traditional recruitment agencies rely on keyword matching without understanding underlying software architecture, leading to mismatched resumes and wasted engineering interview hours. INFO TECH MICROSYSTEMS is a technology firm that recruits technology professionals.",
         "Because our core discipline is software engineering and quality assurance, our evaluation process is conducted by practicing engineers and technical architects. Every candidate is evaluated on algorithmic proficiency, real-world system design, clean coding habits, debugging acumen, and cultural alignment.",
@@ -1373,12 +1373,12 @@
         }
       ],
       "keyDeliverables": [
-        "Detailed Candidate Dossiers with Technical Audit Scores",
-        "Recorded Coding Challenge & System Design Summaries",
-        "Verified Work History & Technical Reference Reports",
-        "Compensation Benchmarking & Talent Market Analysis",
-        "Role-Specific Onboarding Roadmap & 90-Day KPI Alignment",
-        "90-Day Replacement Guarantee on Placed Candidates"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -1404,8 +1404,8 @@
       ]
     },
     "s6": {
-      "tagline": "Data-driven visibility into engineering health, DORA metrics, code quality audits, and regulatory compliance.",
-      "summary": "Make engineering excellence measurable. INFO TECH MICROSYSTEMS establishes tailored Key Performance Indicators (KPIs) and executes formal audit documentation for software development projects.",
+      "tagline": "Rendez l'excellence technique mesurable grâce aux métriques clés (DORA), audits de code et gouvernance de qualité.",
+      "summary": "Nous mettons en place des tableaux de bord de métriques DORA, mesurons les taux d'échappement d'anomalies et réalisons des audits d'architecture formels.",
       "fullDescription": [
         "You cannot improve what you do not measure. In modern software engineering, reliance on anecdotal progress reports leads to missed deadlines, unmanaged technical debt, and sudden production outages. INFO TECH MICROSYSTEMS brings rigorous, data-driven governance to your software lifecycle.",
         "We formulate custom, actionable KPI dashboards aligned with modern frameworks such as DORA (DevOps Research and Assessment) and SPACE (Satisfaction, Performance, Activity, Communication, Efficiency).",
@@ -1476,12 +1476,12 @@
         }
       ],
       "keyDeliverables": [
-        "Comprehensive Engineering KPI Framework Specification",
-        "Automated Executive DORA Metrics Dashboard Setup",
-        "Formal Technical Debt & Codebase Health Audit Report",
-        "Quality Assurance & Test Automation Audit Scorecard",
-        "Security, Compliance & Regulatory Audit Documentation Package",
-        "Vendor/Contractor Delivery Verification Audit Template"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
@@ -1507,8 +1507,8 @@
       ]
     },
     "s7": {
-      "tagline": "Fair, transparent, objective frameworks to evaluate, mentor, and elevate software engineers, QA, and leadership.",
-      "summary": "Align human potential with engineering output. INFO TECH MICROSYSTEMS builds and manages role-specific performance systems for managers, developers, testers, automation engineers, documentation writers, and support staff.",
+      "tagline": "Optimisez la performance technique et fidélisez vos talents clés grâce à des référentiels de compétences clairs.",
+      "summary": "Nous concevons des échelles de compétences techniques, des processus d'évaluation transparents et des stratégies de fidélisation pour vos meilleurs ingénieurs.",
       "fullDescription": [
         "Managing software professionals requires specialized evaluation frameworks that honor the nuance of intellectual engineering work. Generic corporate HR appraisals fail because they cannot measure code craftsmanship, architectural foresight, testing rigor, or technical problem-solving under pressure.",
         "INFO TECH MICROSYSTEMS creates and executes multi-dimensional performance management systems tailored to software engineering organizations. We establish objective competency matrices, transparent career ladders, and actionable 360-degree review cadences.",
@@ -1579,12 +1579,12 @@
         }
       ],
       "keyDeliverables": [
-        "Comprehensive Engineering Competency Rubric (6 Roles x 5 Seniority Levels)",
-        "Technical 360-Degree Review Questionnaire & Scoring Templates",
-        "Engineering 1-on-1 Framework & Career Conversation Playbook",
-        "Objective Performance Improvement Plan (PIP) Documentation Toolkit",
-        "Engineering Career Ladder & Promotion Criteria Handbook",
-        "Team Health & Cognitive Workload Pulse Survey System"
+        "Code source complet avec historique Git exhaustif et licences",
+        "Dossiers de Décisions d'Architecture (ADR) et schémas du système",
+        "Pipelines CI/CD automatisés (GitHub Actions / GitLab / Azure DevOps)",
+        "Suites de tests automatisés unitaires, d'intégration et end-to-end",
+        "Documentation interactive d'API conforme aux standards OpenAPI / Swagger",
+        "Guides de déploiement en production, manuels d'exploitation et plans de reprise"
       ],
       "useCases": [
         {
