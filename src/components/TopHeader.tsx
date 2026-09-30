@@ -12,7 +12,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
 
   return (
     <header className="sticky top-0 z-30 transition-colors duration-300 backdrop-blur-xl border-b border-slate-200/80 bg-white/90 text-slate-900 shadow-sm dark:border-cyan-500/20 dark:bg-[#070913]/90 dark:text-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="flex justify-between items-center h-16">
           
           {/* Mobile View: Hamburger + Brand */}

@@ -52,7 +52,7 @@ export const KPIPlatformPage: React.FC = () => {
   } = useKPIData();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 animate-in fade-in duration-300">
       
       {/* Page Header & Actions */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-cyan-500/20">
@@ -69,7 +69,7 @@ export const KPIPlatformPage: React.FC = () => {
           <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] tracking-tight">
             Quality Engineering KPI Platform
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
             Real-time quality intelligence synthesized across JIRA planning, TestRail test executions, and GitHub CI/CD workflows.
           </p>
         </div>
@@ -127,8 +127,8 @@ export const KPIPlatformPage: React.FC = () => {
         totalFilteredTests={testRailExecutions.length}
       />
 
-      {/* KPI Category Navigation Tabs */}
-      <div className="flex overflow-x-auto pb-2 scrollbar-none gap-2">
+      {/* KPI Category Navigation (Full-Width Responsive Grid, No Horizontal Truncation) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5">
         {KPI_CATEGORIES.map(category => {
           const isActive = activeCategory === category.id;
           return (
@@ -136,20 +136,24 @@ export const KPIPlatformPage: React.FC = () => {
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex flex-col justify-between p-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer text-left gap-2 border ${
                 isActive
-                  ? 'bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 text-white shadow-md shadow-cyan-600/20'
-                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800'
+                  ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-purple-600 text-white border-transparent shadow-md shadow-cyan-600/20'
+                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 shadow-2xs'
               }`}
             >
-              <span className={isActive ? 'text-white' : 'text-cyan-600 dark:text-cyan-400'}>
-                {iconMap[category.iconName]}
-              </span>
-              <span>{category.name}</span>
-              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
-                isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
-              }`}>
-                {category.badge}
+              <div className="flex items-center justify-between gap-1.5">
+                <span className={`p-1.5 rounded-lg ${isActive ? 'bg-white/20 text-white' : 'bg-cyan-50 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400'}`}>
+                  {iconMap[category.iconName]}
+                </span>
+                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                }`}>
+                  {category.badge}
+                </span>
+              </div>
+              <span className="font-['Outfit'] font-bold leading-tight line-clamp-2">
+                {category.name}
               </span>
             </button>
           );
