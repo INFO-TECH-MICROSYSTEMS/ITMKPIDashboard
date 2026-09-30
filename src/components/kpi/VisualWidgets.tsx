@@ -71,7 +71,13 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
             {score}%
           </span>
           {grade && (
-            <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 mt-0.5">
+            <span className={`text-xs font-bold font-mono px-2.5 py-0.5 rounded-full mt-0.5 shadow-2xs ${
+              score < 50 
+                ? 'text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/90 border border-rose-300 dark:border-rose-500/40' 
+                : score < 75 
+                ? 'text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/90 border border-amber-300 dark:border-amber-500/40' 
+                : 'text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/90 border border-emerald-300 dark:border-emerald-500/40'
+            }`}>
               Grade {grade}
             </span>
           )}
@@ -82,7 +88,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
         {title}
       </span>
       {subtitle && (
-        <span className="text-xs text-slate-500 dark:text-slate-400 text-center mt-0.5">
+        <span className="text-xs text-slate-600 dark:text-slate-400 text-center mt-0.5">
           {subtitle}
         </span>
       )}
