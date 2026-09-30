@@ -53,18 +53,19 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           value={`${mttrMttd.avgMttrHours} hrs`}
           target="< 24.0 hrs"
           trend="8.5% faster"
-          trendPositive={true}
-          statusBadge="Active SLA"
-          statusColor="emerald"
+          trendPositive={mttrMttd.avgMttrHours <= 24.0}
+          statusBadge={mttrMttd.avgMttrHours <= 24.0 ? 'SLA Met' : mttrMttd.avgMttrHours <= 36.0 ? 'Warning' : 'Breached'}
+          statusColor={mttrMttd.avgMttrHours <= 24.0 ? 'emerald' : mttrMttd.avgMttrHours <= 36.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
         />
         <MetricCard
           title="Mean Time to Detect (MTTD)"
           value={`${mttrMttd.avgMttdHours} hrs`}
           target="< 6.0 hrs"
-          statusBadge="Fast Discovery"
-          statusColor="cyan"
-          icon={<Flame className="w-5 h-5 text-cyan-500" />}
+          trendPositive={mttrMttd.avgMttdHours <= 6.0}
+          statusBadge={mttrMttd.avgMttdHours <= 6.0 ? 'Fast Discovery' : mttrMttd.avgMttdHours <= 12.0 ? 'Lagging' : 'Critical Lag'}
+          statusColor={mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : mttrMttd.avgMttdHours <= 12.0 ? 'amber' : 'rose'}
+          icon={<Flame className="w-5 h-5 text-amber-500" />}
         />
         <MetricCard
           title="Defect Reopen Rate"
@@ -72,16 +73,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           target="< 5.0%"
           trend={`${mttrMttd.reopenedCount} reopened`}
           trendPositive={mttrMttd.reopenRate < 5}
-          statusBadge={mttrMttd.reopenRate < 5 ? 'Stable' : 'Elevated'}
-          statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : 'amber'}
+          statusBadge={mttrMttd.reopenRate < 5 ? 'Stable' : mttrMttd.reopenRate <= 10 ? 'Elevated' : 'High Churn'}
+          statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : mttrMttd.reopenRate <= 10 ? 'amber' : 'rose'}
           icon={<RefreshCw className="w-5 h-5 text-amber-500" />}
         />
         <MetricCard
           title="Customer Escalations (APARs)"
           value={customerAparList.length}
           target="< 10 Total"
-          statusBadge="Direct Customer Impact"
-          statusColor={customerAparList.length > 15 ? 'rose' : 'purple'}
+          trendPositive={customerAparList.length <= 10}
+          statusBadge={customerAparList.length <= 10 ? 'Controlled Impact' : customerAparList.length <= 20 ? 'Elevated APARs' : 'Severe Escapes'}
+          statusColor={customerAparList.length <= 10 ? 'emerald' : customerAparList.length <= 20 ? 'amber' : 'rose'}
           icon={<Bug className="w-5 h-5 text-purple-500" />}
         />
       </div>

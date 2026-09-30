@@ -137,9 +137,9 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           value={`${scorecard.defectLeakageRate}%`}
           target="< 3.0%"
           trend="-0.8% vs last sprint"
-          trendPositive={true}
-          statusBadge="Controlled"
-          statusColor="cyan"
+          trendPositive={scorecard.defectLeakageRate <= 3.0}
+          statusBadge={scorecard.defectLeakageRate <= 3.0 ? 'Controlled' : scorecard.defectLeakageRate <= 5.0 ? 'Elevated' : 'Breached'}
+          statusColor={scorecard.defectLeakageRate <= 3.0 ? 'emerald' : scorecard.defectLeakageRate <= 5.0 ? 'amber' : 'rose'}
           icon={<TrendingDown className="w-5 h-5 text-cyan-500" />}
         />
         <MetricCard
@@ -147,17 +147,17 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           value={`${scorecard.regressionCycleTimeDays} Days`}
           target="< 2.5 Days"
           trend="42% faster via SDET"
-          trendPositive={true}
-          statusBadge="Optimal"
-          statusColor="emerald"
+          trendPositive={scorecard.regressionCycleTimeDays <= 2.5}
+          statusBadge={scorecard.regressionCycleTimeDays <= 2.5 ? 'Optimal' : scorecard.regressionCycleTimeDays <= 3.5 ? 'Acceptable' : 'Delayed'}
+          statusColor={scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : scorecard.regressionCycleTimeDays <= 3.5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
         />
         <MetricCard
           title="P95 Latency Benchmark"
           value={`${scorecard.performanceP95Ms} ms`}
           target="< 200 ms"
-          statusBadge="P99: 380ms"
-          statusColor="purple"
+          statusBadge={scorecard.performanceP95Ms <= 200 ? 'P99: 380ms' : 'Latency Warning'}
+          statusColor={scorecard.performanceP95Ms <= 200 ? 'emerald' : scorecard.performanceP95Ms <= 350 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
         />
       </div>

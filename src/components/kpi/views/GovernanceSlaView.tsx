@@ -32,9 +32,9 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           value={`${scorecard.slaAdherenceRate}%`}
           target="> 92.0%"
           trend="99.4% P1 triage"
-          trendPositive={true}
-          statusBadge="Compliant"
-          statusColor="emerald"
+          trendPositive={scorecard.slaAdherenceRate >= 92.0}
+          statusBadge={scorecard.slaAdherenceRate >= 92.0 ? 'Compliant' : scorecard.slaAdherenceRate >= 85.0 ? 'At Risk' : 'Breached'}
+          statusColor={scorecard.slaAdherenceRate >= 92.0 ? 'emerald' : scorecard.slaAdherenceRate >= 85.0 ? 'amber' : 'rose'}
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
         />
         <MetricCard
@@ -42,17 +42,18 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           value={`${scorecard.accessibilityScore}%`}
           target="> 95.0%"
           trend="Section 508 Ready"
-          trendPositive={true}
-          statusBadge="Audit Passed"
-          statusColor="cyan"
+          trendPositive={scorecard.accessibilityScore >= 95.0}
+          statusBadge={scorecard.accessibilityScore >= 95.0 ? 'Audit Passed' : scorecard.accessibilityScore >= 90.0 ? 'Minor Violations' : 'Non-Compliant'}
+          statusColor={scorecard.accessibilityScore >= 95.0 ? 'emerald' : scorecard.accessibilityScore >= 90.0 ? 'amber' : 'rose'}
           icon={<Eye className="w-5 h-5 text-cyan-500" />}
         />
         <MetricCard
           title="Performance P95 Latency"
           value={`${scorecard.performanceP95Ms} ms`}
           target="< 180 ms"
-          statusBadge="P99: 380 ms"
-          statusColor="purple"
+          trendPositive={scorecard.performanceP95Ms <= 180}
+          statusBadge={scorecard.performanceP95Ms <= 180 ? 'P99: 380 ms' : scorecard.performanceP95Ms <= 250 ? 'Spike Latency' : 'SLA Breached'}
+          statusColor={scorecard.performanceP95Ms <= 180 ? 'emerald' : scorecard.performanceP95Ms <= 250 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
         />
         <MetricCard
@@ -77,61 +78,92 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           {[
             {
               name: 'Defect Triage SLA (P1 < 4h, P2 < 24h)',
+              rateNum: scorecard.slaBreakdown.p1P2TriageRate,
+              targetNum: 95.0,
               rate: `${scorecard.slaBreakdown.p1P2TriageRate}%`,
               target: '95.0%',
-              desc: 'Rapid initial triage and assessment for blocking and critical defects.',
-              status: scorecard.slaBreakdown.p1P2TriageRate >= 95 ? 'Optimal' : 'Needs Review'
+              desc: 'Rapid initial triage and assessment for blocking and critical defects.'
             },
             {
               name: 'Regression Execution SLA',
+              rateNum: scorecard.slaBreakdown.regressionExecutionRate,
+              targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.regressionExecutionRate}%`,
               target: '90.0%',
-              desc: 'Execution of complete regression cycle within scheduled sprint window.',
-              status: scorecard.slaBreakdown.regressionExecutionRate >= 90 ? 'Optimal' : 'Needs Review'
+              desc: 'Execution of complete regression cycle within scheduled sprint window.'
             },
             {
               name: 'Test Case Creation SLA',
+              rateNum: scorecard.slaBreakdown.testPlanCreationRate,
+              targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.testPlanCreationRate}%`,
               target: '90.0%',
-              desc: 'Test plans authored and reviewed prior to development handoff.',
-              status: scorecard.slaBreakdown.testPlanCreationRate >= 85 ? 'Compliant' : 'Needs Review'
+              desc: 'Test plans authored and reviewed prior to development handoff.'
             },
             {
               name: 'Daily QA Status Report SLA',
+              rateNum: scorecard.slaBreakdown.dailyReportRate,
+              targetNum: 98.0,
               rate: `${scorecard.slaBreakdown.dailyReportRate}%`,
               target: '98.0%',
-              desc: 'Automated executive and squad reporting published every day at 17:00.',
-              status: 'Exceeding'
+              desc: 'Automated executive and squad reporting published every day at 17:00.'
             },
             {
               name: 'Automation Delivery SLA',
+              rateNum: scorecard.slaBreakdown.automationDeliveryRate,
+              targetNum: 85.0,
               rate: `${scorecard.slaBreakdown.automationDeliveryRate}%`,
               target: '85.0%',
-              desc: 'In-sprint test automation completed within the same sprint as feature code.',
-              status: scorecard.slaBreakdown.automationDeliveryRate >= 85 ? 'Compliant' : 'Needs Review'
+              desc: 'In-sprint test automation completed within the same sprint as feature code.'
             },
             {
               name: 'Customer Defect Resolution SLA',
+              rateNum: scorecard.slaBreakdown.customerDefectResolutionRate,
+              targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.customerDefectResolutionRate}%`,
               target: '90.0%',
-              desc: `Hotfix turnaround for high-impact customer APARs (${resolvedCustomerDefects.length}/${customerDefects.length} resolved).`,
-              status: scorecard.slaBreakdown.customerDefectResolutionRate >= 90 ? 'Optimal' : 'Needs Review'
+              desc: `Hotfix turnaround for high-impact customer APARs (${resolvedCustomerDefects.length}/${customerDefects.length} resolved).`
             }
-          ].map(sla => (
-            <div key={sla.name} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-              <div className="flex justify-between items-start gap-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-bold shrink-0">
-                  {sla.status}
-                </span>
+          ].map(sla => {
+            const isOptimal = sla.rateNum >= sla.targetNum;
+            const isWarning = !isOptimal && sla.rateNum >= sla.targetNum - 10;
+            const statusColor = isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose';
+            const statusLabel = isOptimal ? 'Compliant' : isWarning ? 'At Risk' : 'Breached';
+
+            const cardClasses = statusColor === 'emerald'
+              ? 'bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border-emerald-300/90 dark:border-emerald-500/40'
+              : statusColor === 'amber'
+              ? 'bg-gradient-to-br from-amber-50/80 via-white to-yellow-50/30 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-950 border-amber-300/90 dark:border-amber-500/40'
+              : 'bg-gradient-to-br from-rose-50/80 via-white to-red-50/30 dark:from-rose-950/40 dark:via-slate-900 dark:to-slate-950 border-rose-300/90 dark:border-rose-500/40';
+
+            const badgeClasses = statusColor === 'emerald'
+              ? 'bg-emerald-100/90 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40'
+              : statusColor === 'amber'
+              ? 'bg-amber-100/90 dark:bg-amber-950/90 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-500/40'
+              : 'bg-rose-100/90 dark:bg-rose-950/90 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-500/40';
+
+            const adherenceColor = statusColor === 'emerald'
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : statusColor === 'amber'
+              ? 'text-amber-600 dark:text-amber-400'
+              : 'text-rose-600 dark:text-rose-400';
+
+            return (
+              <div key={sla.name} className={`p-4 rounded-xl border shadow-xs transition-all space-y-2 ${cardClasses}`}>
+                <div className="flex justify-between items-start gap-2">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold shrink-0 shadow-2xs ${badgeClasses}`}>
+                    {statusLabel}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
+                <div className="flex justify-between items-center pt-2 border-t border-slate-200/60 dark:border-slate-800/80 text-xs font-mono">
+                  <span className="text-slate-500 dark:text-slate-400">Adherence: <strong className={adherenceColor}>{sla.rate}</strong></span>
+                  <span className="text-slate-500 dark:text-slate-400">Target: {sla.target}</span>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">{sla.desc}</p>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
-                <span className="text-slate-500">Adherence: <strong className="text-emerald-600 dark:text-emerald-400">{sla.rate}</strong></span>
-                <span className="text-slate-400">Target: {sla.target}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

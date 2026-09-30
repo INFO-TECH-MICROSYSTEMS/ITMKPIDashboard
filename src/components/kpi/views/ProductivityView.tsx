@@ -39,33 +39,35 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           value={`${avgCompletionRate}%`}
           target="> 85.0%"
           trend="+4.1% sprint velocity"
-          trendPositive={true}
-          statusBadge="On Target"
-          statusColor="emerald"
+          trendPositive={parseFloat(avgCompletionRate) >= 85.0}
+          statusBadge={parseFloat(avgCompletionRate) >= 85.0 ? 'On Target' : parseFloat(avgCompletionRate) >= 70.0 ? 'Acceptable' : 'Behind Schedule'}
+          statusColor={parseFloat(avgCompletionRate) >= 85.0 ? 'emerald' : parseFloat(avgCompletionRate) >= 70.0 ? 'amber' : 'rose'}
           icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
         />
         <MetricCard
           title="Over-Committed Engineers"
           value={overCommittedCount}
           target="0 Burnout Risk"
-          statusBadge={overCommittedCount > 0 ? 'Rebalance Needed' : 'Balanced'}
-          statusColor={overCommittedCount > 0 ? 'amber' : 'emerald'}
+          trendPositive={overCommittedCount === 0}
+          statusBadge={overCommittedCount === 0 ? 'Balanced' : overCommittedCount <= 2 ? 'Rebalance Needed' : 'Burnout Risk'}
+          statusColor={overCommittedCount === 0 ? 'emerald' : overCommittedCount <= 2 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-amber-500" />}
         />
         <MetricCard
           title="Sprint Story Completion Rate"
           value={`${sprintCompletionPercent}%`}
           target="> 80.0%"
-          statusBadge="Throughput"
-          statusColor="cyan"
+          trendPositive={parseFloat(sprintCompletionPercent) >= 80.0}
+          statusBadge={parseFloat(sprintCompletionPercent) >= 80.0 ? 'Throughput Met' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'At Risk' : 'Slipping'}
+          statusColor={parseFloat(sprintCompletionPercent) >= 80.0 ? 'emerald' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
         />
         <MetricCard
           title="Active QA Specialists"
           value={productivityMetrics.length}
           target="Dedicated Squad"
-          statusBadge="Shared Services"
-          statusColor="purple"
+          statusBadge={productivityMetrics.length >= 4 ? 'Optimal Staffing' : 'Understaffed'}
+          statusColor={productivityMetrics.length >= 4 ? 'emerald' : 'amber'}
           icon={<Users className="w-5 h-5 text-purple-500" />}
         />
       </div>

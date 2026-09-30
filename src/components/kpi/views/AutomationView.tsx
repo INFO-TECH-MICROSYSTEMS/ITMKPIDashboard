@@ -48,9 +48,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           value={`${automatedDistribution.passRate}%`}
           target="> 90.0%"
           trend="+3.2% vs last cycle"
-          trendPositive={true}
-          statusBadge={automatedDistribution.passRate > 85 ? 'Healthy' : 'Degraded'}
-          statusColor={automatedDistribution.passRate > 85 ? 'emerald' : 'amber'}
+          trendPositive={automatedDistribution.passRate >= 90.0}
+          statusBadge={automatedDistribution.passRate >= 90.0 ? 'Optimal' : automatedDistribution.passRate >= 80.0 ? 'Acceptable' : 'Degraded'}
+          statusColor={automatedDistribution.passRate >= 90.0 ? 'emerald' : automatedDistribution.passRate >= 80.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
         />
         <MetricCard
@@ -58,17 +58,18 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           value={`${automationHealth.flakyRate}%`}
           target="< 4.0%"
           trend={`${automationHealth.flakyCount} flaky tests`}
-          trendPositive={automationHealth.flakyRate < 4}
-          statusBadge="Quarantine Active"
-          statusColor={automationHealth.flakyRate < 4 ? 'cyan' : 'rose'}
+          trendPositive={automationHealth.flakyRate <= 4.0}
+          statusBadge={automationHealth.flakyRate <= 4.0 ? 'Controlled' : automationHealth.flakyRate <= 8.0 ? 'Quarantine Active' : 'Pipeline Destabilized'}
+          statusColor={automationHealth.flakyRate <= 4.0 ? 'emerald' : automationHealth.flakyRate <= 8.0 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-rose-500" />}
         />
         <MetricCard
           title="CI/CD Pipeline Runtime"
           value={`${automationHealth.avgPipelineMins} mins`}
           target="< 15.0 mins"
-          statusBadge="GitHub Actions"
-          statusColor="purple"
+          trendPositive={automationHealth.avgPipelineMins <= 15.0}
+          statusBadge={automationHealth.avgPipelineMins <= 15.0 ? 'Fast Pipeline' : automationHealth.avgPipelineMins <= 25.0 ? 'Moderate Latency' : 'Pipeline Bottleneck'}
+          statusColor={automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : automationHealth.avgPipelineMins <= 25.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
         />
         <MetricCard
@@ -77,8 +78,8 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           target="~3.5 FTEs"
           trend="Saved per cycle"
           trendPositive={true}
-          statusBadge="High ROI"
-          statusColor="emerald"
+          statusBadge={automationHealth.manualHoursSaved > 200 ? 'High ROI' : 'Moderate ROI'}
+          statusColor={automationHealth.manualHoursSaved > 200 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-emerald-500" />}
         />
       </div>

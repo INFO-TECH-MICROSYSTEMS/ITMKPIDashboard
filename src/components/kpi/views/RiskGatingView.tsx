@@ -60,24 +60,27 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           title="Items With No API Tests"
           value={itemsWithNoApiTests.length}
           target="< 5 Exceptions"
-          statusBadge="Contract Risk"
-          statusColor="amber"
+          trendPositive={itemsWithNoApiTests.length < 5}
+          statusBadge={itemsWithNoApiTests.length === 0 ? 'Compliant' : itemsWithNoApiTests.length < 5 ? 'Acceptable' : 'Contract Risk'}
+          statusColor={itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose'}
           icon={<GitPullRequest className="w-5 h-5 text-amber-500" />}
         />
         <MetricCard
           title="High Dependency Depth (Depth ≥ 4)"
           value={highDependencyItems.length}
-          target="Low Coupling"
-          statusBadge="Blast Radius Alert"
-          statusColor="purple"
+          target="< 3 High Risk"
+          trendPositive={highDependencyItems.length <= 3}
+          statusBadge={highDependencyItems.length === 0 ? 'Low Coupling' : highDependencyItems.length <= 3 ? 'Manageable' : 'Blast Radius Alert'}
+          statusColor={highDependencyItems.length === 0 ? 'emerald' : highDependencyItems.length <= 3 ? 'amber' : 'rose'}
           icon={<Layers className="w-5 h-5 text-purple-500" />}
         />
         <MetricCard
           title="High Execution Time Tests (>300s)"
           value={highExecutionTests.length}
-          target="Fast Pipeline"
-          statusBadge="Pipeline Latency"
-          statusColor="cyan"
+          target="0 Bottlenecks"
+          trendPositive={highExecutionTests.length === 0}
+          statusBadge={highExecutionTests.length === 0 ? 'Fast Pipeline' : highExecutionTests.length <= 5 ? 'Mild Latency' : 'Pipeline Bottleneck'}
+          statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-cyan-500" />}
         />
       </div>
