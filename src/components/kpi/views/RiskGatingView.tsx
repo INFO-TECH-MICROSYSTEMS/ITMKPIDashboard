@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * KPI View: Risk Assessment & Release Gating
  * Pre-release risk radar, high dependency depth items, missing unit/API tests,
  * and component failure ranking.

@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Main Quality Engineering KPI & Data Mining Platform Page
  * Central orchestration view delivering interactive categorized KPI dashboards,
  * multi-dimensional filtering, and data mining connector management.

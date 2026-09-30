@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Service: KPIJustificationService
  * Generates transparent, deterministic, audit-ready justifications and formulas
  * for every KPI, explaining exactly why a Grade (e.g. Grade F) or Status (Rose/Amber/Emerald)

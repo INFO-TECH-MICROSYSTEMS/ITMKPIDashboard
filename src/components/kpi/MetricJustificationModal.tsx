@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Component: MetricJustificationModal
  * Provides in-depth audit trail, mathematical formulas, rule violations,
  * root causes, and recommended actions for any KPI in the platform.

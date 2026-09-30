@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * KPI View: Governance, SLAs, Accessibility & Benchmarks
  * SLA compliance tracking, WCAG 2.2 AA accessibility audit metrics,
  * P95/P99 latency profiles, and customer satisfaction indexes.

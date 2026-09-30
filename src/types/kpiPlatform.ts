@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Quality Engineering KPI Platform - Data Models & Contracts
  * Strict type definitions representing data mined from JIRA, TestRail, and GitHub,
  * along with Connector Configuration, Sync Audit, and Calculated KPI Metrics.

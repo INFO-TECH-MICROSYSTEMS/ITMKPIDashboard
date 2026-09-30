@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * KPI View: Planning, Velocity & Throughput
  * Individual & squad capacity modeling, test assignments/completion,
  * over-committed engineer alerts, and regression cycle time.

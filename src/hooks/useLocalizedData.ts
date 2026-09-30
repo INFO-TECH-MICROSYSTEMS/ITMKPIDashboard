@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
 import { useTranslation } from 'react-i18next';
 import { SERVICES_DATA } from '../data/servicesData';
 import { CORE_KPIS, AUDIT_CHECKLIST_TEMPLATES } from '../data/kpiData';

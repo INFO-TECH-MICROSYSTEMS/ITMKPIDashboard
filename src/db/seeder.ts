@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * High-Volume Realistic Sample Data Generator
  * Seeds the database with hundreds of JIRA, TestRail, and GitHub records
  * matching realistic enterprise Quality Engineering schemas and distributions.

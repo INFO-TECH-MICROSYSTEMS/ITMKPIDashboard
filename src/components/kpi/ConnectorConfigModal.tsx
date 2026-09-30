@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Data Source Connector Configuration & Scheduling Modal
  * Allows entering account credentials, API keys, endpoints, and retrieval frequencies
  * for JIRA, TestRail, and GitHub.

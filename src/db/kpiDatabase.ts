@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * IndexedDB Free Database Instance (Dexie.js)
  * Enterprise-grade, persistent client-side database with transactional support,
  * zero licensing cost, and rapid query execution.

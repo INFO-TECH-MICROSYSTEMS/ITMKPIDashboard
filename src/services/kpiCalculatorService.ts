@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Quality Engineering KPI Calculation Engine
  * Pure business logic tier for calculating all metrics, scorecards,
  * risk indices, and trend data requested from the presentation.

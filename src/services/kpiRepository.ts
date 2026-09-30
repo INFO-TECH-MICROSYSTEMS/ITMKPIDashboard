@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Quality Engineering Data Access Layer (Repository Pattern)
  * Provides clean decoupling between database storage (Dexie IndexedDB) and business logic.
  * Enforces atomic Wipe-and-Replace semantics on every sync.

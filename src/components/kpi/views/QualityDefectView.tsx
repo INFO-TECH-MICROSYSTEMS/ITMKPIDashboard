@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * KPI View: Quality & Defect Diagnostics
  * In-depth metrics on gating defects, aging queues, discovery vs burnout curves, and MTTR.
  */

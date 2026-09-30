@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * Reusable, Responsive Visual Widgets
  * Built with pure SVG, Tailwind CSS transitions, and zero third-party chart dependencies.
  * Provides high-performance, dark/light mode adaptable charts and gauges.

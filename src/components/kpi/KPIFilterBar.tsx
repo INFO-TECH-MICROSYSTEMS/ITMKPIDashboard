@@ -1,4 +1,12 @@
 /**
+ * Copyright (c) 2026 INFO TECH MICROSYSTEMS. All Rights Reserved.
+ * 
+ * Proprietary and Confidential.
+ * Unauthorized copying, distribution, or modification of this file,
+ * via any medium, is strictly prohibited.
+ */
+
+/**
  * KPI Platform Filter Bar
  * Multi-dimensional filtering across Products, Components, Sprints, Releases, and Date Ranges.
  * Allows drilling down into granular quality metrics.
