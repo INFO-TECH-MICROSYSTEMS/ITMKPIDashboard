@@ -3,10 +3,14 @@ import {
   BarChart3, ShieldCheck, Users, 
   Copy, Check, ArrowRight, Gauge, Activity
 } from 'lucide-react';
-import { CORE_KPIS, AUDIT_CHECKLIST_TEMPLATES } from '../data/kpiData';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocalizedAuditTemplates, useLocalizedCoreKPIs } from '../hooks/useLocalizedData';
 
 export const ToolsPage: React.FC = () => {
+  const { t } = useTranslation();
+  const auditTemplates = useLocalizedAuditTemplates();
+  const coreKpis = useLocalizedCoreKPIs();
   const [activeTab, setActiveTab] = useState<'calculator' | 'audit' | 'capacity' | 'kpis'>('calculator');
 
   // --- TOOL 1: KPI & DORA Health Calculator State ---
@@ -70,23 +74,23 @@ export const ToolsPage: React.FC = () => {
 
   // --- TOOL 2: Interactive QA & Process Audit State ---
   const [checkedAuditItems, setCheckedAuditItems] = useState<Record<string, boolean>>({
-    'Software Architecture & Scalability Audit-0': true,
-    'Software Architecture & Scalability Audit-1': true,
-    'Quality Assurance & Test Automation Audit-0': true,
-    'Security, Compliance & Audit Trail Matrix-0': true,
-    'Engineering Process & Governance Audit-0': true,
+    '0-0': true,
+    '0-1': true,
+    '1-0': true,
+    '2-0': true,
+    '3-0': true,
   });
   const [auditReportCopied, setAuditReportCopied] = useState(false);
 
-  const toggleAuditItem = (category: string, index: number) => {
-    const key = `${category}-${index}`;
+  const toggleAuditItem = (cIdx: number, index: number) => {
+    const key = `${cIdx}-${index}`;
     setCheckedAuditItems(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
   };
 
-  const totalAuditItems = AUDIT_CHECKLIST_TEMPLATES.reduce((acc, cat) => acc + cat.items.length, 0);
+  const totalAuditItems = auditTemplates.reduce((acc, cat) => acc + cat.items.length, 0);
   const completedAuditItems = Object.values(checkedAuditItems).filter(Boolean).length;
   const auditMaturityPercentage = Math.round((completedAuditItems / totalAuditItems) * 100);
 
@@ -95,10 +99,10 @@ export const ToolsPage: React.FC = () => {
     report += `Generated at: ${new Date().toLocaleDateString()}\n`;
     report += `Overall Engineering Maturity Score: ${auditMaturityPercentage}%\n\n`;
 
-    AUDIT_CHECKLIST_TEMPLATES.forEach(cat => {
+    auditTemplates.forEach((cat, cIdx) => {
       report += `[${cat.title}]\n`;
       cat.items.forEach((item, idx) => {
-        const checked = checkedAuditItems[`${cat.title}-${idx}`] ? '✓ PASS' : '✗ ACTION REQUIRED';
+        const checked = checkedAuditItems[`${cIdx}-${idx}`] ? '✓ PASS' : '✗ ACTION REQUIRED';
         report += `  ${checked}: ${item}\n`;
       });
       report += `\n`;
@@ -127,14 +131,13 @@ export const ToolsPage: React.FC = () => {
       <div className="text-center max-w-3xl mx-auto mb-10">
         <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan-50 border border-cyan-200 text-cyan-700 dark:bg-cyan-950/80 dark:text-cyan-400 dark:border-cyan-500/30 mb-3 font-mono">
           <Gauge className="w-3.5 h-3.5" />
-          <span>LATEST ENGINEERING TECHNOLOGY SUITE</span>
+          <span>{t('toolsPage.badge', 'ONLINE AUDIT & MATURITY SUITE')}</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-['Outfit'] mb-4">
-          Software KPIs, Audits & Engineering Tools
+          {t('toolsPage.title', 'Interactive Engineering Tools & Calculators')}
         </h1>
         <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-          INFO TECH MICROSYSTEMS provides interactive tools to help engineering executives, 
-          product owners, and developers measure delivery velocity, audit QA maturity, and model team capacity.
+          {t('toolsPage.subtitle', 'Use our live interactive calculators and audit templates to evaluate your DevOps velocity (DORA), QA maturity, team capacity, and software quality metrics.')}
         </p>
       </div>
 
@@ -149,7 +152,7 @@ export const ToolsPage: React.FC = () => {
           }`}
         >
           <Activity className="w-4 h-4" />
-          <span>DORA & KPI Health Calculator</span>
+          <span>{t('toolsPage.tabCalculator', 'DORA & Velocity Health Calculator')}</span>
         </button>
 
         <button
@@ -161,7 +164,7 @@ export const ToolsPage: React.FC = () => {
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          <span>QA Strategy & Audit Matrix</span>
+          <span>{t('toolsPage.tabAudit', 'Interactive QA & Architecture Audit Matrix')}</span>
         </button>
 
         <button
@@ -173,7 +176,7 @@ export const ToolsPage: React.FC = () => {
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>Team Capacity & Staffing Calculator</span>
+          <span>{t('toolsPage.tabCapacity', 'Team Staffing & Capacity Estimator')}</span>
         </button>
 
         <button
@@ -185,7 +188,7 @@ export const ToolsPage: React.FC = () => {
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>KPI Glossary & Benchmarks</span>
+          <span>{t('toolsPage.tabKpis', 'Standard KPI Reference Catalog')}</span>
         </button>
       </div>
 
@@ -196,18 +199,20 @@ export const ToolsPage: React.FC = () => {
           <div className="lg:col-span-7 p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/20 shadow-sm dark:shadow-xl space-y-6">
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-1">
-                Engineering Velocity & Quality Input Parameters
+                {t('toolsCalculator.inputParamsTitle', 'Engineering Velocity & Quality Input Parameters')}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Adjust sliders to reflect your project's current deployment cadence, defect rates, and recovery metrics.
+                {t('toolsCalculator.inputParamsDesc', "Adjust sliders to reflect your project's current deployment cadence, defect rates, and recovery metrics.")}
               </p>
             </div>
 
             {/* Deploy Frequency */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Deployment Frequency:</span>
-                <span className="text-cyan-700 dark:text-cyan-400 font-bold">{deployFreq} deployments / month</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.deployFreq', 'Deployment Frequency')}:</span>
+                <span className="text-cyan-700 dark:text-cyan-400 font-bold">
+                  {t('toolsCalculator.deploymentsPerMonth', '{{count}} deployments / month', { count: deployFreq })}
+                </span>
               </div>
               <input
                 type="range"
@@ -218,17 +223,19 @@ export const ToolsPage: React.FC = () => {
                 className="w-full accent-cyan-600 dark:accent-cyan-400 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                <span>1/month (Low)</span>
-                <span>4/month (Weekly)</span>
-                <span>30+/month (Daily/Elite)</span>
+                <span>{t('toolsCalculator.lowCadence', '1/month (Low)')}</span>
+                <span>{t('toolsCalculator.weeklyCadence', '4/month (Weekly)')}</span>
+                <span>{t('toolsCalculator.eliteCadence', '30+/month (Daily/Elite)')}</span>
               </div>
             </div>
 
             {/* Lead Time */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Lead Time for Changes:</span>
-                <span className="text-cyan-700 dark:text-cyan-400 font-bold">{leadTimeHours} hours ({Math.round(leadTimeHours/24)} days)</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.leadTime', 'Lead Time for Changes')}:</span>
+                <span className="text-cyan-700 dark:text-cyan-400 font-bold">
+                  {t('toolsCalculator.leadTimeHoursDays', '{{hours}} hours ({{days}} days)', { hours: leadTimeHours, days: Math.round(leadTimeHours/24) })}
+                </span>
               </div>
               <input
                 type="range"
@@ -239,16 +246,16 @@ export const ToolsPage: React.FC = () => {
                 className="w-full accent-cyan-600 dark:accent-cyan-400 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                <span>&lt; 24h (Elite)</span>
-                <span>48h (Good)</span>
-                <span>14 days (High friction)</span>
+                <span>{t('toolsCalculator.leadTimeElite', '< 24h (Elite)')}</span>
+                <span>{t('toolsCalculator.leadTimeGood', '48h (Good)')}</span>
+                <span>{t('toolsCalculator.leadTimeFriction', '14 days (High friction)')}</span>
               </div>
             </div>
 
             {/* Change Failure Rate */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Change Failure Rate (CFR):</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.changeFailRate', 'Change Failure Rate (CFR)')}:</span>
                 <span className={`${changeFailRate <= 5 ? 'text-emerald-600 dark:text-emerald-400' : changeFailRate <= 15 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'} font-bold`}>
                   {changeFailRate}%
                 </span>
@@ -262,17 +269,19 @@ export const ToolsPage: React.FC = () => {
                 className="w-full accent-cyan-600 dark:accent-cyan-400 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                <span>0-5% (Elite)</span>
-                <span>15% (Moderate)</span>
-                <span>30%+ (Critical)</span>
+                <span>{t('toolsCalculator.cfrElite', '0-5% (Elite)')}</span>
+                <span>{t('toolsCalculator.cfrModerate', '15% (Moderate)')}</span>
+                <span>{t('toolsCalculator.cfrCritical', '30%+ (Critical)')}</span>
               </div>
             </div>
 
             {/* Mean Time to Restore (MTTR) */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Mean Time to Restore (MTTR):</span>
-                <span className="text-cyan-700 dark:text-cyan-400 font-bold">{mttrHours} hours</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.mttr', 'Mean Time to Restore (MTTR)')}:</span>
+                <span className="text-cyan-700 dark:text-cyan-400 font-bold">
+                  {t('toolsCalculator.hoursValue', '{{count}} hours', { count: mttrHours })}
+                </span>
               </div>
               <input
                 type="range"
@@ -284,17 +293,19 @@ export const ToolsPage: React.FC = () => {
                 className="w-full accent-cyan-600 dark:accent-cyan-400 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                <span>&lt; 1 hour (Elite)</span>
-                <span>4-8 hours</span>
-                <span>24-48 hours (Severe impact)</span>
+                <span>{t('toolsCalculator.mttrElite', '< 1 hour (Elite)')}</span>
+                <span>{t('toolsCalculator.mttrModerate', '4-8 hours')}</span>
+                <span>{t('toolsCalculator.mttrSevere', '24-48 hours (Severe impact)')}</span>
               </div>
             </div>
 
             {/* Automated Test Coverage */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Automated Test Coverage:</span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">{testCoverage}% branch coverage</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.testCoverage', 'Automated Test Coverage')}:</span>
+                <span className="text-purple-600 dark:text-purple-400 font-bold">
+                  {t('toolsCalculator.branchCoverageValue', '{{pct}}% branch coverage', { pct: testCoverage })}
+                </span>
               </div>
               <input
                 type="range"
@@ -305,18 +316,18 @@ export const ToolsPage: React.FC = () => {
                 className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                <span>20% (High risk)</span>
-                <span>75% (Target)</span>
-                <span>90%+ (Optimal)</span>
+                <span>{t('toolsCalculator.testCovRisk', '20% (High risk)')}</span>
+                <span>{t('toolsCalculator.testCovTarget', '75% (Target)')}</span>
+                <span>{t('toolsCalculator.testCovOptimal', '90%+ (Optimal)')}</span>
               </div>
             </div>
 
             {/* Defect Escape Rate */}
             <div>
               <div className="flex justify-between items-center text-xs font-mono mb-2">
-                <span className="text-slate-700 dark:text-slate-300 font-semibold">Defect Escape Rate (DER):</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">{t('toolsPage.defectEscape', 'Defect Escape Rate (DER)')}:</span>
                 <span className={`${defectEscapeRate <= 2 ? 'text-emerald-600 dark:text-emerald-400' : defectEscapeRate <= 5 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'} font-bold`}>
-                  {defectEscapeRate}% bugs in production
+                  {t('toolsCalculator.defectEscapeValue', '{{pct}}% bugs in production', { pct: defectEscapeRate })}
                 </span>
               </div>
               <input
@@ -335,10 +346,10 @@ export const ToolsPage: React.FC = () => {
             <div className={`p-6 sm:p-8 rounded-2xl ${doraResult.bg} border ${doraResult.border} shadow-lg dark:shadow-2xl relative overflow-hidden`}>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs uppercase font-mono tracking-wider font-bold text-slate-700 dark:text-slate-300">
-                  DORA Performance Scorecard
+                  {t('toolsCalculator.scorecardTitle', 'DORA Performance Scorecard')}
                 </span>
                 <span className={`text-2xl font-black font-mono ${doraResult.color}`}>
-                  Grade: {doraResult.grade}
+                  {t('toolsCalculator.gradeLabel', 'Grade: {{grade}}', { grade: doraResult.grade })}
                 </span>
               </div>
 
@@ -347,34 +358,34 @@ export const ToolsPage: React.FC = () => {
                   {doraResult.tier}
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                  Benchmarked against Google Cloud DORA State of DevOps industry standards.
+                  {t('toolsCalculator.benchmarkNote', 'Benchmarked against Google Cloud DORA State of DevOps industry standards.')}
                 </p>
               </div>
 
               {/* Breakdown metrics summary */}
               <div className="space-y-2 text-xs font-mono border-t border-slate-200 dark:border-slate-700/60 pt-4 mb-6">
                 <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800/60">
-                  <span className="text-slate-600 dark:text-slate-400">Release Cadence:</span>
+                  <span className="text-slate-600 dark:text-slate-400">{t('toolsCalculator.releaseCadence', 'Release Cadence:')}</span>
                   <span className="text-slate-900 dark:text-white font-semibold">
-                    {deployFreq >= 20 ? 'Continuous Delivery (Daily)' : deployFreq >= 4 ? 'Agile Bi-Weekly' : 'Slow Cadence'}
+                    {deployFreq >= 20 ? t('toolsCalculator.continuousDeliveryDaily', 'Continuous Delivery (Daily)') : deployFreq >= 4 ? t('toolsCalculator.agileBiWeekly', 'Agile Bi-Weekly') : t('toolsCalculator.slowCadence', 'Slow Cadence')}
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800/60">
-                  <span className="text-slate-600 dark:text-slate-400">Pipeline Velocity:</span>
+                  <span className="text-slate-600 dark:text-slate-400">{t('toolsCalculator.pipelineVelocity', 'Pipeline Velocity:')}</span>
                   <span className="text-slate-900 dark:text-white font-semibold">
-                    {leadTimeHours <= 24 ? 'High Velocity (<24h)' : leadTimeHours <= 72 ? 'Moderate' : 'Stale Branch Friction'}
+                    {leadTimeHours <= 24 ? t('toolsCalculator.highVelocity24h', 'High Velocity (<24h)') : leadTimeHours <= 72 ? t('toolsCalculator.moderateVelocity', 'Moderate') : t('toolsCalculator.staleBranchFriction', 'Stale Branch Friction')}
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800/60">
-                  <span className="text-slate-600 dark:text-slate-400">Production Stability:</span>
+                  <span className="text-slate-600 dark:text-slate-400">{t('toolsCalculator.productionStability', 'Production Stability:')}</span>
                   <span className={changeFailRate <= 5 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-amber-600 dark:text-amber-400 font-semibold'}>
-                    {changeFailRate <= 5 ? 'Rock Solid (<5% fail)' : 'Needs Rollback Protection'}
+                    {changeFailRate <= 5 ? t('toolsCalculator.rockSolidStability', 'Rock Solid (<5% fail)') : t('toolsCalculator.needsRollbackProtection', 'Needs Rollback Protection')}
                   </span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-600 dark:text-slate-400">QA Safety Net:</span>
+                  <span className="text-slate-600 dark:text-slate-400">{t('toolsCalculator.qaSafetyNet', 'QA Safety Net:')}</span>
                   <span className={testCoverage >= 75 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-rose-600 dark:text-rose-400 font-semibold'}>
-                    {testCoverage >= 75 ? 'Robust Automated Shield' : 'Under-tested / Vulnerable'}
+                    {testCoverage >= 75 ? t('toolsCalculator.robustAutomatedShield', 'Robust Automated Shield') : t('toolsCalculator.underTestedVulnerable', 'Under-tested / Vulnerable')}
                   </span>
                 </div>
               </div>
@@ -382,15 +393,15 @@ export const ToolsPage: React.FC = () => {
               {/* Actionable Recommendations */}
               <div className="p-4 rounded-xl bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs space-y-2 mb-6 shadow-sm">
                 <span className="text-cyan-700 dark:text-cyan-400 font-bold block font-mono">
-                  ITM Strategic Recommendation:
+                  {t('toolsCalculator.strategicRecTitle', 'ITM Strategic Recommendation:')}
                 </span>
                 {doraResult.grade.includes('A') ? (
                   <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                    Your pipeline shows high velocity. Focus on automated canary deployments, advanced APM distributed tracing, and reducing MTTR below 30 minutes via runbook automation.
+                    {t('toolsCalculator.recHigh', 'Your pipeline shows high velocity. Focus on automated canary deployments, advanced APM distributed tracing, and reducing MTTR below 30 minutes via runbook automation.')}
                   </p>
                 ) : (
                   <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                    Recommended immediate priority: Implement automated test gates in CI to suppress the Change Failure Rate, and streamline code reviews to shorten Lead Time for Changes below 24 hours.
+                    {t('toolsCalculator.recLow', 'Recommended immediate priority: Implement automated test gates in CI to suppress the Change Failure Rate, and streamline code reviews to shorten Lead Time for Changes below 24 hours.')}
                   </p>
                 )}
               </div>
@@ -399,8 +410,8 @@ export const ToolsPage: React.FC = () => {
                 to="/services/kpis-and-audits"
                 className="inline-flex items-center justify-center space-x-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
               >
-                <span>Engage ITM for a Formal Engineering Audit</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>{t('toolsCalculator.engageAuditBtn', 'Engage ITM for a Formal Engineering Audit')}</span>
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </div>
           </div>
@@ -415,14 +426,14 @@ export const ToolsPage: React.FC = () => {
             <div>
               <div className="flex items-center space-x-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-                  Software Project Audit Checklist
+                  {t('toolsAudit.checklistTitle', 'Software Project Audit Checklist')}
                 </h2>
                 <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/40">
-                  {completedAuditItems} / {totalAuditItems} Completed
+                  {t('toolsAudit.completedCount', '{{completed}} / {{total}} Completed', { completed: completedAuditItems, total: totalAuditItems })}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl">
-                Check off verified capabilities across architecture, automated testing, security, and governance to calculate your project's readiness score.
+                {t('toolsAudit.checklistDesc', "Check off verified capabilities across architecture, automated testing, security, and governance to calculate your project's readiness score.")}
               </p>
             </div>
 
@@ -431,7 +442,7 @@ export const ToolsPage: React.FC = () => {
                 <div className="text-3xl font-black text-cyan-700 dark:text-cyan-400 font-mono">
                   {auditMaturityPercentage}%
                 </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Maturity Score</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{t('toolsAudit.maturityScore', 'Maturity Score')}</div>
               </div>
 
               <button
@@ -439,14 +450,14 @@ export const ToolsPage: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-medium transition-all cursor-pointer"
               >
                 {auditReportCopied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />}
-                <span>{auditReportCopied ? 'Report Copied!' : 'Copy Audit Report'}</span>
+                <span>{auditReportCopied ? t('toolsAudit.reportCopied', 'Report Copied!') : t('toolsAudit.copyReportBtn', 'Copy Audit Report')}</span>
               </button>
             </div>
           </div>
 
           {/* 4 Pillars Matrix */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {AUDIT_CHECKLIST_TEMPLATES.map((cat, cIdx) => (
+            {auditTemplates.map((cat, cIdx) => (
               <div key={cIdx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                   <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Outfit'] flex items-center space-x-2">
@@ -454,18 +465,18 @@ export const ToolsPage: React.FC = () => {
                     <span>{cat.title}</span>
                   </h3>
                   <span className="text-xs font-mono text-cyan-700 dark:text-cyan-400 font-semibold">
-                    {cat.items.filter((_, idx) => checkedAuditItems[`${cat.title}-${idx}`]).length}/{cat.items.length}
+                    {cat.items.filter((_, idx) => checkedAuditItems[`${cIdx}-${idx}`]).length}/{cat.items.length}
                   </span>
                 </div>
 
                 <div className="space-y-2.5">
                   {cat.items.map((item, iIdx) => {
-                    const key = `${cat.title}-${iIdx}`;
+                    const key = `${cIdx}-${iIdx}`;
                     const isChecked = !!checkedAuditItems[key];
                     return (
                       <label 
                         key={iIdx}
-                        onClick={() => toggleAuditItem(cat.title, iIdx)}
+                        onClick={() => toggleAuditItem(cIdx, iIdx)}
                         className={`flex items-start space-x-3 p-2.5 rounded-lg border transition-all cursor-pointer ${
                           isChecked 
                             ? 'bg-cyan-50 border-cyan-300 text-cyan-950 dark:bg-cyan-950/40 dark:border-cyan-500/30 dark:text-white' 
@@ -489,17 +500,17 @@ export const ToolsPage: React.FC = () => {
           {/* Audit CTA */}
           <div className="p-6 rounded-2xl bg-gradient-to-r from-cyan-50 via-white to-purple-50 dark:from-cyan-950/60 dark:to-purple-950/60 border border-cyan-200 dark:border-cyan-500/30 text-center shadow-sm">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white font-['Outfit'] mb-2">
-              Need a Formal Third-Party Audit for Compliance or Due Diligence?
+              {t('toolsAudit.formalAuditCtaTitle', 'Need a Formal Third-Party Audit for Compliance or Due Diligence?')}
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-4">
-              INFO TECH MICROSYSTEMS delivers signed executive reports covering architecture viability, code quality indices, SOC2/ISO controls, and QA coverage.
+              {t('toolsAudit.formalAuditCtaDesc', 'INFO TECH MICROSYSTEMS delivers signed executive reports covering architecture viability, code quality indices, SOC2/ISO controls, and QA coverage.')}
             </p>
             <Link
               to="/contact"
               className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 text-white dark:text-slate-950 font-bold text-xs shadow-md transition-all cursor-pointer"
             >
-              <span>Schedule Formal Audit with Sudarsha Wijenayake</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{t('toolsAudit.scheduleAuditBtn', 'Schedule Formal Audit with Sudarsha Wijenayake')}</span>
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
           </div>
         </div>
@@ -512,10 +523,10 @@ export const ToolsPage: React.FC = () => {
           <div className="lg:col-span-7 p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6 shadow-sm">
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-1">
-                Engineering Squad Capacity Modeling
+                {t('toolsCapacity.squadCapacityTitle', 'Engineering Squad Capacity Modeling')}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Model sprint velocity, team ratios, and delivery output across development, testing, and management.
+                {t('toolsCapacity.squadCapacityDesc', 'Model sprint velocity, team ratios, and delivery output across development, testing, and management.')}
               </p>
             </div>
 
@@ -523,7 +534,7 @@ export const ToolsPage: React.FC = () => {
               {/* Devs */}
               <div>
                 <label className="block text-xs font-mono text-slate-700 dark:text-slate-300 mb-2">
-                  Software Developers: <span className="text-cyan-700 dark:text-cyan-400 font-bold">{numDevs} engineers</span>
+                  {t('toolsCapacity.developersLabel', { count: numDevs, defaultValue: `Software Developers: ${numDevs} engineers` })}
                 </label>
                 <input
                   type="range"
@@ -538,7 +549,7 @@ export const ToolsPage: React.FC = () => {
               {/* Testers */}
               <div>
                 <label className="block text-xs font-mono text-slate-700 dark:text-slate-300 mb-2">
-                  QA / SDET Automation Engineers: <span className="text-purple-700 dark:text-purple-400 font-bold">{numTesters} testers</span>
+                  {t('toolsCapacity.testersLabel', { count: numTesters, defaultValue: `QA / SDET Automation Engineers: ${numTesters} testers` })}
                 </label>
                 <input
                   type="range"
@@ -553,7 +564,7 @@ export const ToolsPage: React.FC = () => {
               {/* Managers */}
               <div>
                 <label className="block text-xs font-mono text-slate-700 dark:text-slate-300 mb-2">
-                  Project Managers / Scrum Masters: <span className="text-slate-900 dark:text-white font-bold">{numManagers}</span>
+                  {t('toolsCapacity.managersLabel', { count: numManagers, defaultValue: `Project Managers / Scrum Masters: ${numManagers}` })}
                 </label>
                 <input
                   type="range"
@@ -568,17 +579,17 @@ export const ToolsPage: React.FC = () => {
               {/* Sprint Length */}
               <div>
                 <label className="block text-xs font-mono text-slate-700 dark:text-slate-300 mb-2">
-                  Sprint Cadence: <span className="text-emerald-700 dark:text-emerald-400 font-bold">{sprintWeeks} Weeks</span>
+                  {t('toolsCapacity.cadenceLabel', { weeks: sprintWeeks, defaultValue: `Sprint Cadence: ${sprintWeeks} Weeks` })}
                 </label>
                 <select
                   value={sprintWeeks}
                   onChange={(e) => setSprintWeeks(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono"
                 >
-                  <option value={1} className="bg-white dark:bg-slate-900">1 Week (High frequency)</option>
-                  <option value={2} className="bg-white dark:bg-slate-900">2 Weeks (Standard Scrum)</option>
-                  <option value={3} className="bg-white dark:bg-slate-900">3 Weeks</option>
-                  <option value={4} className="bg-white dark:bg-slate-900">4 Weeks (Monthly)</option>
+                  <option value={1} className="bg-white dark:bg-slate-900">{t('toolsCapacity.cadence1Week', '1 Week (High frequency)')}</option>
+                  <option value={2} className="bg-white dark:bg-slate-900">{t('toolsCapacity.cadence2Weeks', '2 Weeks (Standard Scrum)')}</option>
+                  <option value={3} className="bg-white dark:bg-slate-900">{t('toolsCapacity.cadence3Weeks', '3 Weeks')}</option>
+                  <option value={4} className="bg-white dark:bg-slate-900">{t('toolsCapacity.cadence4Weeks', '4 Weeks (Monthly)')}</option>
                 </select>
               </div>
             </div>
@@ -586,7 +597,7 @@ export const ToolsPage: React.FC = () => {
             {/* Velocity per dev slider */}
             <div>
               <label className="block text-xs font-mono text-slate-700 dark:text-slate-300 mb-2">
-                Estimated Velocity per Developer per Sprint: <span className="text-cyan-700 dark:text-cyan-400 font-bold">{pointsPerDevSprint} Story Points</span>
+                {t('toolsCapacity.velocityPerDevLabel', { points: pointsPerDevSprint, defaultValue: `Estimated Velocity per Developer per Sprint: ${pointsPerDevSprint} Story Points` })}
               </label>
               <input
                 type="range"
@@ -602,7 +613,7 @@ export const ToolsPage: React.FC = () => {
           {/* Outputs Card */}
           <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 shadow-md dark:shadow-2xl space-y-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-              Projected Squad Throughput
+              {t('toolsCapacity.projectedThroughputTitle', 'Projected Squad Throughput')}
             </h3>
 
             <div className="grid grid-cols-2 gap-4">
@@ -610,36 +621,39 @@ export const ToolsPage: React.FC = () => {
                 <span className="text-2xl sm:text-3xl font-black text-cyan-700 dark:text-cyan-400 font-mono">
                   {sprintCapacityPoints}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">Story Points / Sprint</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">{t('toolsCapacity.pointsPerSprint', 'Story Points / Sprint')}</span>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-center">
                 <span className="text-2xl sm:text-3xl font-black text-purple-700 dark:text-purple-400 font-mono">
                   ~{monthlyCapacityPoints}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">Story Points / Month</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">{t('toolsCapacity.pointsPerMonth', 'Story Points / Month')}</span>
               </div>
             </div>
 
             {/* Staffing Health Check */}
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 space-y-2 text-xs font-mono">
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
-                <span className="text-slate-600 dark:text-slate-400">Dev-to-QA Ratio:</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('toolsCapacity.devToQaRatio', 'Dev-to-QA Ratio:')}</span>
                 <span className="text-slate-900 dark:text-white font-semibold">{qaToDevRatio} : 1</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
-                <span className="text-slate-600 dark:text-slate-400">Ratio Assessment:</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('toolsCapacity.ratioAssessment', 'Ratio Assessment:')}</span>
                 <span className={Number(qaToDevRatio) <= 3 ? 'text-emerald-700 dark:text-emerald-400 font-semibold' : Number(qaToDevRatio) <= 5 ? 'text-amber-700 dark:text-amber-400 font-semibold' : 'text-rose-700 dark:text-rose-400 font-semibold'}>
-                  {Number(qaToDevRatio) <= 3 ? 'Balanced QA Safety' : Number(qaToDevRatio) <= 5 ? 'Moderate QA Load' : 'High Bottleneck Risk'}
+                  {Number(qaToDevRatio) <= 3 
+                    ? t('toolsCapacity.balancedQaSafety', 'Balanced QA Safety') 
+                    : Number(qaToDevRatio) <= 5 
+                      ? t('toolsCapacity.moderateQaLoad', 'Moderate QA Load') 
+                      : t('toolsCapacity.highBottleneckRisk', 'High Bottleneck Risk')}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Total Squad Headcount:</span>
-                <span className="text-cyan-700 dark:text-cyan-400 font-bold">{numDevs + numTesters + numManagers} Specialists</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('toolsCapacity.totalHeadcount', { count: numDevs + numTesters + numManagers, defaultValue: `Total Squad Headcount: ${numDevs + numTesters + numManagers} Specialists` })}</span>
               </div>
             </div>
 
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Need to scale up or staff missing roles? INFO TECH MICROSYSTEMS recruits pre-vetted Developers, SDETs, and Managers.
+              {t('toolsCapacity.recruitmentBlurb', 'Need to scale up or staff missing roles? INFO TECH MICROSYSTEMS recruits pre-vetted Developers, SDETs, and Managers.')}
             </p>
 
             <Link
@@ -647,7 +661,7 @@ export const ToolsPage: React.FC = () => {
               className="inline-flex items-center justify-center space-x-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
             >
               <Users className="w-4 h-4" />
-              <span>Explore Technical Recruitment Services</span>
+              <span>{t('toolsCapacity.exploreRecruitmentBtn', 'Explore Technical Recruitment Services')}</span>
             </Link>
           </div>
         </div>
@@ -659,10 +673,10 @@ export const ToolsPage: React.FC = () => {
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 mb-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-1">
-                Enterprise Software KPI Reference Directory
+                {t('toolsGlossary.directoryTitle', 'Enterprise Software KPI Reference Directory')}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                Standardized metrics, calculation formulas, target benchmarks, and business justifications used by INFO TECH MICROSYSTEMS.
+                {t('toolsGlossary.directorySubtitle', 'Standardized metrics, calculation formulas, target benchmarks, and business justifications used by INFO TECH MICROSYSTEMS.')}
               </p>
             </div>
             <Link
@@ -670,40 +684,47 @@ export const ToolsPage: React.FC = () => {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md shrink-0 transition-all cursor-pointer"
             >
               <BarChart3 className="w-4 h-4" />
-              <span>Launch Live KPI Platform →</span>
+              <span>{t('toolsGlossary.launchLiveKpi', 'Launch Live KPI Platform →')}</span>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {CORE_KPIS.map((kpi) => (
+            {coreKpis.map((kpi) => (
               <div 
                 key={kpi.id}
                 className="p-6 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500/30 transition-all space-y-3 shadow-sm"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/30">
-                    {kpi.category}
+                    {t(`kpiCategories.${kpi.category}`, kpi.category)}
                   </span>
                   <span className="text-xs font-mono text-purple-700 dark:text-purple-400 font-semibold">
-                    Target: {kpi.targetBenchmark.split('|')[0]}
+                    {t('toolsGlossary.targetPrefix', 'Target: ')}{t(`kpiGlossaryData.${kpi.id}.targetBenchmark`, kpi.targetBenchmark.split('|')[0])}
                   </span>
                 </div>
 
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white font-['Outfit']">
-                  {kpi.name}
+                  {t(`kpiGlossaryData.${kpi.id}.name`, kpi.name)}
                 </h3>
 
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {kpi.description}
+                  {t(`kpiGlossaryData.${kpi.id}.description`, kpi.description)}
                 </p>
 
                 <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-mono text-xs">
-                  <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold mb-1">Formula:</span>
-                  <span className="text-cyan-800 dark:text-cyan-300">{kpi.calculationFormula}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold mb-1">
+                    {t('toolsGlossary.formulaPrefix', 'Formula:')}
+                  </span>
+                  <span className="text-cyan-800 dark:text-cyan-300">
+                    {t(`kpiGlossaryData.${kpi.id}.calculationFormula`, kpi.calculationFormula)}
+                  </span>
                 </div>
 
                 <div className="text-xs text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/80">
-                  <strong className="text-slate-900 dark:text-slate-200">Business Impact:</strong> {kpi.businessImpact}
+                  <strong className="text-slate-900 dark:text-slate-200">
+                    {t('toolsGlossary.businessImpactPrefix', 'Business Impact:')}{' '}
+                  </strong>
+                  {t(`kpiGlossaryData.${kpi.id}.businessImpact`, kpi.businessImpact)}
                 </div>
               </div>
             ))}

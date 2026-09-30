@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   X, AlertOctagon, AlertTriangle, CheckCircle2, 
   HelpCircle, Lightbulb 
@@ -24,6 +25,8 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
   isOpen,
   onClose
 }) => {
+  const { t } = useTranslation();
+
   // Handle ESC key to dismiss
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,7 +63,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">
-                  KPI Decision Audit & Justification
+                  {t('kpiPlatform.modal.decisionAudit')}
                 </span>
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${theme.badge}`}>
                   {justification.statusBadge}
@@ -85,19 +88,19 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           {/* Status & Values Overview Banner - Styled using theme */}
           <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl border ${theme.calloutBg} ${theme.calloutBorder} font-mono text-xs`}>
             <div>
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Current Telemetry</span>
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.currentTelemetry')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
                 {justification.currentValue}
               </span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Governance Target</span>
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.governanceTarget')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.target}`}>
                 {justification.targetValue}
               </span>
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">Status Verdict</span>
+              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.statusVerdict')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
                 {justification.statusBadge}
               </span>
@@ -107,7 +110,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           {/* Rationale & Root Cause Explanation */}
           <div className="space-y-2">
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span>Why Is This Status / Grade Assigned?</span>
+              <span>{t('kpiPlatform.modal.whyAssigned')}</span>
             </h4>
             <div className={`p-4 rounded-2xl border leading-relaxed text-slate-800 dark:text-slate-200 text-xs sm:text-sm ${theme.calloutBg} ${theme.calloutBorder}`}>
               {justification.rationale}
@@ -117,7 +120,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           {/* Evaluated Rule or Formula */}
           <div className="space-y-2">
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-              Governing Rule & Metric Formula
+              {t('kpiPlatform.modal.governingFormula')}
             </h4>
             <pre className={`p-4 rounded-xl text-xs font-mono overflow-x-auto whitespace-pre-wrap ${theme.codeBlock}`}>
               {justification.formulaOrRule}
@@ -128,7 +131,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           {justification.factors && justification.factors.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-                Evaluation Factors & Score Penalties
+                {t('kpiPlatform.modal.factorsPenalties')}
               </h4>
               <div className="space-y-2">
                 {justification.factors.map((f, i) => {
@@ -163,10 +166,10 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-                  Offending Entities (Evidence From Database)
+                  {t('kpiPlatform.modal.offendingEntities')}
                 </h4>
                 <span className="text-[11px] font-mono text-slate-400">
-                  {justification.offendingItems.length} Identified
+                  {justification.offendingItems.length} {t('kpiPlatform.modal.identified')}
                 </span>
               </div>
               <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
@@ -195,7 +198,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
           <div className={`p-4 rounded-2xl border space-y-2 ${KPI_STATUS_THEMES.emerald.calloutBg} ${KPI_STATUS_THEMES.emerald.calloutBorder}`}>
             <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
               <Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Recommended Remediation (Path to Green)</span>
+              <span>{t('kpiPlatform.modal.pathGreen')}</span>
             </h4>
             <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
               {justification.recommendedAction}
@@ -209,7 +212,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             onClick={onClose}
             className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${theme.buttonAccent}`}
           >
-            Acknowledge & Close
+            {t('kpiPlatform.modal.acknowledgeClose')}
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   X, Check, RefreshCw, Key, Globe, Shield, Clock, 
   Database, AlertCircle, Sparkles, Layers 
@@ -32,6 +33,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
   onResetSampleData,
   isSyncing
 }) => {
+  const { t } = useTranslation();
   const [selectedSource, setSelectedSource] = useState<DataSourceType>('jira');
   const [formState, setFormState] = useState<Record<string, DataSourceConfig>>(() => {
     const initial: Record<string, DataSourceConfig> = {};
@@ -76,10 +78,10 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
             </div>
             <div>
               <h3 className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                Data Mining Connectors & Sync Engine
+                {t('kpiPlatform.connector.title')}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Configure credentials, API tokens, endpoints, and automated retrieval schedules.
+                {t('kpiPlatform.connector.subtitle')}
               </p>
             </div>
           </div>
@@ -96,7 +98,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
           {/* Left App Tabs */}
           <div className="w-full md:w-64 p-4 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/20 space-y-2 shrink-0">
             <span className="text-[10px] font-mono uppercase font-bold text-slate-400 tracking-wider block px-2 mb-1">
-              Mining Targets
+              {t('kpiPlatform.connector.miningTargets')}
             </span>
 
             {[
@@ -123,10 +125,10 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
             <div className="mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 text-[11px] text-amber-800 dark:text-amber-300 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>Wipe & Replace Policy</span>
+                <span>{t('kpiPlatform.connector.wipeReplacePolicy')}</span>
               </div>
               <p className="leading-relaxed opacity-90">
-                Per requirement, every retrieval entirely wipes and replaces existing database snapshots with fresh data.
+                {t('kpiPlatform.connector.wipeReplaceDesc')}
               </p>
             </div>
           </div>
@@ -138,10 +140,10 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-base text-slate-900 dark:text-white font-['Outfit']">
-                      {currentConfig.name} Configuration
+                      {currentConfig.name} {t('kpiPlatform.connector.dataSourceType')}
                     </span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
-                      Active
+                      {t('kpiPlatform.connector.activeSync')}
                     </span>
                   </div>
 
@@ -152,7 +154,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                       onChange={(e) => handleFieldChange('enabled', e.target.checked)}
                       className="accent-cyan-600 rounded"
                     />
-                    <span>Enable Mining</span>
+                    <span>{t('kpiPlatform.connector.activeSync')}</span>
                   </label>
                 </div>
 
@@ -160,7 +162,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                 <div className="space-y-1.5">
                   <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                     <Globe className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                    <span>Application Base URL / API Endpoint</span>
+                    <span>{t('kpiPlatform.connector.apiEndpoint')}</span>
                   </label>
                   <input
                     type="url"
@@ -176,7 +178,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                   <div className="space-y-1.5">
                     <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                       <Key className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                      <span>API Key / Personal Access Token</span>
+                      <span>{t('kpiPlatform.connector.secretToken')}</span>
                     </label>
                     <input
                       type="password"
@@ -190,7 +192,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                   <div className="space-y-1.5">
                     <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                       <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                      <span>Project Keys / Scopes</span>
+                      <span>{t('kpiPlatform.connector.projectScope')}</span>
                     </label>
                     <input
                       type="text"
@@ -206,7 +208,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                 <div className="space-y-2 pt-2">
                   <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                     <Clock className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                    <span>Data Retrieval Frequency</span>
+                    <span>{t('kpiPlatform.connector.retrievalSchedule')}</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {RETRIEVAL_FREQUENCY_OPTIONS.map(opt => (
@@ -242,7 +244,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition-all shadow-sm cursor-pointer"
                   >
                     {saveSuccess ? <Check className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-                    <span>{saveSuccess ? 'Configuration Saved!' : 'Save Credentials'}</span>
+                    <span>{saveSuccess ? t('kpiPlatform.connector.configSaved') : t('kpiPlatform.connector.saveConfig')}</span>
                   </button>
 
                   <div className="flex items-center gap-2">
@@ -253,7 +255,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                       className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                      <span>{isSyncing ? 'Mining Data...' : 'Sync Now (Wipe & Replace)'}</span>
+                      <span>{isSyncing ? t('kpiPlatform.syncInProgress') : t('kpiPlatform.connector.triggerNow')}</span>
                     </button>
 
                     <button
@@ -263,7 +265,7 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
                       className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold text-xs border border-purple-200 dark:border-purple-500/30 transition-colors cursor-pointer"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Reset Sample Dataset</span>
+                      <span>{t('kpiPlatform.resetSample')}</span>
                     </button>
                   </div>
                 </div>

@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   ShieldAlert, GitPullRequest, 
   Layers, Clock, XCircle 
@@ -30,6 +31,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
   jiraItems,
   testRailExecutions
 }) => {
+  const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
   // PPT Requirement Calculations:
@@ -52,22 +54,22 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
       {/* Top Risk KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Items With No Unit Tests"
+          title={t('kpiPlatform.riskView.noUnitTests', 'Items With No Unit Tests')}
           value={itemsWithNoUnitTests.length}
-          target="0 Permitted"
-          trend={`${itemsWithNoTests.length} missing test plan`}
+          target={t('kpiPlatform.riskView.zeroPermitted', '0 Permitted')}
+          trend={`${itemsWithNoTests.length} ${t('kpiPlatform.riskView.missingTestPlan', 'missing test plan')}`}
           trendPositive={itemsWithNoTests.length === 0}
-          statusBadge={itemsWithNoUnitTests.length > 0 ? 'Gate Violation' : 'Compliant'}
+          statusBadge={itemsWithNoUnitTests.length > 0 ? t('kpiPlatform.statusGateViolation', 'Gate Violation') : t('kpiPlatform.statusCompliant', 'Compliant')}
           statusColor={itemsWithNoUnitTests.length > 0 ? 'rose' : 'emerald'}
           icon={<ShieldAlert className="w-5 h-5 text-rose-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMissingUnitTestsJustification(jiraItems))}
         />
         <MetricCard
-          title="Items With No API Tests"
+          title={t('kpiPlatform.riskView.noApiTests', 'Items With No API Tests')}
           value={itemsWithNoApiTests.length}
-          target="< 5 Exceptions"
+          target={t('kpiPlatform.riskView.exceptionsTarget', '< 5 Exceptions')}
           trendPositive={itemsWithNoApiTests.length < 5}
-          statusBadge={itemsWithNoApiTests.length === 0 ? 'Compliant' : itemsWithNoApiTests.length < 5 ? 'Acceptable' : 'Contract Risk'}
+          statusBadge={itemsWithNoApiTests.length === 0 ? t('kpiPlatform.statusCompliant', 'Compliant') : itemsWithNoApiTests.length < 5 ? t('kpiPlatform.statusAcceptable', 'Acceptable') : t('kpiPlatform.statusContractRisk', 'Contract Risk')}
           statusColor={itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose'}
           icon={<GitPullRequest className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification({
@@ -88,11 +90,11 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           })}
         />
         <MetricCard
-          title="High Dependency Depth (Depth ≥ 4)"
+          title={t('kpiPlatform.riskView.highDependency', 'High Dependency Depth (Depth ≥ 4)')}
           value={highDependencyItems.length}
-          target="< 3 High Risk"
+          target={t('kpiPlatform.riskView.highRiskTarget', '< 3 High Risk')}
           trendPositive={highDependencyItems.length <= 3}
-          statusBadge={highDependencyItems.length === 0 ? 'Low Coupling' : highDependencyItems.length <= 3 ? 'Manageable' : 'Blast Radius Alert'}
+          statusBadge={highDependencyItems.length === 0 ? t('kpiPlatform.statusLowCoupling', 'Low Coupling') : highDependencyItems.length <= 3 ? t('kpiPlatform.statusManageable', 'Manageable') : t('kpiPlatform.statusBlastRadiusAlert', 'Blast Radius Alert')}
           statusColor={highDependencyItems.length === 0 ? 'emerald' : highDependencyItems.length <= 3 ? 'amber' : 'rose'}
           icon={<Layers className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification({
@@ -117,7 +119,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           value={highExecutionTests.length}
           target="0 Bottlenecks"
           trendPositive={highExecutionTests.length === 0}
-          statusBadge={highExecutionTests.length === 0 ? 'Fast Pipeline' : highExecutionTests.length <= 5 ? 'Mild Latency' : 'Pipeline Bottleneck'}
+          statusBadge={highExecutionTests.length === 0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : highExecutionTests.length <= 5 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
           statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-cyan-500" />}
           onJustify={() => setSelectedJustification({
@@ -138,7 +140,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              Component Risk Matrix & Failure Vulnerability
+              {t('kpiPlatform.riskView.matrixTitle')}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Evaluated across test execution failure rates, open gating defects, and unit test omissions.
@@ -153,13 +155,13 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <table className="w-full text-xs text-left">
             <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
               <tr>
-                <th className="p-3 rounded-l-lg">Component / Module</th>
-                <th className="p-3">Test Failure Rate</th>
-                <th className="p-3">Gating Defects</th>
-                <th className="p-3">Total Defects</th>
-                <th className="p-3">Test Coverage</th>
-                <th className="p-3">Missing Unit Tests</th>
-                <th className="p-3 rounded-r-lg">Risk Tier</th>
+                <th className="p-3 rounded-l-lg">{t('kpiPlatform.riskView.tableModule')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableFailureRate')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableGatingDefects')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableTotalDefects')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableTestCoverage')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableMissingUnit')}</th>
+                <th className="p-3 rounded-r-lg">{t('kpiPlatform.riskView.tableRiskTier')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
@@ -216,9 +218,9 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
               <XCircle className="w-4 h-4 text-rose-500" />
-              <span>Blocked Development Items ({blockedItems.length})</span>
+              <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItems.length})</span>
             </span>
-            <span className="text-[10px] font-mono text-slate-400">Stalled in Sprint</span>
+            <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -240,9 +242,9 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
               <Layers className="w-4 h-4 text-purple-500" />
-              <span>High Dependency Depth Items ({highDependencyItems.length})</span>
+              <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItems.length})</span>
             </span>
-            <span className="text-[10px] font-mono text-slate-400">Coupling Risk</span>
+            <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -250,10 +252,10 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                 <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
                   <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
-                  <span className="text-purple-600 dark:text-purple-400">Depth Level: {item.dependencyDepth}</span>
+                  <span className="text-purple-600 dark:text-purple-400">{t('kpiPlatform.riskView.depthLevel')}: {item.dependencyDepth}</span>
                 </div>
                 <div className="text-slate-600 dark:text-slate-300 truncate mt-0.5">{item.title}</div>
-                <div className="text-[10px] font-mono text-slate-400 mt-1">Requires cross-team regression testing before merge.</div>
+                <div className="text-[10px] font-mono text-slate-400 mt-1">{t('kpiPlatform.riskView.crossTeamTesting')}</div>
               </div>
             ))}
           </div>

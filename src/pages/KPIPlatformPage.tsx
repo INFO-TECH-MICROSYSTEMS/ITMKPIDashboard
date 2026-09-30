@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, Activity, AlertTriangle, Cpu, 
   TrendingUp, Gauge, RefreshCw, Settings, Sparkles 
@@ -32,6 +33,7 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export const KPIPlatformPage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<string>('executive');
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
 
@@ -59,18 +61,18 @@ export const KPIPlatformPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
-              Quality Engineering Intelligence Engine
+              {t('kpiPlatform.engineBadge')}
             </span>
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-300 dark:border-emerald-500/30">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Telemetry
+              {t('kpiPlatform.liveTelemetry')}
             </span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] tracking-tight">
-            Quality Engineering KPI Platform
+            {t('kpiPlatform.title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
-            Real-time quality intelligence synthesized across JIRA planning, TestRail test executions, and GitHub CI/CD workflows.
+            {t('kpiPlatform.subtitle')}
           </p>
         </div>
 
@@ -78,8 +80,8 @@ export const KPIPlatformPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Last refreshed timestamp */}
           <div className="hidden xl:flex flex-col text-right text-[11px] font-mono text-slate-500 dark:text-slate-400 mr-2">
-            <span>Snapshot: {lastRefreshedAt.toLocaleTimeString()}</span>
-            <span className="text-[10px] text-cyan-600 dark:text-cyan-400">IndexedDB Persistent</span>
+            <span>{t('kpiPlatform.snapshot')}: {lastRefreshedAt.toLocaleTimeString()}</span>
+            <span className="text-[10px] text-cyan-600 dark:text-cyan-400">{t('kpiPlatform.indexedDb')}</span>
           </div>
 
           {/* Sync Now Button (Atomic Wipe & Replace) */}
@@ -88,10 +90,10 @@ export const KPIPlatformPage: React.FC = () => {
             onClick={() => triggerSyncNow()}
             disabled={isSyncing}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs transition-all shadow-sm hover:shadow cursor-pointer disabled:opacity-50"
-            title="Triggers atomic wipe and fresh retrieval replacement"
+            title={t('kpiPlatform.syncTitle')}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? 'Mining Fresh Data...' : 'Sync (Wipe & Replace)'}</span>
+            <span>{isSyncing ? t('kpiPlatform.miningData') : t('kpiPlatform.syncWipe')}</span>
           </button>
 
           {/* Connectors & Mining Settings Button */}
@@ -101,7 +103,7 @@ export const KPIPlatformPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-800 transition-colors shadow-xs cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-            <span>Connectors & Schedule</span>
+            <span>{t('kpiPlatform.connectorsSchedule')}</span>
           </button>
 
           {/* Reset to Sample Dataset */}
@@ -110,10 +112,10 @@ export const KPIPlatformPage: React.FC = () => {
             onClick={resetToSampleData}
             disabled={isSyncing}
             className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold text-xs border border-purple-200 dark:border-purple-500/30 transition-colors cursor-pointer"
-            title="Populates database with high-volume sample data"
+            title={t('kpiPlatform.resetDemoDataTitle')}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Demo Data</span>
+            <span className="hidden sm:inline">{t('kpiPlatform.resetDemoData')}</span>
           </button>
         </div>
       </div>
@@ -149,11 +151,11 @@ export const KPIPlatformPage: React.FC = () => {
                 <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
                   isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                 }`}>
-                  {category.badge}
+                  {t(`kpiPlatform.categories.${category.id}Badge`, category.badge)}
                 </span>
               </div>
               <span className="font-['Outfit'] font-bold leading-tight line-clamp-2">
-                {category.name}
+                {t(`kpiPlatform.categories.${category.id}`, category.name)}
               </span>
             </button>
           );
@@ -166,7 +168,7 @@ export const KPIPlatformPage: React.FC = () => {
           <div className="flex flex-col items-center justify-center p-16 space-y-4">
             <RefreshCw className="w-8 h-8 text-cyan-600 dark:text-cyan-400 animate-spin" />
             <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-              Querying IndexedDB & Computing KPI aggregates...
+              {t('kpiPlatform.queryingDb')}
             </span>
           </div>
         ) : (

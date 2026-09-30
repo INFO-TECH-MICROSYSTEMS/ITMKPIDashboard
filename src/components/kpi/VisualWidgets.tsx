@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { HelpCircle } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
@@ -283,6 +284,7 @@ export const StackedProgressBar: React.FC<{
   distribution: TestStatusDistribution;
   title?: string;
 }> = ({ distribution, title }) => {
+  const { t } = useTranslation();
   const { passed, failed, blocked, unattempted, total } = distribution;
   if (total === 0) return null;
 
@@ -296,7 +298,7 @@ export const StackedProgressBar: React.FC<{
       {title && (
         <div className="flex justify-between items-center text-xs">
           <span className="font-semibold text-slate-800 dark:text-slate-200">{title}</span>
-          <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">{passedPct}% Pass Rate</span>
+          <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">{passedPct}% {t('kpiPlatform.executiveView.passed', 'Pass Rate')}</span>
         </div>
       )}
 
@@ -305,22 +307,22 @@ export const StackedProgressBar: React.FC<{
         <div 
           style={{ width: `${passedPct}%` }} 
           className="bg-emerald-500 transition-all duration-500" 
-          title={`Passed: ${passed} (${passedPct}%)`}
+          title={`${t('kpiPlatform.executiveView.passed', 'Passed')}: ${passed} (${passedPct}%)`}
         />
         <div 
           style={{ width: `${failedPct}%` }} 
           className="bg-rose-500 transition-all duration-500" 
-          title={`Failed: ${failed} (${failedPct}%)`}
+          title={`${t('kpiPlatform.executiveView.failed', 'Failed')}: ${failed} (${failedPct}%)`}
         />
         <div 
           style={{ width: `${blockedPct}%` }} 
           className="bg-amber-500 transition-all duration-500" 
-          title={`Blocked: ${blocked} (${blockedPct}%)`}
+          title={`${t('kpiPlatform.executiveView.blocked', 'Blocked')}: ${blocked} (${blockedPct}%)`}
         />
         <div 
           style={{ width: `${unattemptedPct}%` }} 
           className="bg-slate-400 dark:bg-slate-600 transition-all duration-500" 
-          title={`Unattempted: ${unattempted} (${unattemptedPct}%)`}
+          title={`${t('kpiPlatform.executiveView.untested', 'Unattempted')}: ${unattempted} (${unattemptedPct}%)`}
         />
       </div>
 
@@ -328,19 +330,19 @@ export const StackedProgressBar: React.FC<{
       <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-600 dark:text-slate-400 pt-1">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
-          Passed: <strong className="text-slate-900 dark:text-white">{passed}</strong> ({passedPct}%)
+          {t('kpiPlatform.executiveView.passed', 'Passed')}: <strong className="text-slate-900 dark:text-white">{passed}</strong> ({passedPct}%)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />
-          Failed: <strong className="text-slate-900 dark:text-white">{failed}</strong> ({failedPct}%)
+          {t('kpiPlatform.executiveView.failed', 'Failed')}: <strong className="text-slate-900 dark:text-white">{failed}</strong> ({failedPct}%)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-amber-500" />
-          Blocked: <strong className="text-slate-900 dark:text-white">{blocked}</strong> ({blockedPct}%)
+          {t('kpiPlatform.executiveView.blocked', 'Blocked')}: <strong className="text-slate-900 dark:text-white">{blocked}</strong> ({blockedPct}%)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-slate-400 dark:bg-slate-600" />
-          Unattempted: <strong className="text-slate-900 dark:text-white">{unattempted}</strong> ({unattemptedPct}%)
+          {t('kpiPlatform.executiveView.untested', 'Unattempted')}: <strong className="text-slate-900 dark:text-white">{unattempted}</strong> ({unattemptedPct}%)
         </span>
       </div>
     </div>
@@ -372,6 +374,7 @@ export const MetricCard: React.FC<{
   icon,
   onJustify
 }) => {
+  const { t } = useTranslation();
   const theme = KPI_STATUS_THEMES[statusColor];
 
   return (
@@ -414,7 +417,7 @@ export const MetricCard: React.FC<{
       </div>
 
       <div className={`flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t ${theme.footerBorder}`}>
-        {target && <span>Target: <strong className="text-slate-800 dark:text-slate-200">{target}</strong></span>}
+        {target && <span>{t('kpiPlatform.targetLabel', 'Target')}: <strong className="text-slate-800 dark:text-slate-200">{target}</strong></span>}
         {trend && (
           <span className={`font-semibold ${trendPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
             {trend}

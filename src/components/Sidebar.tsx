@@ -7,6 +7,7 @@ import {
   Cpu, Sparkles, MapPin, X
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { SERVICES_DATA } from '../data/servicesData';
 
 const iconMap: Record<string, React.ElementType> = {
@@ -33,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setIsCollapsed,
 }) => {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const location = useLocation();
   const [servicesExpanded, setServicesExpanded] = useState(true);
   const [flyoutOpen, setFlyoutOpen] = useState(false);
@@ -151,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Home Link */}
           <Link
             to="/"
-            title={isCollapsed ? 'Home' : undefined}
+            title={isCollapsed ? t('nav.home', 'Home') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               location.pathname === '/'
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -159,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           >
             <Home className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>Home</span>
+            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>{t('nav.home', 'Home')}</span>
           </Link>
 
           {/* Services Group */}
@@ -178,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
                       : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
                   }`}
-                  title="Services (7 Core Offerings)"
+                  title={t('nav.servicesSubtitle', 'Services (7 Core Offerings)')}
                 >
                   <Briefcase className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 </Link>
@@ -188,18 +190,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <div className="absolute left-full top-0 ml-2 w-80 rounded-xl p-3 shadow-2xl backdrop-blur-2xl border border-slate-200 bg-white text-slate-800 dark:border-cyan-500/30 dark:bg-[#0a0e1f]/95 dark:text-slate-200 z-50 animate-in fade-in slide-in-from-left-2 duration-150">
                     <div className="px-2 py-1.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center mb-2">
                       <span className="text-[11px] uppercase tracking-wider font-semibold text-cyan-600 dark:text-cyan-400 font-mono">
-                        Enterprise Services (7)
+                        {t('nav.enterpriseServices', 'Enterprise Services (7)')}
                       </span>
                       <Link 
                         to="/services" 
                         className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium"
                       >
-                        All Services →
+                        {t('nav.allServices', 'All Services →')}
                       </Link>
                     </div>
                     <div className="space-y-1 max-h-96 overflow-y-auto pr-1">
                       {SERVICES_DATA.map((service, idx) => {
                         const IconComponent = iconMap[service.iconName] || Cpu;
+                        const localizedTitle = t(`serviceNames.s${idx + 1}Short`, service.shortTitle);
                         return (
                           <Link
                             key={service.id}
@@ -210,7 +213,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               <IconComponent className="w-3.5 h-3.5" />
                             </div>
                             <span className="text-xs font-medium text-slate-800 dark:text-slate-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 truncate">
-                              {idx + 1}. {service.shortTitle}
+                              {idx + 1}. {localizedTitle}
                             </span>
                           </Link>
                         );
@@ -233,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   <Briefcase className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-                  <span className="truncate">Services</span>
+                  <span className="truncate">{t('nav.services', 'Services')}</span>
                   <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 font-mono font-semibold">
                     7
                   </span>
@@ -265,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         }`}
                       >
                         <IconComponent className="w-3.5 h-3.5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-                        <span className="truncate">{idx + 1}. {service.shortTitle}</span>
+                        <span className="truncate">{idx + 1}. {t(`serviceNames.s${idx + 1}Short`, service.shortTitle)}</span>
                       </Link>
                     );
                   })}
@@ -273,7 +276,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     to="/services"
                     className="block px-2.5 py-1 text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium"
                   >
-                    View Overview Grid →
+                    {t('nav.viewOverviewGrid', 'View Overview Grid →')}
                   </Link>
                 </div>
               )}
@@ -283,7 +286,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Quality Engineering KPI Platform Link */}
           <Link
             to="/kpi"
-            title={isCollapsed ? 'QE KPI Platform' : undefined}
+            title={isCollapsed ? t('nav.kpiDashboard', 'KPI Dashboard') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive('/kpi')
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -292,9 +295,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <BarChart3 className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
             <div className={`flex items-center gap-2 truncate ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-              <span className="truncate">KPI Dashboard</span>
+              <span className="truncate">{t('nav.kpiDashboard', 'KPI Dashboard')}</span>
               <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                Live
+                {t('nav.live', 'Live')}
               </span>
             </div>
           </Link>
@@ -302,7 +305,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Interactive Tools & Calculators Link */}
           <Link
             to="/tools"
-            title={isCollapsed ? 'Tools & Calculators' : undefined}
+            title={isCollapsed ? t('nav.toolsAndCalculators', 'Tools & Calculators') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive('/tools')
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -311,14 +314,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Wrench className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
             <div className={`flex items-center gap-2 truncate ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-              <span className="truncate">Tools & Calculators</span>
+              <span className="truncate">{t('nav.toolsAndCalculators', 'Tools & Calculators')}</span>
             </div>
           </Link>
 
           {/* Leadership & About */}
           <Link
             to="/about"
-            title={isCollapsed ? 'Leadership & About' : undefined}
+            title={isCollapsed ? t('nav.leadershipAndAbout', 'Leadership & About') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive('/about')
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -326,13 +329,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           >
             <Users className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>Leadership & About</span>
+            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>{t('nav.leadershipAndAbout', 'Leadership & About')}</span>
           </Link>
 
           {/* Contact Us */}
           <Link
             to="/contact"
-            title={isCollapsed ? 'Contact Us' : undefined}
+            title={isCollapsed ? t('nav.contactUs', 'Contact Us') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive('/contact')
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -340,7 +343,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           >
             <Mail className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>Contact Us</span>
+            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>{t('nav.contactUs', 'Contact Us')}</span>
           </Link>
         </div>
 
@@ -351,14 +354,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div>
             <Link
               to="/contact"
-              title={isCollapsed ? 'Request Consultation' : undefined}
+              title={isCollapsed ? t('nav.requestConsultation', 'Request Consultation') : undefined}
               className={`flex items-center justify-center gap-2 rounded-xl font-semibold text-xs uppercase tracking-wider shadow-sm transition-all duration-200 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:via-blue-500 hover:to-purple-500 text-white shadow-cyan-600/20 hover:shadow-md cursor-pointer ${
                 isCollapsed ? 'p-2.5 lg:w-10 lg:h-10 lg:mx-auto' : 'px-4 py-2.5 w-full'
               }`}
             >
               <Sparkles className="w-4 h-4 text-white shrink-0" />
               <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-                Request Consultation
+                {t('nav.requestConsultation', 'Request Consultation')}
               </span>
             </Link>
           </div>
@@ -367,8 +370,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={toggleTheme}
-            aria-label="Toggle Dark/Light Mode"
-            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            aria-label={t('header.toggleTheme', 'Toggle Dark/Light Mode')}
+            title={theme === 'dark' ? t('header.switchToLight', 'Switch to Light Mode') : t('header.switchToDark', 'Switch to Dark Mode')}
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 text-slate-700 hover:text-cyan-700 dark:text-slate-300 dark:hover:text-cyan-300 bg-white dark:bg-slate-900 transition-colors cursor-pointer text-xs font-medium ${
               isCollapsed ? 'lg:justify-center lg:px-0 lg:w-10 lg:h-10 lg:mx-auto' : ''
             }`}
@@ -379,7 +382,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Moon className="w-4 h-4 text-indigo-500 shrink-0" />
             )}
             <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              {theme === 'dark' ? t('nav.lightMode', 'Light Mode') : t('nav.darkMode', 'Dark Mode')}
             </span>
           </button>
 
@@ -389,7 +392,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}>
             <div className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-semibold font-mono">
               <MapPin className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <span className="truncate">Ottawa, Canada (EST)</span>
+              <span className="truncate">{t('nav.ottawaCanada', 'Ottawa, Canada (EST)')}</span>
             </div>
             
             <a 
@@ -415,6 +418,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               onClick={() => setIsCollapsed(prev => !prev)}
+              aria-label={isCollapsed ? t('nav.expandSidebar', 'Expand sidebar') : t('nav.collapseSidebar', 'Collapse sidebar')}
               className="w-full flex items-center justify-center gap-2 py-1.5 text-xs text-slate-500 hover:text-cyan-600 dark:text-slate-400 dark:hover:text-cyan-300 transition-colors cursor-pointer"
             >
               {isCollapsed ? (
@@ -422,7 +426,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ) : (
                 <>
                   <ChevronLeft className="w-4 h-4" />
-                  <span>Collapse sidebar</span>
+                  <span>{t('nav.collapseSidebar', 'Collapse sidebar')}</span>
                 </>
               )}
             </button>

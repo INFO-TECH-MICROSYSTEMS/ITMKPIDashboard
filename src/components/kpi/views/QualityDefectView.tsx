@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Bug, AlertTriangle, Clock, RefreshCw, Flame 
 } from 'lucide-react';
@@ -38,6 +39,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
   mttrMttd,
   jiraItems
 }) => {
+  const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
   const gatingDefectsList = jiraItems.filter(i => i.isGatingDefect && i.status !== 'Done');
@@ -54,22 +56,22 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Mean Time to Resolve (MTTR)"
-          value={`${mttrMttd.avgMttrHours} hrs`}
-          target="< 24.0 hrs"
-          trend="8.5% faster"
+          title={t('kpiPlatform.qualityView.mttrCard', 'Mean Time to Resolve (MTTR)')}
+          value={`${mttrMttd.avgMttrHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
+          target={`< 24.0 ${t('kpiPlatform.hrsUnit', 'hrs')}`}
+          trend={`8.5% ${t('kpiPlatform.qualityView.fasterTrend', 'faster')}`}
           trendPositive={mttrMttd.avgMttrHours <= 24.0}
-          statusBadge={mttrMttd.avgMttrHours <= 24.0 ? 'SLA Met' : mttrMttd.avgMttrHours <= 36.0 ? 'Warning' : 'Breached'}
+          statusBadge={mttrMttd.avgMttrHours <= 24.0 ? t('kpiPlatform.statusMet', 'SLA Met') : mttrMttd.avgMttrHours <= 36.0 ? t('kpiPlatform.statusWarning', 'Warning') : t('kpiPlatform.statusBreached', 'Breached')}
           statusColor={mttrMttd.avgMttrHours <= 24.0 ? 'emerald' : mttrMttd.avgMttrHours <= 36.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMttrJustification(mttrMttd.avgMttrHours))}
         />
         <MetricCard
-          title="Mean Time to Detect (MTTD)"
-          value={`${mttrMttd.avgMttdHours} hrs`}
-          target="< 6.0 hrs"
+          title={t('kpiPlatform.qualityView.mttdCard', 'Mean Time to Detect (MTTD)')}
+          value={`${mttrMttd.avgMttdHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
+          target={`< 6.0 ${t('kpiPlatform.hrsUnit', 'hrs')}`}
           trendPositive={mttrMttd.avgMttdHours <= 6.0}
-          statusBadge={mttrMttd.avgMttdHours <= 6.0 ? 'Fast Discovery' : mttrMttd.avgMttdHours <= 12.0 ? 'Lagging' : 'Critical Lag'}
+          statusBadge={mttrMttd.avgMttdHours <= 6.0 ? t('kpiPlatform.statusFastDiscovery', 'Fast Discovery') : mttrMttd.avgMttdHours <= 12.0 ? t('kpiPlatform.statusLagging', 'Lagging') : t('kpiPlatform.statusCriticalLag', 'Critical Lag')}
           statusColor={mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : mttrMttd.avgMttdHours <= 12.0 ? 'amber' : 'rose'}
           icon={<Flame className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification({
@@ -84,12 +86,12 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           })}
         />
         <MetricCard
-          title="Defect Reopen Rate"
+          title={t('kpiPlatform.qualityView.reopenCard', 'Defect Reopen Rate')}
           value={`${mttrMttd.reopenRate}%`}
           target="< 5.0%"
-          trend={`${mttrMttd.reopenedCount} reopened`}
+          trend={`${mttrMttd.reopenedCount} ${t('kpiPlatform.qualityView.reopenedTrend', 'reopened')}`}
           trendPositive={mttrMttd.reopenRate < 5}
-          statusBadge={mttrMttd.reopenRate < 5 ? 'Stable' : mttrMttd.reopenRate <= 10 ? 'Elevated' : 'High Churn'}
+          statusBadge={mttrMttd.reopenRate < 5 ? t('kpiPlatform.statusStable', 'Stable') : mttrMttd.reopenRate <= 10 ? t('kpiPlatform.statusElevated', 'Elevated') : t('kpiPlatform.statusHighChurn', 'High Churn')}
           statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : mttrMttd.reopenRate <= 10 ? 'amber' : 'rose'}
           icon={<RefreshCw className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification({
@@ -104,11 +106,11 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           })}
         />
         <MetricCard
-          title="Customer Escalations (APARs)"
+          title={t('kpiPlatform.qualityView.aparCard', 'Customer Escalations (APARs)')}
           value={customerAparList.length}
           target="< 10 Total"
           trendPositive={customerAparList.length <= 10}
-          statusBadge={customerAparList.length <= 10 ? 'Controlled Impact' : customerAparList.length <= 20 ? 'Elevated APARs' : 'Severe Escapes'}
+          statusBadge={customerAparList.length <= 10 ? t('kpiPlatform.statusControlledImpact', 'Controlled Impact') : customerAparList.length <= 20 ? t('kpiPlatform.statusElevatedApars', 'Elevated APARs') : t('kpiPlatform.statusSevereEscapes', 'Severe Escapes')}
           statusColor={customerAparList.length <= 10 ? 'emerald' : customerAparList.length <= 20 ? 'amber' : 'rose'}
           icon={<Bug className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification({
@@ -130,19 +132,19 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         />
       </div>
 
-      {/* Aging of Items Pending Testing (PPT Requirement: 7, 7-14, 14-21, 21+ days) */}
+      {/* Aging of Items Pending Testing */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              Items Pending Testing Aging Profile
+              {t('kpiPlatform.qualityView.agingProfileTitle')}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Backlog latency for items queued in "Under QA" state before verification completion.
+              {t('kpiPlatform.qualityView.agingProfileSubtitle')}
             </p>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
-            Total In QA Queue: {totalAgingItems} Items
+            {t('kpiPlatform.qualityView.totalInQueue')}: {totalAgingItems} {t('kpiPlatform.qualityView.itemsCount')}
           </span>
         </div>
 
@@ -150,14 +152,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* < 7 Days */}
           <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30">
             <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
-              &lt; 7 Days Pending
+              {t('kpiPlatform.qualityView.under7Days')}
             </span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-700 dark:text-emerald-400">
                 {agingBuckets.pending7Days}
               </span>
               <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                Fresh / Healthy
+                {t('kpiPlatform.qualityView.freshHealthy')}
               </span>
             </div>
             <div className="w-full bg-emerald-200 dark:bg-emerald-900/60 h-1.5 rounded-full mt-2">
@@ -171,14 +173,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* 7 - 14 Days */}
           <div className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30">
             <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
-              7 - 14 Days Pending
+              {t('kpiPlatform.qualityView.days7To14')}
             </span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl sm:text-3xl font-black font-mono text-cyan-700 dark:text-cyan-400">
                 {agingBuckets.pending7To14Days}
               </span>
               <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                Normal Cadence
+                {t('kpiPlatform.qualityView.normalCadence')}
               </span>
             </div>
             <div className="w-full bg-cyan-200 dark:bg-cyan-900/60 h-1.5 rounded-full mt-2">
@@ -192,14 +194,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* 14 - 21 Days */}
           <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30">
             <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
-              14 - 21 Days Pending
+              {t('kpiPlatform.qualityView.days14To21')}
             </span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl sm:text-3xl font-black font-mono text-amber-700 dark:text-amber-400">
                 {agingBuckets.pending14To21Days}
               </span>
               <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
-                At Risk
+                {t('kpiPlatform.statusAtRisk')}
               </span>
             </div>
             <div className="w-full bg-amber-200 dark:bg-amber-900/60 h-1.5 rounded-full mt-2">
@@ -213,14 +215,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* 21+ Days */}
           <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30">
             <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
-              21+ Days (Stale / Gated)
+              {t('kpiPlatform.qualityView.days21Plus')}
             </span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl sm:text-3xl font-black font-mono text-rose-700 dark:text-rose-400">
                 {agingBuckets.pending21PlusDays}
               </span>
               <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400">
-                Critical SLA Breach
+                {t('kpiPlatform.qualityView.criticalSlaBreach')}
               </span>
             </div>
             <div className="w-full bg-rose-200 dark:bg-rose-900/60 h-1.5 rounded-full mt-2">
@@ -239,9 +241,9 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         <div className="lg:col-span-8">
           <AreaTrendChart
             data={defectTrends}
-            title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
-            series1Name="Discovered Defects"
-            series2Name="Resolved / Burned Out"
+            title={t('kpiPlatform.qualityView.trendChartTitle')}
+            series1Name={t('kpiPlatform.qualityView.discoveredDefects')}
+            series2Name={t('kpiPlatform.qualityView.resolvedBurnedOut')}
             series1Color="#f43f5e" // Rose
             series2Color="#10b981" // Emerald
             height={240}
@@ -251,15 +253,15 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         {/* Severity Distribution */}
         <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
-            Defect Severity Breakdown
+            {t('kpiPlatform.qualityView.severityTitle')}
           </h4>
 
           <div className="space-y-3">
             {[
-              { label: 'P1 - Blocker (Gating)', count: severityCounts.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
-              { label: 'P2 - Critical Release Defect', count: severityCounts.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
-              { label: 'P3 - Major Functional Defect', count: severityCounts.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
-              { label: 'P4 - Minor / Cosmetic Defect', count: severityCounts.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
+              { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCounts.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
+              { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCounts.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
+              { label: t('kpiPlatform.qualityView.p3Major'), count: severityCounts.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
+              { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCounts.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
             ].map(sev => {
               const total = severityCounts.blockerP1 + severityCounts.criticalP2 + severityCounts.majorP3 + severityCounts.minorP4;
               const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';
@@ -284,20 +286,20 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-3">
           <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
             <AlertTriangle className="w-4 h-4" />
-            <span>Active Release Gating Defects ({gatingDefectsList.length} Items Require Sign-off)</span>
+            <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsList.length} {t('kpiPlatform.qualityView.requireSignoff')})</span>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
                 <tr>
-                  <th className="p-2.5 rounded-l-lg">Key</th>
-                  <th className="p-2.5">Title</th>
-                  <th className="p-2.5">Severity</th>
-                  <th className="p-2.5">Product</th>
-                  <th className="p-2.5">Component</th>
-                  <th className="p-2.5">QA Owner</th>
-                  <th className="p-2.5 rounded-r-lg">Status</th>
+                  <th className="p-2.5 rounded-l-lg">{t('kpiPlatform.qualityView.tableKey')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableTitle')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableSeverity')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableProduct')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableComponent')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableQaOwner')}</th>
+                  <th className="p-2.5 rounded-r-lg">{t('kpiPlatform.qualityView.tableStatus')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">

@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { 
-  ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck, Cpu, Code2, 
+  ArrowLeft, ArrowRight, CheckCircle2, Cpu, Code2, 
   Compass, GraduationCap, UserCheck, BarChart3, TrendingUp, Sparkles, 
   ChevronDown, ChevronUp, Check, Target
 } from 'lucide-react';
-import { SERVICES_DATA } from '../data/servicesData';
+import { useTranslation } from 'react-i18next';
+import { useLocalizedServices } from '../hooks/useLocalizedData';
 import { ContactForm } from '../components/ContactForm';
 
 const iconMap: Record<string, React.ElementType> = {
   Code2,
   Compass,
   GraduationCap,
-  ShieldCheck,
+  Cpu,
   UserCheck,
   BarChart3,
   TrendingUp,
@@ -20,28 +21,37 @@ const iconMap: Record<string, React.ElementType> = {
 
 export const ServiceDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { t } = useTranslation();
+  const services = useLocalizedServices();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  const serviceIndex = SERVICES_DATA.findIndex((s) => s.slug === slug);
-  const service = SERVICES_DATA[serviceIndex];
+  const serviceIndex = services.findIndex((s) => s.slug === slug);
+  const service = services[serviceIndex];
 
   if (!service) {
     return <Navigate to="/services" replace />;
   }
 
-  const prevService = serviceIndex > 0 ? SERVICES_DATA[serviceIndex - 1] : null;
-  const nextService = serviceIndex < SERVICES_DATA.length - 1 ? SERVICES_DATA[serviceIndex + 1] : null;
+  const prevService = serviceIndex > 0 ? services[serviceIndex - 1] : null;
+  const nextService = serviceIndex < services.length - 1 ? services[serviceIndex + 1] : null;
   const IconComponent = iconMap[service.iconName] || Cpu;
+
+  const serviceShortTitle = service.shortTitle;
+  const serviceFullTitle = service.title;
 
   return (
     <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400 mb-8 font-mono">
-        <Link to="/" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Home</Link>
+        <Link to="/" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
+          {t('nav.home', 'Home')}
+        </Link>
         <span>/</span>
-        <Link to="/services" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Services</Link>
+        <Link to="/services" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
+          {t('nav.services', 'Services')}
+        </Link>
         <span>/</span>
-        <span className="text-cyan-700 dark:text-cyan-400 font-semibold truncate max-w-xs">{service.shortTitle}</span>
+        <span className="text-cyan-700 dark:text-cyan-400 font-semibold truncate max-w-xs">{serviceShortTitle}</span>
       </nav>
 
       {/* Hero Banner for this Dedicated Service */}
@@ -50,17 +60,17 @@ export const ServiceDetailPage: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <span className="px-3 py-1 rounded-md bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/30 text-xs font-mono font-bold">
-            SERVICE 0{serviceIndex + 1} OF 07
+            {t('serviceDetail.servicePrefix', 'SERVICE 0')}{serviceIndex + 1} {t('serviceDetail.ofSeven', 'OF 07')}
           </span>
           <span className="px-3 py-1 rounded-md bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 text-xs font-mono">
-            {service.badge}
+            {t(`serviceCategories.${service.badge.toLowerCase().replace(/[^a-z0-9]/g, '')}`, service.badge)}
           </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-9 space-y-4">
             <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-['Outfit'] leading-tight">
-              {service.title}
+              {serviceFullTitle}
             </h1>
             <p className="text-lg sm:text-xl text-cyan-700 dark:text-cyan-300 font-medium">
               {service.tagline}
@@ -80,16 +90,16 @@ export const ServiceDetailPage: React.FC = () => {
         {/* Quick Nav Anchor Buttons */}
         <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-3 text-xs font-mono">
           <a href="#capabilities" className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 border border-slate-200 dark:border-slate-800 shadow-sm">
-            ↓ Capabilities
+            {t('serviceDetail.navCapabilities', '↓ Capabilities')}
           </a>
           <a href="#methodology" className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 border border-slate-200 dark:border-slate-800 shadow-sm">
-            ↓ Methodology
+            {t('serviceDetail.navMethodology', '↓ Methodology')}
           </a>
           <a href="#deliverables" className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 border border-slate-200 dark:border-slate-800 shadow-sm">
-            ↓ Deliverables & KPIs
+            {t('serviceDetail.navDeliverables', '↓ Deliverables & KPIs')}
           </a>
           <a href="#inquiry" className="px-3 py-1.5 rounded-lg bg-cyan-600 dark:bg-cyan-950 text-white dark:text-cyan-300 hover:opacity-90 border border-cyan-600 dark:border-cyan-500/40 font-bold shadow-sm">
-            ↓ Request This Service
+            {t('serviceDetail.navRequest', '↓ Request This Service')}
           </a>
         </div>
       </div>
@@ -98,7 +108,7 @@ export const ServiceDetailPage: React.FC = () => {
       <section className="mb-14 p-8 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 shadow-sm">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-4 flex items-center space-x-2">
           <Sparkles className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-          <span>Executive Overview & Technical Depth</span>
+          <span>{t('serviceDetail.overviewTitle', 'Executive Overview & Technical Depth')}</span>
         </h2>
         <div className="space-y-4 text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
           {service.fullDescription.map((paragraph, pIdx) => (
@@ -110,9 +120,11 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Core Capabilities Breakdown */}
       <section id="capabilities" className="mb-16">
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">Scope of Execution</span>
+          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">
+            {t('serviceDetail.capabilitiesScope', 'Scope of Execution')}
+          </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] mt-1">
-            Detailed Capabilities & Specializations
+            {t('serviceDetail.capabilitiesTitle', 'Detailed Capabilities & Specializations')}
           </h2>
         </div>
 
@@ -147,9 +159,11 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 4-Step Methodology */}
       <section id="methodology" className="mb-16 p-8 sm:p-10 rounded-3xl bg-slate-100/70 dark:bg-[#090d1f] border border-slate-200 dark:border-cyan-500/20 shadow-sm">
         <div className="max-w-3xl mb-8">
-          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">Engineered Process</span>
+          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">
+            {t('serviceDetail.methodologyBadge', 'Rigorous Methodology')}
+          </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] mt-1">
-            4-Step Delivery & Execution Methodology
+            {t('serviceDetail.methodologyTitle', 'How We Deliver High-Reliability Results')}
           </h2>
         </div>
 
@@ -177,11 +191,11 @@ export const ServiceDetailPage: React.FC = () => {
           <div className="flex items-center space-x-2 mb-4">
             <CheckCircle2 className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
             <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-              Standard Deliverables Checklist
+              {t('serviceDetail.verifiedDeliverables', 'Standard Deliverables Checklist')}
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-            Clear, verifiable artifacts and tangible documentation produced during this engagement.
+            {t('serviceDetailSections.checklistSubtitle', 'Clear, verifiable artifacts and tangible documentation produced during this engagement.')}
           </p>
           <ul className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
             {service.keyDeliverables.map((del, dIdx) => (
@@ -198,11 +212,11 @@ export const ServiceDetailPage: React.FC = () => {
           <div className="flex items-center space-x-2 mb-4">
             <Target className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-              Governing KPIs & Target Benchmarks
+              {t('serviceDetail.governedKpis', 'Governing KPIs & Target Benchmarks')}
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-            Quantifiable metrics we track to guarantee return on investment and engineering health.
+            {t('serviceDetailSections.governedKpisSubtitle', 'Quantifiable metrics we track to guarantee return on investment and engineering health.')}
           </p>
           <ul className="space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
             {service.relevantKPIs.map((kpi, kIdx) => (
@@ -218,7 +232,7 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Tech Stack & Tooling Pills */}
       <section className="p-6 sm:p-8 rounded-2xl bg-slate-50 dark:bg-[#080c1e] border border-slate-200 dark:border-cyan-500/20 mb-16 text-center shadow-sm">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white font-['Outfit'] mb-3">
-          Technologies & Ecosystems Utilized in This Service
+          {t('serviceDetailSections.technologiesTitle', 'Technologies & Ecosystems Utilized in This Service')}
         </h3>
         <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
           {service.technologies.map((tech, tIdx) => (
@@ -232,20 +246,24 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Real-World Use Cases */}
       <section className="mb-16">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-6 text-center">
-          Real-World Engagement Scenarios
+          {t('serviceDetailSections.scenariosTitle', 'Real-World Engagement Scenarios')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {service.useCases.map((uc, uIdx) => (
             <div key={uIdx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
               <span className="text-xs font-mono font-bold text-cyan-700 dark:text-cyan-400 px-2.5 py-1 rounded bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-500/30">
-                Client: {uc.clientType}
+                {t('serviceDetailSections.clientLabel', 'Client')}: {uc.clientType}
               </span>
               <div>
-                <span className="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold block mb-1">Scenario / Challenge:</span>
+                <span className="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold block mb-1">
+                  {t('serviceDetailSections.scenarioLabel', 'Scenario / Challenge:')}
+                </span>
                 <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300">{uc.scenario}</p>
               </div>
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800/80">
-                <span className="text-xs uppercase text-emerald-600 dark:text-emerald-400 font-bold block mb-1">Measurable Outcome:</span>
+                <span className="text-xs uppercase text-emerald-600 dark:text-emerald-400 font-bold block mb-1">
+                  {t('serviceDetailSections.outcomeLabel', 'Measurable Outcome:')}
+                </span>
                 <p className="text-xs sm:text-sm text-emerald-800 dark:text-emerald-200/90 font-medium">{uc.outcome}</p>
               </div>
             </div>
@@ -256,7 +274,7 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Frequently Asked Questions Accordion */}
       <section className="mb-16 max-w-3xl mx-auto">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-6 text-center">
-          Frequently Asked Questions
+          {t('serviceDetailSections.faqsTitle', 'Frequently Asked Questions')}
         </h3>
         <div className="space-y-3">
           {service.faqs.map((faq, fIdx) => (
@@ -266,7 +284,7 @@ export const ServiceDetailPage: React.FC = () => {
             >
               <button
                 onClick={() => setOpenFaqIndex(openFaqIndex === fIdx ? null : fIdx)}
-                className="w-full p-4 text-left flex justify-between items-center text-sm font-semibold text-slate-900 dark:text-white hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors cursor-pointer"
+                className="w-full p-4 text-left rtl:text-right flex justify-between items-center text-sm font-semibold text-slate-900 dark:text-white hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors cursor-pointer"
               >
                 <span>{faq.q}</span>
                 {openFaqIndex === fIdx ? <ChevronUp className="w-4 h-4 text-cyan-600 dark:text-cyan-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
@@ -284,12 +302,14 @@ export const ServiceDetailPage: React.FC = () => {
       {/* Direct Service Inquiry Form Section */}
       <section id="inquiry" className="mb-16">
         <div className="text-center max-w-2xl mx-auto mb-8">
-          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">Start Engagement</span>
+          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">
+            {t('serviceDetailSections.startEngagement', 'Start Engagement')}
+          </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] mt-1">
-            Request Consultation for {service.shortTitle}
+            {t('serviceDetail.ctaTitle', 'Ready to Engage on This Service?')}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
-            Fill out the form below to connect directly with Sudarsha Wijenayake. We review requirements within 24 hours.
+            {t('serviceDetail.ctaDesc', 'Submit an inquiry directly for this offering or speak with Sudarsha Wijenayake to discuss timeline, architecture, or resource allocation.')}
           </p>
         </div>
         <div className="max-w-3xl mx-auto">
@@ -304,9 +324,9 @@ export const ServiceDetailPage: React.FC = () => {
             to={`/services/${prevService.slug}`}
             className="flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Previous:</span>
-            <span className="font-semibold">{prevService.shortTitle}</span>
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+            <span className="hidden sm:inline">{t('serviceDetail.previousService', 'Previous Service')}:</span>
+            <span className="font-semibold">{t(`serviceNames.s${serviceIndex}Short`, prevService.shortTitle)}</span>
           </Link>
         ) : <div />}
 
@@ -315,17 +335,17 @@ export const ServiceDetailPage: React.FC = () => {
             to={`/services/${nextService.slug}`}
             className="flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
           >
-            <span className="hidden sm:inline">Next:</span>
-            <span className="font-semibold">{nextService.shortTitle}</span>
-            <ArrowRight className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('serviceDetail.nextService', 'Next Service')}:</span>
+            <span className="font-semibold">{t(`serviceNames.s${serviceIndex + 2}Short`, nextService.shortTitle)}</span>
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         ) : (
           <Link 
             to="/services/software-development"
             className="flex items-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
           >
-            <span>Restart Service Tour (Service 01)</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>{t('serviceDetail.allServices', 'All Services')}</span>
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         )}
       </div>

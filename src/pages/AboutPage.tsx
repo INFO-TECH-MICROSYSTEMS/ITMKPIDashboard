@@ -4,23 +4,24 @@ import {
   Award, ShieldCheck, MapPin, Phone, Mail, 
   Target, Code2, Users, ArrowRight 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const AboutPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
         <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-cyan-50 border border-cyan-200 text-cyan-700 dark:bg-cyan-950/80 dark:text-cyan-400 dark:border-cyan-500/30 mb-3 font-mono">
           <Award className="w-3.5 h-3.5" />
-          <span>ABOUT INFO TECH MICROSYSTEMS</span>
+          <span>{t('aboutPage.badge', 'ABOUT INFO TECH MICROSYSTEMS')}</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white font-['Outfit'] mb-4">
-          Architectural Rigor. Measurable Engineering ROI.
+          {t('aboutPage.heroTitle', 'Architectural Rigor. Measurable Engineering ROI.')}
         </h1>
         <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-          INFO TECH MICROSYSTEMS was founded to close the gap between high-level technology strategy 
-          and production-grade software delivery. Based in Ottawa, Ontario, Canada, we partner with enterprises, 
-          startups, and public agencies to engineer enduring software solutions.
+          {t('aboutPage.heroDesc', 'INFO TECH MICROSYSTEMS was founded to close the gap between high-level technology strategy and production-grade software delivery. Based in Ottawa, Ontario, Canada, we partner with enterprises, startups, and public agencies to engineer enduring software solutions.')}
         </p>
       </div>
 
@@ -41,11 +42,11 @@ export const AboutPage: React.FC = () => {
                     className="w-72 h-84 sm:w-80 sm:h-96 object-cover rounded-xl"
                   />
                   <div className="p-4 bg-slate-50 dark:bg-slate-950 text-center border-t border-slate-200 dark:border-slate-800">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">Sudarsha Wijenayake</h3>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">{t('founderSpotlight.founderName', 'Sudarsha Wijenayake')}</h3>
                     <p className="text-xs text-cyan-700 dark:text-cyan-400 font-mono font-semibold mt-0.5">
-                      Founder & Principal Technology Consultant
+                      {t('founderSpotlight.founderRole', 'Founder & Principal Technology Consultant')}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">INFO TECH MICROSYSTEMS</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('founderSpotlight.companyName', 'INFO TECH MICROSYSTEMS')}</p>
                   </div>
                 </div>
               </div>
@@ -54,19 +55,16 @@ export const AboutPage: React.FC = () => {
             {/* Founder Narrative */}
             <div className="lg:col-span-7 space-y-5">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/30 text-xs font-mono">
-                <span>FOUNDER'S MISSION & PHILOSOPHY</span>
+                <span>{t('aboutPage.missionBadge', "FOUNDER'S MISSION & PHILOSOPHY")}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-['Outfit']">
-                A Practitioner's Commitment to Quality
+                {t('aboutPage.missionTitle', "A Practitioner's Commitment to Quality")}
               </h2>
               <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-                "Throughout my career in software engineering, architecture, and technology leadership, I have observed a recurring industry pitfall: organizations frequently overpay for bloated, brittle software systems because they lack disciplined architectural guidance, shift-left quality assurance, and objective performance metrics."
+                {t('aboutPage.missionP1', '"Throughout my career in software engineering, architecture, and technology leadership, I have observed a recurring industry pitfall: organizations frequently overpay for bloated, brittle software systems because they lack disciplined architectural guidance, shift-left quality assurance, and objective performance metrics."')}
               </p>
               <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-                "I established <strong className="text-slate-900 dark:text-white">INFO TECH MICROSYSTEMS</strong> to provide a different paradigm. 
-                When we partner with a client, we do not simply advise from the sidelines—we embed hands-on technical excellence. 
-                Whether we are developing modern microservices, authoring automated test suites, training your development team, 
-                or placing high-caliber engineers, our work is governed by verifiable data and transparent accountability."
+                {t('aboutPage.missionP2', '"I established INFO TECH MICROSYSTEMS to provide a different paradigm. When we partner with a client, we do not simply advise from the sidelines—we embed hands-on technical excellence. Whether we are developing modern microservices, authoring automated test suites, training your development team, or placing high-caliber engineers, our work is governed by verifiable data and transparent accountability."')}
               </p>
 
               {/* Direct Founder Contact Strip */}
@@ -78,19 +76,19 @@ export const AboutPage: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                   <a href="tel:+16132665285" className="hover:text-cyan-600 dark:hover:text-cyan-400 text-slate-900 dark:text-white font-semibold transition-colors">
-                    +1 613 266 5285 (Direct)
+                    +1 613 266 5285 ({t('aboutPage.direct', 'Direct')})
                   </a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                   <a href="mailto:info.tech.microsystems.ca@gmail.com" className="hover:text-cyan-600 dark:hover:text-cyan-400 text-slate-900 dark:text-white font-semibold transition-colors">
-                    info.tech.microsystems.ca@gmail.com (Company)
+                    info.tech.microsystems.ca@gmail.com ({t('aboutPage.company', 'Company')})
                   </a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                   <a href="mailto:sudarsha.wijenayake@gmail.com" className="hover:text-purple-600 dark:hover:text-purple-400 text-slate-700 dark:text-slate-300 transition-colors">
-                    sudarsha.wijenayake@gmail.com (Direct)
+                    sudarsha.wijenayake@gmail.com ({t('aboutPage.direct', 'Direct')})
                   </a>
                 </div>
               </div>
@@ -102,32 +100,34 @@ export const AboutPage: React.FC = () => {
       {/* Core Values / 4 Pillars */}
       <section className="mb-20">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">FOUNDATIONAL PRINCIPLES</span>
+          <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 tracking-wider font-bold">
+            {t('aboutPage.principlesBadge', 'FOUNDATIONAL PRINCIPLES')}
+          </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] mt-1">
-            How INFO TECH MICROSYSTEMS Operates
+            {t('aboutPage.principlesTitle', 'How INFO TECH MICROSYSTEMS Operates')}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              title: 'Engineering Rigor',
-              desc: 'We do not take shortcuts. Every codebase, microservice, and test harness is built for maintainability, security, and low total cost of ownership.',
+              title: t('aboutPage.pillar1Title', 'Engineering Rigor'),
+              desc: t('aboutPage.pillar1Desc', 'We do not take shortcuts. Every codebase, microservice, and test harness is built for maintainability, security, and low total cost of ownership.'),
               icon: Code2
             },
             {
-              title: 'Quality as a Culture',
-              desc: 'Quality is not an afterthought handled at the end of a sprint. We embed automated testing and shift-left verification into every developer workflow.',
+              title: t('aboutPage.pillar2Title', 'Quality as a Culture'),
+              desc: t('aboutPage.pillar2Desc', 'Quality is not an afterthought handled at the end of a sprint. We embed automated testing and shift-left verification into every developer workflow.'),
               icon: ShieldCheck
             },
             {
-              title: 'Measurable KPIs',
-              desc: 'We replace subjective feelings with quantifiable benchmarks: DORA metrics, Defect Escape Rates, automated code coverage, and sprint predictability.',
+              title: t('aboutPage.pillar3Title', 'Measurable KPIs'),
+              desc: t('aboutPage.pillar3Desc', 'We replace subjective feelings with quantifiable benchmarks: DORA metrics, Defect Escape Rates, automated code coverage, and sprint predictability.'),
               icon: Target
             },
             {
-              title: 'Workforce Elevation',
-              desc: 'We leave every client team stronger than we found it through hands-on pairing, comprehensive documentation, and structured training programs.',
+              title: t('aboutPage.pillar4Title', 'Workforce Elevation'),
+              desc: t('aboutPage.pillar4Desc', 'We leave every client team stronger than we found it through hands-on pairing, comprehensive documentation, and structured training programs.'),
               icon: Users
             }
           ].map((pillar, idx) => {
@@ -153,16 +153,17 @@ export const AboutPage: React.FC = () => {
       <section className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 space-y-3">
-            <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 font-bold">CANADIAN OPERATIONS</span>
+            <span className="text-xs font-mono uppercase text-cyan-700 dark:text-cyan-400 font-bold">
+              {t('aboutCanadianOps.badge', 'CANADIAN OPERATIONS')}
+            </span>
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-              Headquartered in Canada's Technology Capital
+              {t('aboutCanadianOps.title', "Headquartered in Canada's Technology Capital")}
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Situated in Ottawa, Ontario—one of North America’s premier tech hubs—INFO TECH MICROSYSTEMS combines local, 
-              in-person accountability with seamless remote delivery across Canada, the United States, and international enterprises.
+              {t('aboutCanadianOps.desc', 'Situated in Ottawa, Ontario—one of North America’s premier tech hubs—INFO TECH MICROSYSTEMS combines local, in-person accountability with seamless remote delivery across Canada, the United States, and international enterprises.')}
             </p>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-mono pt-2">
-              Corporate Office: 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7
+              {t('aboutCanadianOps.corpOffice', 'Corporate Office: 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7')}
             </div>
           </div>
 
@@ -171,8 +172,8 @@ export const AboutPage: React.FC = () => {
               to="/contact"
               className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
             >
-              <span>Schedule an In-Person or Virtual Meeting</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{t('header.requestConsultation', 'Schedule an In-Person or Virtual Meeting')}</span>
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
           </div>
         </div>

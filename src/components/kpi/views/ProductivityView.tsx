@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle2 
 } from 'lucide-react';
@@ -26,6 +27,7 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
   productivityMetrics,
   jiraItems
 }) => {
+  const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
   const overCommittedCount = productivityMetrics.filter(p => p.isOverCommitted).length;
@@ -43,12 +45,12 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
       {/* Top Productivity Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Avg QA Test Completion Rate"
+          title={t('kpiPlatform.productivityView.qaCompletionRate', 'Avg QA Test Completion Rate')}
           value={`${avgCompletionRate}%`}
           target="> 85.0%"
-          trend="+4.1% sprint velocity"
+          trend={`+4.1% ${t('kpiPlatform.productivityView.sprintVelocityTrend', 'sprint velocity')}`}
           trendPositive={parseFloat(avgCompletionRate) >= 85.0}
-          statusBadge={parseFloat(avgCompletionRate) >= 85.0 ? 'On Target' : parseFloat(avgCompletionRate) >= 70.0 ? 'Acceptable' : 'Behind Schedule'}
+          statusBadge={parseFloat(avgCompletionRate) >= 85.0 ? t('kpiPlatform.statusOnTarget', 'On Target') : parseFloat(avgCompletionRate) >= 70.0 ? t('kpiPlatform.statusAcceptable', 'Acceptable') : t('kpiPlatform.statusBehindSchedule', 'Behind Schedule')}
           statusColor={parseFloat(avgCompletionRate) >= 85.0 ? 'emerald' : parseFloat(avgCompletionRate) >= 70.0 ? 'amber' : 'rose'}
           icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification({
@@ -63,21 +65,21 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           })}
         />
         <MetricCard
-          title="Over-Committed Engineers"
+          title={t('kpiPlatform.productivityView.overCommittedEngineers', 'Over-Committed Engineers')}
           value={overCommittedCount}
-          target="0 Burnout Risk"
+          target={t('kpiPlatform.productivityView.zeroBurnoutRisk', '0 Burnout Risk')}
           trendPositive={overCommittedCount === 0}
-          statusBadge={overCommittedCount === 0 ? 'Balanced' : overCommittedCount <= 2 ? 'Rebalance Needed' : 'Burnout Risk'}
+          statusBadge={overCommittedCount === 0 ? t('kpiPlatform.statusBalanced', 'Balanced') : overCommittedCount <= 2 ? t('kpiPlatform.statusRebalanceNeeded', 'Rebalance Needed') : t('kpiPlatform.statusBurnoutRisk', 'Burnout Risk')}
           statusColor={overCommittedCount === 0 ? 'emerald' : overCommittedCount <= 2 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getOverCommittedJustification(overCommittedCount))}
         />
         <MetricCard
-          title="Sprint Story Completion Rate"
+          title={t('kpiPlatform.productivityView.storyCompletionRate', 'Sprint Story Completion Rate')}
           value={`${sprintCompletionPercent}%`}
           target="> 80.0%"
           trendPositive={parseFloat(sprintCompletionPercent) >= 80.0}
-          statusBadge={parseFloat(sprintCompletionPercent) >= 80.0 ? 'Throughput Met' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'At Risk' : 'Slipping'}
+          statusBadge={parseFloat(sprintCompletionPercent) >= 80.0 ? t('kpiPlatform.statusThroughputMet', 'Throughput Met') : parseFloat(sprintCompletionPercent) >= 65.0 ? t('kpiPlatform.statusAtRisk', 'At Risk') : t('kpiPlatform.statusSlipping', 'Slipping')}
           statusColor={parseFloat(sprintCompletionPercent) >= 80.0 ? 'emerald' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
           onJustify={() => setSelectedJustification({
@@ -92,10 +94,10 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           })}
         />
         <MetricCard
-          title="Active QA Specialists"
+          title={t('kpiPlatform.productivityView.activeQaSpecialists', 'Active QA Specialists')}
           value={productivityMetrics.length}
-          target="Dedicated Squad"
-          statusBadge={productivityMetrics.length >= 4 ? 'Optimal Staffing' : 'Understaffed'}
+          target={t('kpiPlatform.productivityView.dedicatedSquad', 'Dedicated Squad')}
+          statusBadge={productivityMetrics.length >= 4 ? t('kpiPlatform.statusOptimalStaffing', 'Optimal Staffing') : t('kpiPlatform.statusUnderstaffed', 'Understaffed')}
           statusColor={productivityMetrics.length >= 4 ? 'emerald' : 'amber'}
           icon={<Users className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification({
@@ -116,14 +118,14 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              QA Engineer Test Assignment & Throughput Ledger
+              {t('kpiPlatform.productivityView.ledgerTitle')}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Assigned vs completed test case executions, blocked items, and individual velocity.
+              {t('kpiPlatform.productivityView.ledgerSubtitle')}
             </p>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
-            Capacity Limit: 140 Tests / Engineer
+            {t('kpiPlatform.productivityView.capacityLimit')}
           </span>
         </div>
 
@@ -131,13 +133,13 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           <table className="w-full text-xs text-left">
             <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
               <tr>
-                <th className="p-3 rounded-l-lg">QA Engineer</th>
-                <th className="p-3">Assigned Tests</th>
-                <th className="p-3">Completed Tests</th>
-                <th className="p-3">Completion Rate</th>
-                <th className="p-3">Delayed / Blocked</th>
-                <th className="p-3">Avg Hours / Test</th>
-                <th className="p-3 rounded-r-lg">Workload Status</th>
+                <th className="p-3 rounded-l-lg">{t('kpiPlatform.productivityView.tableEngineer')}</th>
+                <th className="p-3">{t('kpiPlatform.productivityView.tableAssigned')}</th>
+                <th className="p-3">{t('kpiPlatform.productivityView.tableCompleted')}</th>
+                <th className="p-3">{t('kpiPlatform.productivityView.tableRate')}</th>
+                <th className="p-3">{t('kpiPlatform.productivityView.tableDelayed')}</th>
+                <th className="p-3">{t('kpiPlatform.productivityView.tableAvgHours')}</th>
+                <th className="p-3 rounded-r-lg">{t('kpiPlatform.productivityView.tableWorkload')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
@@ -172,16 +174,16 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
                     </span>
                   </td>
                   <td className="p-3 font-mono text-slate-600 dark:text-slate-400">
-                    {eng.avgHoursPerTest} hrs
+                    {eng.avgHoursPerTest} {t('kpiPlatform.hrsUnit', 'hrs')}
                   </td>
                   <td className="p-3">
                     {eng.isOverCommitted ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
-                        Over-Committed
+                        {t('kpiPlatform.overCommitted', 'Over-Committed')}
                       </span>
                     ) : (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
-                        Balanced Load
+                        {t('kpiPlatform.statusBalancedLoad', 'Balanced Load')}
                       </span>
                     )}
                   </td>

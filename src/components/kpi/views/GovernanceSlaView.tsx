@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, Eye, Zap, ThumbsUp 
 } from 'lucide-react';
@@ -27,6 +28,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
   scorecard,
   jiraItems
 }) => {
+  const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
   const customerDefects = jiraItems.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
@@ -37,23 +39,23 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
       {/* Top Governance Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Overall SLA Adherence"
+          title={t('kpiPlatform.governanceView.overallSla', 'Overall SLA Adherence')}
           value={`${scorecard.slaAdherenceRate}%`}
           target="> 92.0%"
-          trend="99.4% P1 triage"
+          trend={`99.4% ${t('kpiPlatform.governanceView.triageTrend', 'P1 triage')}`}
           trendPositive={scorecard.slaAdherenceRate >= 92.0}
-          statusBadge={scorecard.slaAdherenceRate >= 92.0 ? 'Compliant' : scorecard.slaAdherenceRate >= 85.0 ? 'At Risk' : 'Breached'}
+          statusBadge={scorecard.slaAdherenceRate >= 92.0 ? t('kpiPlatform.statusCompliant', 'Compliant') : scorecard.slaAdherenceRate >= 85.0 ? t('kpiPlatform.statusAtRisk', 'At Risk') : t('kpiPlatform.statusBreached', 'Breached')}
           statusColor={scorecard.slaAdherenceRate >= 92.0 ? 'emerald' : scorecard.slaAdherenceRate >= 85.0 ? 'amber' : 'rose'}
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
         />
         <MetricCard
-          title="WCAG 2.2 AA Accessibility"
+          title={t('kpiPlatform.governanceView.accessibilityTitle', 'WCAG 2.2 AA Accessibility')}
           value={`${scorecard.accessibilityScore}%`}
           target="> 95.0%"
-          trend="Section 508 Ready"
+          trend={t('kpiPlatform.governanceView.section508', 'Section 508 Ready')}
           trendPositive={scorecard.accessibilityScore >= 95.0}
-          statusBadge={scorecard.accessibilityScore >= 95.0 ? 'Audit Passed' : scorecard.accessibilityScore >= 90.0 ? 'Minor Violations' : 'Non-Compliant'}
+          statusBadge={scorecard.accessibilityScore >= 95.0 ? t('kpiPlatform.statusAuditPassed', 'Audit Passed') : scorecard.accessibilityScore >= 90.0 ? t('kpiPlatform.statusMinorViolations', 'Minor Violations') : t('kpiPlatform.statusNonCompliant', 'Non-Compliant')}
           statusColor={scorecard.accessibilityScore >= 95.0 ? 'emerald' : scorecard.accessibilityScore >= 90.0 ? 'amber' : 'rose'}
           icon={<Eye className="w-5 h-5 text-cyan-500" />}
           onJustify={() => setSelectedJustification({
@@ -68,11 +70,11 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           })}
         />
         <MetricCard
-          title="Performance P95 Latency"
-          value={`${scorecard.performanceP95Ms} ms`}
-          target="< 180 ms"
+          title={t('kpiPlatform.governanceView.performanceP95', 'Performance P95 Latency')}
+          value={`${scorecard.performanceP95Ms} ${t('kpiPlatform.msUnit', 'ms')}`}
+          target={`< 180 ${t('kpiPlatform.msUnit', 'ms')}`}
           trendPositive={scorecard.performanceP95Ms <= 180}
-          statusBadge={scorecard.performanceP95Ms <= 180 ? 'P99: 380 ms' : scorecard.performanceP95Ms <= 250 ? 'Spike Latency' : 'SLA Breached'}
+          statusBadge={scorecard.performanceP95Ms <= 180 ? 'P99: 380 ms' : scorecard.performanceP95Ms <= 250 ? t('kpiPlatform.statusSpikeLatency', 'Spike Latency') : t('kpiPlatform.statusBreached', 'SLA Breached')}
           statusColor={scorecard.performanceP95Ms <= 180 ? 'emerald' : scorecard.performanceP95Ms <= 250 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification({
@@ -87,12 +89,12 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           })}
         />
         <MetricCard
-          title="Stakeholder Satisfaction (CSAT)"
+          title={t('kpiPlatform.governanceView.csatTitle', 'Stakeholder Satisfaction (CSAT)')}
           value="4.8 / 5.0"
           target="> 4.5"
-          trend="96% Net Positive"
+          trend={`96% ${t('kpiPlatform.governanceView.netPositive', 'Net Positive')}`}
           trendPositive={true}
-          statusBadge="High Trust"
+          statusBadge={t('kpiPlatform.statusHighTrust', 'High Trust')}
           statusColor="emerald"
           icon={<ThumbsUp className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification({
@@ -111,69 +113,75 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
       {/* SLA Compliance Breakdown Matrix */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-          Enterprise Quality Service Level Agreements (SLAs)
+          {t('kpiPlatform.governanceView.slaMatrixTitle')}
         </h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             {
-              name: 'Defect Triage SLA (P1 < 4h, P2 < 24h)',
+              id: 'defectTriage',
+              name: t('kpiPlatform.slaItems.defectTriageName', 'Defect Triage SLA (P1 < 4h, P2 < 24h)'),
               rateNum: scorecard.slaBreakdown.p1P2TriageRate,
               targetNum: 95.0,
               rate: `${scorecard.slaBreakdown.p1P2TriageRate}%`,
               target: '95.0%',
-              desc: 'Rapid initial triage and assessment for blocking and critical defects.'
+              desc: t('kpiPlatform.slaItems.defectTriageDesc', 'Rapid initial triage and assessment for blocking and critical defects.')
             },
             {
-              name: 'Regression Execution SLA',
+              id: 'regressionExec',
+              name: t('kpiPlatform.slaItems.regressionExecName', 'Regression Execution SLA'),
               rateNum: scorecard.slaBreakdown.regressionExecutionRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.regressionExecutionRate}%`,
               target: '90.0%',
-              desc: 'Execution of complete regression cycle within scheduled sprint window.'
+              desc: t('kpiPlatform.slaItems.regressionExecDesc', 'Execution of complete regression cycle within scheduled sprint window.')
             },
             {
-              name: 'Test Case Creation SLA',
+              id: 'testCreation',
+              name: t('kpiPlatform.slaItems.testCreationName', 'Test Case Creation SLA'),
               rateNum: scorecard.slaBreakdown.testPlanCreationRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.testPlanCreationRate}%`,
               target: '90.0%',
-              desc: 'Test plans authored and reviewed prior to development handoff.'
+              desc: t('kpiPlatform.slaItems.testCreationDesc', 'Test plans authored and reviewed prior to development handoff.')
             },
             {
-              name: 'Daily QA Status Report SLA',
+              id: 'dailyReport',
+              name: t('kpiPlatform.slaItems.dailyReportName', 'Daily QA Status Report SLA'),
               rateNum: scorecard.slaBreakdown.dailyReportRate,
               targetNum: 98.0,
               rate: `${scorecard.slaBreakdown.dailyReportRate}%`,
               target: '98.0%',
-              desc: 'Automated executive and squad reporting published every day at 17:00.'
+              desc: t('kpiPlatform.slaItems.dailyReportDesc', 'Automated executive and squad reporting published every day at 17:00.')
             },
             {
-              name: 'Automation Delivery SLA',
+              id: 'autoDelivery',
+              name: t('kpiPlatform.slaItems.autoDeliveryName', 'Automation Delivery SLA'),
               rateNum: scorecard.slaBreakdown.automationDeliveryRate,
               targetNum: 85.0,
               rate: `${scorecard.slaBreakdown.automationDeliveryRate}%`,
               target: '85.0%',
-              desc: 'In-sprint test automation completed within the same sprint as feature code.'
+              desc: t('kpiPlatform.slaItems.autoDeliveryDesc', 'In-sprint test automation completed within the same sprint as feature code.')
             },
             {
-              name: 'Customer Defect Resolution SLA',
+              id: 'customerResolution',
+              name: t('kpiPlatform.slaItems.customerResolutionName', 'Customer Defect Resolution SLA'),
               rateNum: scorecard.slaBreakdown.customerDefectResolutionRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.customerDefectResolutionRate}%`,
               target: '90.0%',
-              desc: `Hotfix turnaround for high-impact customer APARs (${resolvedCustomerDefects.length}/${customerDefects.length} resolved).`
+              desc: `${t('kpiPlatform.slaItems.customerResolutionDesc', 'Hotfix turnaround for high-impact customer APARs')} (${resolvedCustomerDefects.length}/${customerDefects.length}).`
             }
           ].map(sla => {
             const isOptimal = sla.rateNum >= sla.targetNum;
             const isWarning = !isOptimal && sla.rateNum >= sla.targetNum - 10;
             const statusColor = isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose';
-            const statusLabel = isOptimal ? 'Compliant' : isWarning ? 'At Risk' : 'Breached';
+            const statusLabel = isOptimal ? t('kpiPlatform.statusCompliant', 'Compliant') : isWarning ? t('kpiPlatform.statusAtRisk', 'At Risk') : t('kpiPlatform.statusBreached', 'Breached');
             const slaTheme = KPI_STATUS_THEMES[statusColor];
 
             return (
               <div 
-                key={sla.name} 
+                key={sla.id} 
                 onClick={() => setSelectedJustification({
                   title: sla.name,
                   statusBadge: statusLabel,
@@ -187,7 +195,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                     : 'Allocate dedicated QE and engineering triage capacity to address SLA bottlenecks.'
                 })}
                 className={`p-4 rounded-xl border transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${slaTheme.card}`}
-                title="Click for SLA justification and compliance audit"
+                title={t('kpiPlatform.governanceView.viewJustification', 'Click for SLA justification and compliance audit')}
               >
                 <div className="flex justify-between items-start gap-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
@@ -197,8 +205,8 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
                 <div className={`flex justify-between items-center pt-2 border-t text-xs font-mono ${slaTheme.footerBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400">Adherence: <strong className={slaTheme.value}>{sla.rate}</strong></span>
-                  <span className="text-slate-500 dark:text-slate-400">Target: {sla.target}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.adherenceLabel', 'Adherence')}: <strong className={slaTheme.value}>{sla.rate}</strong></span>
+                  <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.targetSlaLabel', 'Target')}: {sla.target}</span>
                 </div>
               </div>
             );
@@ -213,27 +221,27 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           <div className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-cyan-500" />
             <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              Accessibility (WCAG 2.2 AA) Audit
+              {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
             </h4>
           </div>
 
           <div className="space-y-2 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Color Contrast Ratios (AA & AAA)</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">100% Pass (7:1 High Contrast)</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.colorContrast', 'Color Contrast Ratios (AA & AAA)')}</span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.colorContrastPass', '100% Pass (7:1 High Contrast)')}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Keyboard Navigation & Focus Traps</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 Traps Detected</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.keyboardNav', 'Keyboard Navigation & Focus Traps')}</span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.zeroTraps', '0 Traps Detected')}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Screen Reader ARIA Compatibility</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.accessibilityScore}% Suite Pass Rate</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-slate-600 dark:text-slate-400">Audit Status</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
               <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                {scorecard.accessibilityScore >= 95 ? 'Certified for Public Sector' : 'Conditional Pass'}
+                {scorecard.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
               </span>
             </div>
           </div>
@@ -244,27 +252,27 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-purple-500" />
             <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              SaaS Performance & Reliability Benchmarks
+              {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
             </h4>
           </div>
 
           <div className="space-y-2 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">P95 Response Time Benchmark</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceP95Ms} ms (&lt; 180 ms target)</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">P99 Spike Latency Benchmark</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.performanceP99Ms} ms (&lt; 450 ms target)</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">HTTP 5xx Server Error Rate</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
               <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceErrorRate}%</span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-slate-600 dark:text-slate-400">Infrastructure Stress Level</span>
+              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>
               <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                {scorecard.performanceErrorRate > 1.0 ? 'Elevated Load Warning' : 'Under 40% CPU Capacity'}
+                {scorecard.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
               </span>
             </div>
           </div>
