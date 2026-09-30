@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **System Classification:** Enterprise Web Application & KPI Telemetry Engine
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Developer Guide](developer_guide.md) • [Design System](design_system.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Developer Guide](developer_guide.md) • [Design System](design_system.md) • [License](LICENSE.md)
 
 ---
 

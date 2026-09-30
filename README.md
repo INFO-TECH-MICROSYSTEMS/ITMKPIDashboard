@@ -90,7 +90,7 @@ We maintain an extensive, professional documentation portfolio adhering to enter
 
 | Document | Description | Target Audience |
 | :--- | :--- | :--- |
-| 📖 **[User Guide](USER_GUIDE.md)** | Complete walkthrough of all services, tools, KPI telemetry views, and contact flows. | Clients, Partners, Evaluators |
+| 📖 **[User Guide](docs/user_guide.md)** | Complete walkthrough of all services, tools, KPI telemetry views, and contact flows. | Clients, Partners, Evaluators |
 | 🏗️ **[Architecture & Modularization](docs/architecture_and_modularization.md)** | System architecture diagrams, component hierarchy, IndexedDB engine, and design patterns. | Architects, Lead Engineers |
 | 🛠️ **[Developer Guide](docs/developer_guide.md)** | Environment setup, project structure, conventions, i18n workflows, and testing. | Contributing Developers |
 | 🌐 **[Globalization Guide](docs/globalization_guide.md)** | Localization architecture, 11 supported languages, flags, RTL layout, and caching. | i18n Specialists, Translators |

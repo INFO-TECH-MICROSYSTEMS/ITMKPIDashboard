@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Audience:** Contributing Engineers, Architecture Consultants, DevOps Specialists
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Deployment Guide](deployment_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Deployment Guide](deployment_guide.md) • [License](LICENSE.md)
 
 ---
 

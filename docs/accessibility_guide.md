@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Standards:** W3C WCAG 2.1 Level AA, Section 508, EN 301 549, ADA Title III
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Globalization Guide](globalization_guide.md) • [Design System](design_system.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Globalization Guide](globalization_guide.md) • [Design System](design_system.md) • [License](LICENSE.md)
 
 ---
 

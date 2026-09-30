@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Target Environments:** AWS CloudFront / S3, Vercel, Netlify, Cloudflare Pages, Docker / Nginx
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Developer Guide](developer_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Developer Guide](developer_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [License](LICENSE.md)
 
 ---
 

@@ -3,7 +3,7 @@
 **Effective Date:** January 1, 2026  
 **Last Updated:** September 30, 2026
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Developer Guide](developer_guide.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Developer Guide](developer_guide.md)
 
 ---
 

@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Aesthetic Style:** Cyber-Executive Neon Glassmorphism & High-Contrast Light Mode
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
 
 ---
 

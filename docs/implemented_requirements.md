@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Verification Status:** 100% Implemented & Verified
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Developer Guide](developer_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Developer Guide](developer_guide.md) • [License](LICENSE.md)
 
 ---
 

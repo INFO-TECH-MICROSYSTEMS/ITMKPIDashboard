@@ -4,7 +4,7 @@
 **Effective Date:** September 2026  
 **Standards:** ISO 639-1, W3C Internationalization, Unicode CLDR
 
-[← Back to Main README](../README.md) • [User Guide](../USER_GUIDE.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
 
 ---
 
