@@ -3,7 +3,7 @@
  * In-depth metrics on gating defects, aging queues, discovery vs burnout curves, and MTTR.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bug, AlertTriangle, Clock, RefreshCw, Flame 
 } from 'lucide-react';
@@ -11,9 +11,12 @@ import type {
   AgingBuckets, 
   DefectSeverityCounts, 
   TrendPoint, 
-  JiraWorkItem 
+  JiraWorkItem,
+  KPIJustification 
 } from '../../../types/kpiPlatform';
 import { MetricCard, AreaTrendChart } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface QualityDefectViewProps {
   agingBuckets: AgingBuckets;
@@ -35,6 +38,8 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
   mttrMttd,
   jiraItems
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   const gatingDefectsList = jiraItems.filter(i => i.isGatingDefect && i.status !== 'Done');
   const customerAparList = jiraItems.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
 
@@ -57,6 +62,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={mttrMttd.avgMttrHours <= 24.0 ? 'SLA Met' : mttrMttd.avgMttrHours <= 36.0 ? 'Warning' : 'Breached'}
           statusColor={mttrMttd.avgMttrHours <= 24.0 ? 'emerald' : mttrMttd.avgMttrHours <= 36.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMttrJustification(mttrMttd.avgMttrHours))}
         />
         <MetricCard
           title="Mean Time to Detect (MTTD)"
@@ -66,6 +72,16 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={mttrMttd.avgMttdHours <= 6.0 ? 'Fast Discovery' : mttrMttd.avgMttdHours <= 12.0 ? 'Lagging' : 'Critical Lag'}
           statusColor={mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : mttrMttd.avgMttdHours <= 12.0 ? 'amber' : 'rose'}
           icon={<Flame className="w-5 h-5 text-amber-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Mean Time to Detect (MTTD)',
+            statusBadge: mttrMttd.avgMttdHours <= 6.0 ? 'Fast Discovery' : 'Lagging',
+            statusColor: mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : 'amber',
+            currentValue: `${mttrMttd.avgMttdHours} hrs`,
+            targetValue: '< 6.0 hrs',
+            formulaOrRule: `MTTD = SUM(BugIdentificationTime - CodeCommitTime) / TotalDetectedBugs`,
+            rationale: `Mean Time to Detect is ${mttrMttd.avgMttdHours} hours. Rapid discovery minimizes defect blast radius and prevents downstream test dependencies.`,
+            recommendedAction: 'Keep automated smoke suites running on every branch commit to detect regressions within hours of authoring.'
+          })}
         />
         <MetricCard
           title="Defect Reopen Rate"
@@ -76,6 +92,16 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={mttrMttd.reopenRate < 5 ? 'Stable' : mttrMttd.reopenRate <= 10 ? 'Elevated' : 'High Churn'}
           statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : mttrMttd.reopenRate <= 10 ? 'amber' : 'rose'}
           icon={<RefreshCw className="w-5 h-5 text-amber-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Defect Reopen Rate',
+            statusBadge: mttrMttd.reopenRate < 5 ? 'Stable' : 'Elevated',
+            statusColor: mttrMttd.reopenRate < 5 ? 'emerald' : 'amber',
+            currentValue: `${mttrMttd.reopenRate}% (${mttrMttd.reopenedCount} Reopened)`,
+            targetValue: '< 5.0%',
+            formulaOrRule: `ReopenRate = (COUNT(BugsWithStatusTransitionsFromDoneToInProgress) / TotalResolvedBugs) × 100`,
+            rationale: `Reopen rate stands at ${mttrMttd.reopenRate}%. A high reopen rate signals premature resolution by developers or inadequate reproduction verification by QA.`,
+            recommendedAction: 'Require automated unit/integration test coverage attached to defect resolution PRs before mark-as-done.'
+          })}
         />
         <MetricCard
           title="Customer Escalations (APARs)"
@@ -85,6 +111,22 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={customerAparList.length <= 10 ? 'Controlled Impact' : customerAparList.length <= 20 ? 'Elevated APARs' : 'Severe Escapes'}
           statusColor={customerAparList.length <= 10 ? 'emerald' : customerAparList.length <= 20 ? 'amber' : 'rose'}
           icon={<Bug className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Customer Escalations (APARs)',
+            statusBadge: customerAparList.length <= 10 ? 'Controlled' : 'Elevated APARs',
+            statusColor: customerAparList.length <= 10 ? 'emerald' : 'amber',
+            currentValue: `${customerAparList.length} APAR Tickets`,
+            targetValue: '< 10 Total',
+            formulaOrRule: `CustomerEscalations = COUNT(JiraItems WHERE isCustomerDefect == true OR type == 'CustomerAPAR')`,
+            rationale: `${customerAparList.length} customer issues have been escalated into engineering APAR tickets. High escape counts indicate gaps in production-like staging test datasets.`,
+            offendingItems: customerAparList.slice(0, 5).map(c => ({
+              id: c.id,
+              title: c.title,
+              source: 'JIRA',
+              severityOrStatus: `${c.severity} (${c.status})`
+            })),
+            recommendedAction: 'Run synthetic customer journey scenarios and load tests against mirrored production telemetry.'
+          })}
         />
       </div>
 
@@ -279,6 +321,13 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };

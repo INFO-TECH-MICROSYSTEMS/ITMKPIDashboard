@@ -227,3 +227,32 @@ export interface PersonProductivityMetric {
   isOverCommitted: boolean;
   avgHoursPerTest: number;
 }
+
+// ==========================================
+// 7. KPI EXPLAINABILITY & AUDIT JUSTIFICATION
+// ==========================================
+
+export interface KPIContributingFactor {
+  factor: string;
+  impact: string; // e.g. "-96 pts" or "Threshold Exceeded"
+  status: 'critical' | 'warning' | 'positive';
+  details: string;
+}
+
+export interface KPIJustification {
+  title: string;
+  statusBadge: string;
+  statusColor: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
+  currentValue: string | number;
+  targetValue: string;
+  formulaOrRule: string;
+  rationale: string;
+  factors?: KPIContributingFactor[];
+  offendingItems?: Array<{
+    id: string;
+    title: string;
+    source: 'JIRA' | 'TestRail' | 'GitHub';
+    severityOrStatus?: string;
+  }>;
+  recommendedAction: string;
+}

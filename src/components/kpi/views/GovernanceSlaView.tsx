@@ -4,12 +4,18 @@
  * P95/P99 latency profiles, and customer satisfaction indexes.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldCheck, Eye, Zap, ThumbsUp 
 } from 'lucide-react';
-import type { ReleaseQualityScorecard, JiraWorkItem } from '../../../types/kpiPlatform';
+import type { 
+  ReleaseQualityScorecard, 
+  JiraWorkItem,
+  KPIJustification 
+} from '../../../types/kpiPlatform';
 import { MetricCard } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface GovernanceSlaViewProps {
   scorecard: ReleaseQualityScorecard;
@@ -20,6 +26,8 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
   scorecard,
   jiraItems
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   const customerDefects = jiraItems.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
   const resolvedCustomerDefects = customerDefects.filter(i => i.status === 'Done');
 
@@ -36,6 +44,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={scorecard.slaAdherenceRate >= 92.0 ? 'Compliant' : scorecard.slaAdherenceRate >= 85.0 ? 'At Risk' : 'Breached'}
           statusColor={scorecard.slaAdherenceRate >= 92.0 ? 'emerald' : scorecard.slaAdherenceRate >= 85.0 ? 'amber' : 'rose'}
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
         />
         <MetricCard
           title="WCAG 2.2 AA Accessibility"
@@ -46,6 +55,16 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={scorecard.accessibilityScore >= 95.0 ? 'Audit Passed' : scorecard.accessibilityScore >= 90.0 ? 'Minor Violations' : 'Non-Compliant'}
           statusColor={scorecard.accessibilityScore >= 95.0 ? 'emerald' : scorecard.accessibilityScore >= 90.0 ? 'amber' : 'rose'}
           icon={<Eye className="w-5 h-5 text-cyan-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'WCAG 2.2 AA Accessibility Compliance',
+            statusBadge: scorecard.accessibilityScore >= 95.0 ? 'Audit Passed' : 'Minor Violations',
+            statusColor: scorecard.accessibilityScore >= 95.0 ? 'emerald' : 'amber',
+            currentValue: `${scorecard.accessibilityScore}% Pass Rate`,
+            targetValue: '> 95.0%',
+            formulaOrRule: `AccessibilityScore = (PassedTestCasesInAccessibilitySuite / TotalAccessibilityTestCases) × 100`,
+            rationale: `Automated and manual axe-core audit tests verified ${scorecard.accessibilityScore}% compliance with WCAG 2.2 Level AA guidelines, including color contrast, ARIA tags, and keyboard focus traps.`,
+            recommendedAction: 'Verify screen-reader compatibility on newly added dynamic modal dialogs.'
+          })}
         />
         <MetricCard
           title="Performance P95 Latency"
@@ -55,6 +74,16 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={scorecard.performanceP95Ms <= 180 ? 'P99: 380 ms' : scorecard.performanceP95Ms <= 250 ? 'Spike Latency' : 'SLA Breached'}
           statusColor={scorecard.performanceP95Ms <= 180 ? 'emerald' : scorecard.performanceP95Ms <= 250 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Performance P95 Latency Benchmark',
+            statusBadge: scorecard.performanceP95Ms <= 180 ? 'Compliant' : 'Spike Latency',
+            statusColor: scorecard.performanceP95Ms <= 180 ? 'emerald' : 'amber',
+            currentValue: `${scorecard.performanceP95Ms} ms`,
+            targetValue: '< 180 ms',
+            formulaOrRule: `P95Latency = 95th Percentile Response Duration (ms) in Performance Suite executions`,
+            rationale: `P95 latency is ${scorecard.performanceP95Ms} ms, reflecting server response time under simulated multi-user concurrent workloads.`,
+            recommendedAction: 'Optimize database index scans on high-traffic query endpoints.'
+          })}
         />
         <MetricCard
           title="Stakeholder Satisfaction (CSAT)"
@@ -65,6 +94,16 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge="High Trust"
           statusColor="emerald"
           icon={<ThumbsUp className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Stakeholder Satisfaction (CSAT)',
+            statusBadge: 'High Trust',
+            statusColor: 'emerald',
+            currentValue: '4.8 / 5.0',
+            targetValue: '> 4.5',
+            formulaOrRule: `CSAT = AVERAGE(SurveyRatings across Product, Engineering, and Operations stakeholders)`,
+            rationale: `Stakeholder feedback scores quality governance and release velocity at 4.8 out of 5.0 (96% net positive trust rating).`,
+            recommendedAction: 'Maintain executive quality demo transparency and bi-weekly release reviews.'
+          })}
         />
       </div>
 
@@ -149,11 +188,27 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               : 'text-rose-600 dark:text-rose-400';
 
             return (
-              <div key={sla.name} className={`p-4 rounded-xl border shadow-xs transition-all space-y-2 ${cardClasses}`}>
+              <div 
+                key={sla.name} 
+                onClick={() => setSelectedJustification({
+                  title: sla.name,
+                  statusBadge: statusLabel,
+                  statusColor,
+                  currentValue: sla.rate,
+                  targetValue: `≥ ${sla.target}`,
+                  formulaOrRule: `SLA_Compliance = (ExecutedOnTimeItems / TotalApplicableItems) × 100`,
+                  rationale: `Actual adherence is ${sla.rate} against a corporate governance target of ${sla.target}. ${sla.desc}`,
+                  recommendedAction: isOptimal 
+                    ? 'Compliance target met. Continue daily monitoring.' 
+                    : 'Allocate dedicated QE and engineering triage capacity to address SLA bottlenecks.'
+                })}
+                className={`p-4 rounded-xl border shadow-xs transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${cardClasses}`}
+                title="Click for SLA justification and compliance audit"
+              >
                 <div className="flex justify-between items-start gap-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold shrink-0 shadow-2xs ${badgeClasses}`}>
-                    {statusLabel}
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold shrink-0 shadow-2xs flex items-center gap-1 ${badgeClasses}`}>
+                    <span>{statusLabel}</span>
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
@@ -231,6 +286,13 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };

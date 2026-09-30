@@ -3,23 +3,37 @@
  * High-level quality governance, release readiness dial, leakage rates, and operational stability.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   AlertOctagon, CheckCircle2, 
-  TrendingDown, Clock, Zap 
+  TrendingDown, Clock, Zap, HelpCircle 
 } from 'lucide-react';
-import type { ReleaseQualityScorecard, TestStatusDistribution } from '../../../types/kpiPlatform';
+import type { 
+  ReleaseQualityScorecard, 
+  TestStatusDistribution, 
+  JiraWorkItem, 
+  TestRailExecution, 
+  KPIJustification 
+} from '../../../types/kpiPlatform';
 import { GaugeMeter, MetricCard, StackedProgressBar } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface ExecutiveScorecardViewProps {
   scorecard: ReleaseQualityScorecard;
   testDistribution: TestStatusDistribution;
+  jiraItems?: JiraWorkItem[];
+  testRailExecutions?: TestRailExecution[];
 }
 
 export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
   scorecard,
-  testDistribution
+  testDistribution,
+  jiraItems = [],
+  testRailExecutions = []
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   const verdictThemes = {
     'Release Approved': {
       cardBg: 'bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/60 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border-emerald-300 dark:border-emerald-500/30 text-slate-900 dark:text-white',
@@ -49,6 +63,15 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
 
   const currentTheme = verdictThemes[scorecard.readinessVerdict];
 
+  const handleOpenReleaseIndexJustification = () => {
+    const just = KPIJustificationService.getReleaseQualityIndexJustification(
+      scorecard,
+      jiraItems,
+      testRailExecutions
+    );
+    setSelectedJustification(just);
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Banner: Release Readiness Hero Card */}
@@ -63,6 +86,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               subtitle="Composite score across testing gates"
               grade={scorecard.releaseReadyGrade}
               size={190}
+              onJustify={handleOpenReleaseIndexJustification}
             />
           </div>
 
@@ -72,14 +96,20 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               <span className={`text-xs font-mono uppercase tracking-widest font-bold ${currentTheme.headerTag}`}>
                 Senior Management Executive Evaluation
               </span>
-              <div className={`px-3 py-1 rounded-full text-xs font-mono font-bold border flex items-center gap-1.5 shadow-2xs ${currentTheme.badge}`}>
+              <button 
+                type="button"
+                onClick={handleOpenReleaseIndexJustification}
+                className={`px-3 py-1 rounded-full text-xs font-mono font-bold border flex items-center gap-1.5 shadow-2xs hover:scale-105 transition-transform cursor-pointer ${currentTheme.badge}`}
+                title="Click to see why this release verdict was triggered"
+              >
                 {scorecard.readinessVerdict === 'Release Approved' ? (
                   <CheckCircle2 className="w-4 h-4" />
                 ) : (
                   <AlertOctagon className="w-4 h-4" />
                 )}
                 <span>{scorecard.readinessVerdict}</span>
-              </div>
+                <HelpCircle className="w-3 h-3 opacity-60 ml-0.5" />
+              </button>
             </div>
 
             <h3 className="text-2xl sm:text-3xl font-black font-['Outfit'] tracking-tight text-slate-900 dark:text-white">
@@ -131,6 +161,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.gatingDefectCount === 0 ? 'Clear Gate' : 'Action Required'}
           statusColor={scorecard.gatingDefectCount === 0 ? 'emerald' : 'rose'}
           icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getGatingDefectsJustification(jiraItems))}
         />
         <MetricCard
           title="Defect Leakage (Customer APARs)"
@@ -141,6 +172,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.defectLeakageRate <= 3.0 ? 'Controlled' : scorecard.defectLeakageRate <= 5.0 ? 'Elevated' : 'Breached'}
           statusColor={scorecard.defectLeakageRate <= 3.0 ? 'emerald' : scorecard.defectLeakageRate <= 5.0 ? 'amber' : 'rose'}
           icon={<TrendingDown className="w-5 h-5 text-cyan-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getDefectLeakageJustification(scorecard.defectLeakageRate, jiraItems))}
         />
         <MetricCard
           title="Regression Cycle Time"
@@ -151,6 +183,16 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.regressionCycleTimeDays <= 2.5 ? 'Optimal' : scorecard.regressionCycleTimeDays <= 3.5 ? 'Acceptable' : 'Delayed'}
           statusColor={scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : scorecard.regressionCycleTimeDays <= 3.5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Regression Cycle Time',
+            statusBadge: scorecard.regressionCycleTimeDays <= 2.5 ? 'Optimal' : 'Delayed',
+            statusColor: scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : 'amber',
+            currentValue: `${scorecard.regressionCycleTimeDays} Days`,
+            targetValue: '< 2.5 Days',
+            formulaOrRule: `RegressionCycleDays = SUM(RegressionTestDurationsInSeconds) / (8 hours/day * 3600)`,
+            rationale: `Regression suite duration currently takes ${scorecard.regressionCycleTimeDays} days. Faster regressions allow squads to release continuously without holding back staging builds.`,
+            recommendedAction: 'Expand parallel worker threads in CI/CD pipeline runners to keep full regression cycle under 2.5 days.'
+          })}
         />
         <MetricCard
           title="P95 Latency Benchmark"
@@ -159,6 +201,18 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.performanceP95Ms <= 200 ? 'P99: 380ms' : 'Latency Warning'}
           statusColor={scorecard.performanceP95Ms <= 200 ? 'emerald' : scorecard.performanceP95Ms <= 350 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Performance P95 Latency Benchmark',
+            statusBadge: scorecard.performanceP95Ms <= 200 ? 'Passed' : 'Latency Warning',
+            statusColor: scorecard.performanceP95Ms <= 200 ? 'emerald' : 'rose',
+            currentValue: `${scorecard.performanceP95Ms} ms`,
+            targetValue: '< 200 ms',
+            formulaOrRule: `P95Latency = 95th Percentile HTTP Response Duration across TestRail Performance Suite runs`,
+            rationale: `P95 API response duration is ${scorecard.performanceP95Ms} ms. 95% of synthetic and load test requests complete within this latency envelope.`,
+            recommendedAction: scorecard.performanceP95Ms <= 200
+              ? 'Performance benchmarks are compliant with corporate SLA.'
+              : 'Investigate slow database query execution and caching layers.'
+          })}
         />
       </div>
 
@@ -172,6 +226,13 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           title="Consolidated QA Execution Health (Automated + Manual)"
         />
       </div>
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };

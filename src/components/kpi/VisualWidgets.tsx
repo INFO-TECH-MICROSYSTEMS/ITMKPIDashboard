@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { HelpCircle } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
 
 // ==========================================
@@ -17,6 +18,7 @@ interface GaugeMeterProps {
   subtitle?: string;
   size?: number;
   grade?: string;
+  onJustify?: () => void;
 }
 
 export const GaugeMeter: React.FC<GaugeMeterProps> = ({
@@ -24,7 +26,8 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
   title,
   subtitle,
   size = 180,
-  grade
+  grade,
+  onJustify
 }) => {
   const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
@@ -37,7 +40,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
   else if (score < 90) strokeColor = '#06b6d4'; // Cyan
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center p-4 relative group">
       <div className="relative" style={{ width: size, height: size }}>
         <svg className="transform -rotate-90" width={size} height={size}>
           {/* Background circle */}
@@ -71,22 +74,38 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
             {score}%
           </span>
           {grade && (
-            <span className={`text-xs font-bold font-mono px-2.5 py-0.5 rounded-full mt-0.5 shadow-2xs ${
-              score < 50 
-                ? 'text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/90 border border-rose-300 dark:border-rose-500/40' 
-                : score < 75 
-                ? 'text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/90 border border-amber-300 dark:border-amber-500/40' 
-                : 'text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/90 border border-emerald-300 dark:border-emerald-500/40'
-            }`}>
-              Grade {grade}
-            </span>
+            <button
+              onClick={onJustify}
+              className={`text-xs font-bold font-mono px-2.5 py-0.5 rounded-full mt-0.5 shadow-2xs flex items-center gap-1 transition-transform hover:scale-105 cursor-pointer ${
+                score < 50 
+                  ? 'text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/90 border border-rose-300 dark:border-rose-500/40 hover:bg-rose-200' 
+                  : score < 75 
+                  ? 'text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/90 border border-amber-300 dark:border-amber-500/40 hover:bg-amber-200' 
+                  : 'text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/90 border border-emerald-300 dark:border-emerald-500/40 hover:bg-emerald-200'
+              }`}
+              title="Click for grade justification and breakdown"
+            >
+              <span>Grade {grade}</span>
+              {onJustify && <HelpCircle className="w-3 h-3 opacity-70" />}
+            </button>
           )}
         </div>
       </div>
 
-      <span className="mt-3 text-sm font-bold text-slate-900 dark:text-white text-center font-['Outfit']">
-        {title}
-      </span>
+      <div className="mt-3 flex items-center justify-center gap-1.5">
+        <span className="text-sm font-bold text-slate-900 dark:text-white text-center font-['Outfit']">
+          {title}
+        </span>
+        {onJustify && (
+          <button
+            onClick={onJustify}
+            className="p-1 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Click to view KPI calculation formula and rule justifications"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
       {subtitle && (
         <span className="text-xs text-slate-600 dark:text-slate-400 text-center mt-0.5">
           {subtitle}
@@ -340,6 +359,7 @@ export const MetricCard: React.FC<{
   statusBadge?: string;
   statusColor?: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
   icon?: React.ReactNode;
+  onJustify?: () => void;
 }> = ({
   title,
   value,
@@ -348,7 +368,8 @@ export const MetricCard: React.FC<{
   trendPositive,
   statusBadge,
   statusColor = 'cyan',
-  icon
+  icon,
+  onJustify
 }) => {
   const statusThemeMap = {
     rose: {
@@ -393,9 +414,20 @@ export const MetricCard: React.FC<{
   return (
     <div className={`p-4 sm:p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between ${theme.card}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit']">
-          {title}
-        </span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+            {title}
+          </span>
+          {onJustify && (
+            <button
+              onClick={onJustify}
+              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
+              title="Click for KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
         {icon && <div className={`shrink-0 ${theme.icon}`}>{icon}</div>}
       </div>
 
@@ -404,9 +436,17 @@ export const MetricCard: React.FC<{
           {value}
         </span>
         {statusBadge && (
-          <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs ${theme.badge}`}>
-            {statusBadge}
-          </span>
+          <button
+            onClick={onJustify}
+            disabled={!onJustify}
+            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 transition-transform ${
+              onJustify ? 'hover:scale-105 cursor-pointer' : ''
+            } ${theme.badge}`}
+            title={onJustify ? 'Click for status audit and rule breakdown' : undefined}
+          >
+            <span>{statusBadge}</span>
+            {onJustify && <HelpCircle className="w-2.5 h-2.5 opacity-60" />}
+          </button>
         )}
       </div>
 
@@ -421,3 +461,4 @@ export const MetricCard: React.FC<{
     </div>
   );
 };
+

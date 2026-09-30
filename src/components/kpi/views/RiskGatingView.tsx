@@ -4,7 +4,7 @@
  * and component failure ranking.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldAlert, GitPullRequest, 
   Layers, Clock, XCircle 
@@ -12,9 +12,12 @@ import {
 import type { 
   ComponentRiskMetric, 
   JiraWorkItem, 
-  TestRailExecution 
+  TestRailExecution,
+  KPIJustification 
 } from '../../../types/kpiPlatform';
 import { MetricCard } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface RiskGatingViewProps {
   componentRisks: ComponentRiskMetric[];
@@ -27,6 +30,8 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
   jiraItems,
   testRailExecutions
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   // PPT Requirement Calculations:
   const itemsWithNoTests = jiraItems.filter(i => !i.hasTestPlan && (i.type === 'Story' || i.type === 'Epic'));
   const itemsWithNoUnitTests = jiraItems.filter(i => !i.hasUnitTests);
@@ -55,6 +60,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={itemsWithNoUnitTests.length > 0 ? 'Gate Violation' : 'Compliant'}
           statusColor={itemsWithNoUnitTests.length > 0 ? 'rose' : 'emerald'}
           icon={<ShieldAlert className="w-5 h-5 text-rose-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMissingUnitTestsJustification(jiraItems))}
         />
         <MetricCard
           title="Items With No API Tests"
@@ -64,6 +70,22 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={itemsWithNoApiTests.length === 0 ? 'Compliant' : itemsWithNoApiTests.length < 5 ? 'Acceptable' : 'Contract Risk'}
           statusColor={itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose'}
           icon={<GitPullRequest className="w-5 h-5 text-amber-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Items With No API Tests',
+            statusBadge: itemsWithNoApiTests.length === 0 ? 'Compliant' : itemsWithNoApiTests.length < 5 ? 'Acceptable' : 'Contract Risk',
+            statusColor: itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose',
+            currentValue: `${itemsWithNoApiTests.length} Items`,
+            targetValue: '< 5 Exceptions',
+            formulaOrRule: `MissingApiTests = COUNT(JiraItems WHERE hasApiTests == false)`,
+            rationale: `${itemsWithNoApiTests.length} items lack automated API/endpoint integration coverage. Untested API payloads cause contract regressions across microservices.`,
+            offendingItems: itemsWithNoApiTests.slice(0, 5).map(m => ({
+              id: m.id,
+              title: m.title,
+              source: 'JIRA',
+              severityOrStatus: `No API Tests (${m.component})`
+            })),
+            recommendedAction: 'Attach Postman/REST-assured automated integration tests to PRs before QA signoff.'
+          })}
         />
         <MetricCard
           title="High Dependency Depth (Depth ≥ 4)"
@@ -73,6 +95,22 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={highDependencyItems.length === 0 ? 'Low Coupling' : highDependencyItems.length <= 3 ? 'Manageable' : 'Blast Radius Alert'}
           statusColor={highDependencyItems.length === 0 ? 'emerald' : highDependencyItems.length <= 3 ? 'amber' : 'rose'}
           icon={<Layers className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'High Dependency Depth (Depth ≥ 4)',
+            statusBadge: highDependencyItems.length === 0 ? 'Low Coupling' : 'Blast Radius Alert',
+            statusColor: highDependencyItems.length === 0 ? 'emerald' : 'rose',
+            currentValue: `${highDependencyItems.length} Items (Depth ≥ 4)`,
+            targetValue: '< 3 High Risk',
+            formulaOrRule: `HighDependencyDepth = COUNT(JiraItems WHERE dependencyDepth >= 4)`,
+            rationale: `${highDependencyItems.length} backlog items have recursive dependency trees spanning 4 or more tiers. Modifying these items risks cascading test failures across squads.`,
+            offendingItems: highDependencyItems.slice(0, 5).map(d => ({
+              id: d.id,
+              title: d.title,
+              source: 'JIRA',
+              severityOrStatus: `Depth: ${d.dependencyDepth}`
+            })),
+            recommendedAction: 'Schedule an architecture decoupling review and coordinate cross-squad regression testing.'
+          })}
         />
         <MetricCard
           title="High Execution Time Tests (>300s)"
@@ -82,6 +120,16 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={highExecutionTests.length === 0 ? 'Fast Pipeline' : highExecutionTests.length <= 5 ? 'Mild Latency' : 'Pipeline Bottleneck'}
           statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-cyan-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'High Execution Time Tests (>300s)',
+            statusBadge: highExecutionTests.length === 0 ? 'Fast Pipeline' : 'Pipeline Bottleneck',
+            statusColor: highExecutionTests.length === 0 ? 'emerald' : 'amber',
+            currentValue: `${highExecutionTests.length} Tests > 300s`,
+            targetValue: '0 Bottlenecks',
+            formulaOrRule: `HighExecutionTests = COUNT(TestRailExecutions WHERE durationSeconds > 300)`,
+            rationale: `${highExecutionTests.length} test cases take longer than 5 minutes each to complete, clogging CI worker pools and delaying developer feedback.`,
+            recommendedAction: 'Parallelize test data seeding and split monolithic E2E scenarios into targeted integration runs.'
+          })}
         />
       </div>
 
@@ -211,6 +259,13 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };

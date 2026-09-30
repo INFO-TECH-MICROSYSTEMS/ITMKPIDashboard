@@ -175,6 +175,8 @@ export const KPIPlatformPage: React.FC = () => {
               <ExecutiveScorecardView
                 scorecard={metrics.executiveScorecard}
                 testDistribution={metrics.testDistributionAll}
+                jiraItems={jiraItems}
+                testRailExecutions={testRailExecutions}
               />
             )}
 

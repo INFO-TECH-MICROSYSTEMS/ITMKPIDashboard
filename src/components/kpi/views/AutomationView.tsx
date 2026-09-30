@@ -4,16 +4,19 @@
  * CI/CD execution runtimes, and engineering ROI.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Cpu, AlertCircle, RefreshCw, 
   Clock, Zap, CheckCircle2 
 } from 'lucide-react';
 import type { 
   TestStatusDistribution, 
-  TestRailExecution 
+  TestRailExecution,
+  KPIJustification 
 } from '../../../types/kpiPlatform';
 import { MetricCard, StackedProgressBar } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface AutomationViewProps {
   automatedDistribution: TestStatusDistribution;
@@ -37,6 +40,8 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
   automationHealth,
   testRailExecutions
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   const flakyTestsList = testRailExecutions.filter(t => t.isFlaky || t.rerunCount > 0);
 
   return (
@@ -52,6 +57,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automatedDistribution.passRate >= 90.0 ? 'Optimal' : automatedDistribution.passRate >= 80.0 ? 'Acceptable' : 'Degraded'}
           statusColor={automatedDistribution.passRate >= 90.0 ? 'emerald' : automatedDistribution.passRate >= 80.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationPassRateJustification(automatedDistribution.passRate))}
         />
         <MetricCard
           title="Flaky Test Detection Index"
@@ -62,6 +68,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automationHealth.flakyRate <= 4.0 ? 'Controlled' : automationHealth.flakyRate <= 8.0 ? 'Quarantine Active' : 'Pipeline Destabilized'}
           statusColor={automationHealth.flakyRate <= 4.0 ? 'emerald' : automationHealth.flakyRate <= 8.0 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-rose-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getFlakyTestJustification(automationHealth.flakyRate, automationHealth.flakyCount))}
         />
         <MetricCard
           title="CI/CD Pipeline Runtime"
@@ -71,6 +78,16 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automationHealth.avgPipelineMins <= 15.0 ? 'Fast Pipeline' : automationHealth.avgPipelineMins <= 25.0 ? 'Moderate Latency' : 'Pipeline Bottleneck'}
           statusColor={automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : automationHealth.avgPipelineMins <= 25.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'CI/CD Pipeline Runtime',
+            statusBadge: automationHealth.avgPipelineMins <= 15.0 ? 'Fast Pipeline' : 'Moderate Latency',
+            statusColor: automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : 'amber',
+            currentValue: `${automationHealth.avgPipelineMins} mins`,
+            targetValue: '< 15.0 mins',
+            formulaOrRule: `PipelineRuntime = AVERAGE(GitHubWorkflowExecutionMinutes across all feature PRs)`,
+            rationale: `Average pull request pipeline runtime is ${automationHealth.avgPipelineMins} minutes. Keeping PR verification under 15 minutes prevents engineering context-switching.`,
+            recommendedAction: 'Cache package manager dependencies and split build vs test execution steps into matrix jobs.'
+          })}
         />
         <MetricCard
           title="Manual Hours Saved (ROI)"
@@ -81,6 +98,16 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automationHealth.manualHoursSaved > 200 ? 'High ROI' : 'Moderate ROI'}
           statusColor={automationHealth.manualHoursSaved > 200 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Manual Hours Saved (Automation ROI)',
+            statusBadge: 'High ROI',
+            statusColor: 'emerald',
+            currentValue: `${automationHealth.manualHoursSaved.toLocaleString()} hours`,
+            targetValue: '~3.5 FTEs Capacity',
+            formulaOrRule: `HoursSaved = SUM(AutomatedTestRuns × BaselineManualExecutionTime - AutomatedAuthoringMaintenanceHours)`,
+            rationale: `Automated test regression execution has saved approximately ${automationHealth.manualHoursSaved.toLocaleString()} hours of manual repetitive testing effort across sprints, unlocking engineering capacity for exploratory QA.`,
+            recommendedAction: 'Prioritize automation for high-volume smoke and API contract validations.'
+          })}
         />
       </div>
 
@@ -160,6 +187,13 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           </table>
         </div>
       </div>
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };

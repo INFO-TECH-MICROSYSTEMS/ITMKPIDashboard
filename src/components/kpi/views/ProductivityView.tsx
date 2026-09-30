@@ -4,12 +4,18 @@
  * over-committed engineer alerts, and regression cycle time.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle2 
 } from 'lucide-react';
-import type { PersonProductivityMetric, JiraWorkItem } from '../../../types/kpiPlatform';
+import type { 
+  PersonProductivityMetric, 
+  JiraWorkItem,
+  KPIJustification 
+} from '../../../types/kpiPlatform';
 import { MetricCard } from '../VisualWidgets';
+import { MetricJustificationModal } from '../MetricJustificationModal';
+import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
 interface ProductivityViewProps {
   productivityMetrics: PersonProductivityMetric[];
@@ -20,6 +26,8 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
   productivityMetrics,
   jiraItems
 }) => {
+  const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
+
   const overCommittedCount = productivityMetrics.filter(p => p.isOverCommitted).length;
   const avgCompletionRate = productivityMetrics.length > 0 
     ? (productivityMetrics.reduce((sum, p) => sum + p.completionRate, 0) / productivityMetrics.length).toFixed(1)
@@ -43,6 +51,16 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           statusBadge={parseFloat(avgCompletionRate) >= 85.0 ? 'On Target' : parseFloat(avgCompletionRate) >= 70.0 ? 'Acceptable' : 'Behind Schedule'}
           statusColor={parseFloat(avgCompletionRate) >= 85.0 ? 'emerald' : parseFloat(avgCompletionRate) >= 70.0 ? 'amber' : 'rose'}
           icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Average QA Test Completion Rate',
+            statusBadge: parseFloat(avgCompletionRate) >= 85.0 ? 'On Target' : 'Behind Schedule',
+            statusColor: parseFloat(avgCompletionRate) >= 85.0 ? 'emerald' : 'amber',
+            currentValue: `${avgCompletionRate}%`,
+            targetValue: '> 85.0%',
+            formulaOrRule: `AvgCompletionRate = AVERAGE(CompletedExecutions / AssignedExecutions across all QA team members) × 100`,
+            rationale: `Squad members have completed an average of ${avgCompletionRate}% of their assigned test cases. Rates above 85% ensure verification finishes before sprint close.`,
+            recommendedAction: 'Reassign delayed test executions from overloaded engineers to squad members with spare capacity.'
+          })}
         />
         <MetricCard
           title="Over-Committed Engineers"
@@ -52,6 +70,7 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           statusBadge={overCommittedCount === 0 ? 'Balanced' : overCommittedCount <= 2 ? 'Rebalance Needed' : 'Burnout Risk'}
           statusColor={overCommittedCount === 0 ? 'emerald' : overCommittedCount <= 2 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-amber-500" />}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getOverCommittedJustification(overCommittedCount))}
         />
         <MetricCard
           title="Sprint Story Completion Rate"
@@ -61,6 +80,16 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           statusBadge={parseFloat(sprintCompletionPercent) >= 80.0 ? 'Throughput Met' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'At Risk' : 'Slipping'}
           statusColor={parseFloat(sprintCompletionPercent) >= 80.0 ? 'emerald' : parseFloat(sprintCompletionPercent) >= 65.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Sprint Story Completion Rate',
+            statusBadge: parseFloat(sprintCompletionPercent) >= 80.0 ? 'Throughput Met' : 'Slipping',
+            statusColor: parseFloat(sprintCompletionPercent) >= 80.0 ? 'emerald' : 'amber',
+            currentValue: `${sprintCompletionPercent}% (${sprintCompletedItems.length}/${jiraItems.length} Done)`,
+            targetValue: '> 80.0%',
+            formulaOrRule: `StoryCompletionRate = (CompletedWorkItems / TotalSprintWorkItems) × 100`,
+            rationale: `${sprintCompletedItems.length} of ${jiraItems.length} items are marked Done (${sprintCompletionPercent}%). Meeting story throughput ensures release scope commitments are delivered on schedule.`,
+            recommendedAction: 'Focus team WIP on finishing in-flight stories rather than pulling new backlog items into sprint.'
+          })}
         />
         <MetricCard
           title="Active QA Specialists"
@@ -69,6 +98,16 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           statusBadge={productivityMetrics.length >= 4 ? 'Optimal Staffing' : 'Understaffed'}
           statusColor={productivityMetrics.length >= 4 ? 'emerald' : 'amber'}
           icon={<Users className="w-5 h-5 text-purple-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Active QA Specialists & Capacity',
+            statusBadge: productivityMetrics.length >= 4 ? 'Optimal Staffing' : 'Understaffed',
+            statusColor: productivityMetrics.length >= 4 ? 'emerald' : 'amber',
+            currentValue: `${productivityMetrics.length} QA Engineers`,
+            targetValue: 'Dedicated Squad (≥ 4 Engineers)',
+            formulaOrRule: `ActiveQA = COUNT(DistinctAssignees in TestRail execution logs)`,
+            rationale: `Currently ${productivityMetrics.length} QA engineers are actively authoring and executing test suites across products.`,
+            recommendedAction: 'Maintain balanced assignments and pair-test complex integration scenarios.'
+          })}
         />
       </div>
 
@@ -152,6 +191,13 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
           </table>
         </div>
       </div>
+
+      {/* KPI Decision & Audit Justification Modal */}
+      <MetricJustificationModal
+        isOpen={Boolean(selectedJustification)}
+        justification={selectedJustification}
+        onClose={() => setSelectedJustification(null)}
+      />
     </div>
   );
 };
