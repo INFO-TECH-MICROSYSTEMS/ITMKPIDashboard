@@ -656,13 +656,22 @@ export const ToolsPage: React.FC = () => {
       {/* --- TAB 4: Core KPI Reference Glossary --- */}
       {activeTab === 'kpis' && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 mb-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-1">
-              Enterprise Software KPI Reference Directory
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-              Standardized metrics, calculation formulas, target benchmarks, and business justifications used by INFO TECH MICROSYSTEMS.
-            </p>
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 mb-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Outfit'] mb-1">
+                Enterprise Software KPI Reference Directory
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                Standardized metrics, calculation formulas, target benchmarks, and business justifications used by INFO TECH MICROSYSTEMS.
+              </p>
+            </div>
+            <Link
+              to="/kpi"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md shrink-0 transition-all cursor-pointer"
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Launch Live KPI Platform →</span>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

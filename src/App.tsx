@@ -10,6 +10,7 @@ import { HomePage } from './pages/HomePage';
 import { ServicesOverviewPage } from './pages/ServicesOverviewPage';
 import { ServiceDetailPage } from './pages/ServiceDetailPage';
 import { ToolsPage } from './pages/ToolsPage';
+import { KPIPlatformPage } from './pages/KPIPlatformPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 
@@ -56,6 +57,8 @@ export function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicesOverviewPage />} />
                 <Route path="/services/:slug" element={<ServiceDetailPage />} />
+                <Route path="/kpi" element={<KPIPlatformPage />} />
+                <Route path="/kpis" element={<KPIPlatformPage />} />
                 <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />

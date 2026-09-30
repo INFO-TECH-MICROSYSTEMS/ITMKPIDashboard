@@ -280,10 +280,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Interactive Tools & KPIs Link */}
+          {/* Quality Engineering KPI Platform Link */}
+          <Link
+            to="/kpi"
+            title={isCollapsed ? 'QE KPI Platform' : undefined}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              isActive('/kpi')
+                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
+                : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
+            } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
+          >
+            <BarChart3 className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
+            <div className={`flex items-center gap-2 truncate ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
+              <span className="truncate">KPI Dashboard</span>
+              <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                Live
+              </span>
+            </div>
+          </Link>
+
+          {/* Interactive Tools & Calculators Link */}
           <Link
             to="/tools"
-            title={isCollapsed ? 'Interactive Tools & KPIs' : undefined}
+            title={isCollapsed ? 'Tools & Calculators' : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive('/tools')
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
@@ -292,10 +311,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Wrench className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
             <div className={`flex items-center gap-2 truncate ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-              <span className="truncate">KPIs & Tools</span>
-              <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                Live
-              </span>
+              <span className="truncate">Tools & Calculators</span>
             </div>
           </Link>
 
