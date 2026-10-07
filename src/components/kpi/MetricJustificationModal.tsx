@@ -17,7 +17,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   X, AlertOctagon, AlertTriangle, CheckCircle2, 
-  HelpCircle, Lightbulb 
+  HelpCircle, Lightbulb, Info 
 } from 'lucide-react';
 import type { KPIJustification } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
@@ -114,6 +114,49 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
               </span>
             </div>
           </div>
+
+          {/* Educational Metric Details: What it is, What it tracks, Why it is important */}
+          {(justification.description || justification.trackedInfo || justification.businessImportance) && (
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
+                <Info className="w-4 h-4" />
+                <span>Metric Overview & Architectural Significance</span>
+              </div>
+              
+              {justification.description && (
+                <div className="space-y-1">
+                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                    What is this metric?
+                  </span>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {justification.description}
+                  </p>
+                </div>
+              )}
+
+              {justification.trackedInfo && (
+                <div className="space-y-1">
+                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                    What information does it track / expose?
+                  </span>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {justification.trackedInfo}
+                  </p>
+                </div>
+              )}
+
+              {justification.businessImportance && (
+                <div className="space-y-1">
+                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
+                    Why is it important?
+                  </span>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium text-emerald-800 dark:text-emerald-300">
+                    {justification.businessImportance}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Rationale & Root Cause Explanation */}
           <div className="space-y-2">

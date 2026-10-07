@@ -131,6 +131,9 @@ export class KPIJustificationService {
       statusColor: scorecard.readinessVerdict === 'Release Approved' ? 'emerald' : scorecard.readinessVerdict === 'Conditional Warning' ? 'amber' : 'rose',
       currentValue: `${scorecard.overallScore}% (Grade ${scorecard.releaseReadyGrade})`,
       targetValue: `≥ 90% (Grade A)`,
+      description: 'A composite, multi-dimensional health scorecard synthesizing test pass rates, blocker defect status, test automation coverage, customer leakage, and regression cycle speed into a single unified executive readiness score (0-100%).',
+      trackedInfo: 'Aggregates open P1/P2 release gating tickets in JIRA, automated test suite execution pass rates in TestRail, PR quality gate checks in GitHub, and customer APAR escape counts.',
+      businessImportance: 'Protects enterprise brand reputation and service reliability by enforcing deterministic pre-release governance. Prevents premature software releases that cause costly production outages or customer churn.',
       formulaOrRule: `CompositeScore = 100 
   - (OpenGatingDefects × 8) 
   - (DefectLeakageRate × 2.5) 
@@ -160,6 +163,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isClean ? 'emerald' : 'rose',
       currentValue: `${gating.length} Open Blockers`,
       targetValue: '0 Permitted at Gate',
+      description: 'The count of unresolved, high-severity software defects (P1-Blocker or P2-Critical) that violate acceptance criteria or break critical customer workflows.',
+      trackedInfo: 'Tracks active, in-development, or re-opened defects flagged with isGatingDefect=true in JIRA that have not reached "Done" or verified status.',
+      businessImportance: 'Zero-tolerance release blocker. Shipping with known P1 blockers directly risks immediate production outages, contract breaches, and emergency developer firefighting.',
       formulaOrRule: `GatingDefects = COUNT(JiraItems WHERE isGatingDefect == true AND status != 'Done')`,
       rationale: isClean
         ? 'No unresolved gating defects are recorded in JIRA for this release scope. Quality gates are clear.'
@@ -191,6 +197,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
       currentValue: `${rate}% (${customerEscapes.length}/${totalDefects})`,
       targetValue: '< 3.0%',
+      description: 'The proportion of software bugs discovered in production by end customers compared to the total defects discovered across the entire lifecycle.',
+      trackedInfo: 'Measures customer APAR incident tickets originated in live production environments vs. internal defects caught during CI, QA regression, and staging verification.',
+      businessImportance: 'Key barometer of test suite screening rigor. High defect leakage damages customer trust, creates high-cost hotfix cycles, and incurs enterprise SLA penalty liabilities.',
       formulaOrRule: `DefectLeakageRate = (CustomerEscapedDefects / TotalIdentifiedDefects) × 100`,
       rationale: isOptimal
         ? `Defect leakage is ${rate}%, confirming that test suites and pre-production staging catch over ${100 - rate}% of bugs before reaching customers.`
@@ -221,6 +230,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
       currentValue: `${hours} hours`,
       targetValue: `< ${target} hours`,
+      description: 'The average duration elapsed from the moment a bug is logged in the system until a verified code fix is delivered.',
+      trackedInfo: 'Measures turnaround cycle time in hours across defect creation, developer debugging, code commit, code review, and QA verification sign-off.',
+      businessImportance: 'Direct measure of organizational agility and engineering responsiveness. Faster MTTR unblocks dependent test teams and preserves sprint throughput.',
       formulaOrRule: `MTTR = SUM(ResolutionTimestamp - CreationTimestamp) / TotalResolvedDefects`,
       rationale: isOptimal
         ? `Average turnaround time to resolve defects is ${hours} hours, safely within the ${target}-hour corporate SLA.`
@@ -244,6 +256,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isClean ? 'emerald' : 'rose',
       currentValue: `${missing.length} Stories Missing Tests`,
       targetValue: '0 Permitted',
+      description: 'The number of committed user stories or feature epics that lack automated unit test test suites in their pull requests.',
+      trackedInfo: 'Inspects JIRA tickets merged to the main integration branch without verified unit test code coverage.',
+      businessImportance: 'First line of defense against code regressions. Code merged without unit tests causes architectural rot, increases bug recurrence, and creates fragile builds.',
       formulaOrRule: `MissingUnitTests = COUNT(JiraItems WHERE hasUnitTests == false)`,
       rationale: isClean
         ? 'All stories and epics have accompanying unit test suites verified in PR workflows.'
@@ -274,6 +289,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
       currentValue: `${rate}%`,
       targetValue: `> ${target}%`,
+      description: 'The percentage of automated test assertions that complete successfully without assertion errors, timeouts, or unexpected crashes.',
+      trackedInfo: 'Captures execution telemetry across Unit, API, Contract, and UI Playwright/Cypress test runs triggered in CI pipelines.',
+      businessImportance: 'Indicates automated test suite health and build stability. A high pass rate guarantees confidence in rapid, continuous release deployments.',
       formulaOrRule: `PassRate = (PassedTestExecutions / TotalAutomatedExecutions) × 100`,
       rationale: isOptimal
         ? `Automated pass rate is ${rate}%, demonstrating high pipeline stability and repeatable build verification.`
@@ -297,6 +315,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : 'rose',
       currentValue: `${rate}% (${flakyCount} Tests)`,
       targetValue: `< ${target}%`,
+      description: 'The percentage of automated tests exhibiting non-deterministic behavior—passing and failing intermittently on identical code commits.',
+      trackedInfo: 'Monitors tests requiring CI retry passes, asynchronous race conditions, or unhandled timing delays across test executions.',
+      businessImportance: 'Protects developer trust in CI signals. Flaky tests desensitize engineering teams to real failures, cause unnecessary build retries, and waste compute budget.',
       formulaOrRule: `FlakyRate = (COUNT(TestsWithRerunsOrNonDeterministicResults) / TotalTests) × 100`,
       rationale: isOptimal
         ? `Flakiness index is ${rate}%, within the tolerated threshold of < ${target}%. Test results are deterministic and trustworthy.`
@@ -319,6 +340,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isClean ? 'emerald' : 'amber',
       currentValue: `${count} Engineers Alerted`,
       targetValue: '0 Burnout Risk',
+      description: 'The number of QA and test engineers assigned workloads that exceed sustainable sprint throughput capacity.',
+      trackedInfo: 'Evaluates individual test execution assignments exceeding 140 executions/sprint or over 40 testing labor hours per week.',
+      businessImportance: 'Guards team health and mitigates testing bottlenecks. Overloaded engineers lead to rushed testing, defect escapes, and eventual talent attrition.',
       formulaOrRule: `OverCommitted = COUNT(Engineers WHERE AssignedTests > 140 OR AssignedHours > 40/week)`,
       rationale: isClean
         ? 'QA workload is evenly distributed across team members without exceeding individual execution limits.'
@@ -365,6 +389,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
       currentValue: `${rate}% Adherence`,
       targetValue: `≥ ${target}%`,
+      description: 'The composite adherence percentage across six core corporate service level agreements governing defect triage, test execution, and APAR resolution.',
+      trackedInfo: 'Measures compliance across P1/P2 defect triage (<4h/<24h), regression completion, test plan authoring, daily reports, automation delivery, and customer hotfix SLAs.',
+      businessImportance: 'Protects contractual customer commitments and prevents SLA credit deductions or breach penalties from enterprise stakeholders.',
       formulaOrRule: `SLA_Adherence = AVERAGE(TriageSLA, RegressionSLA, TestPlanSLA, DailyReportSLA, AutomationSLA, CustomerDefectSLA)`,
       rationale: isOptimal
         ? `Enterprise SLA compliance is at ${rate}%, fulfilling all formal service commitments to product stakeholders and customers.`
@@ -390,6 +417,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : 'amber',
       currentValue: `$${copq.toLocaleString()} Rework`,
       targetValue: '< $25,000 / Sprint',
+      description: 'The financial cost incurred due to defect remediation, customer escalation handling, emergency hotfixes, and wasted developer rework hours.',
+      trackedInfo: 'Quantifies developer labor hours spent investigating and patching customer APARs and internal defects at an enterprise blended hourly rate ($95/hr).',
+      businessImportance: 'Translates technical software quality into executive dollar impact for CFOs and VPs, demonstrating the direct ROI of pre-release automated testing.',
       formulaOrRule: `CoPQ = (CustomerAPARs × 22 hrs + InternalBugs × 10 hrs) × $${QUALITY_THRESHOLDS.engineerHourlyBlendedRate}/hr`,
       rationale: `Estimated financial expenditure caused by defect remediation and customer hotfixes stands at $${copq.toLocaleString()}. Automated regression testing has offset this by an estimated $${savings.toLocaleString()} in saved manual test labor.`,
       recommendedAction: isOptimal
@@ -412,6 +442,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isElite ? 'emerald' : isWarning ? 'amber' : 'rose',
       currentValue: `${rate}% Failures`,
       targetValue: `< ${target}% (Elite)`,
+      description: 'The percentage of production deployments or releases that cause service degradations or outages requiring remediation (hotfix or rollback).',
+      trackedInfo: 'Calculates the ratio of pull requests and releases that failed post-deployment health checks or triggered emergency hotfix PRs.',
+      businessImportance: 'Google DORA benchmark standard for release stability. Elite organizations balance rapid feature velocity with low release failure rates (< 5%).',
       formulaOrRule: `CFR = (Deployments Requiring Remediation / Total Production Deployments) × 100`,
       rationale: isElite
         ? `Change Failure Rate is ${rate}%, qualifying for Google DORA "Elite" tier (< 5%). Deployed changes rarely degrade production stability.`
@@ -435,6 +468,9 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       statusColor: isOptimal ? 'emerald' : 'amber',
       currentValue: `${rate}% Delivered`,
       targetValue: `${target}% - 100%`,
+      description: 'The ratio of committed story points delivered at sprint completion versus the original commitment made during sprint planning.',
+      trackedInfo: 'Measures total story points marked Done by sprint end divided by committed story points at sprint start.',
+      businessImportance: 'Essential for dependable product roadmapping. High predictability enables business stakeholders to forecast releases and market launches accurately.',
       formulaOrRule: `SPI = (Completed Story Points / Committed Sprint Story Points) × 100`,
       rationale: isOptimal
         ? `Squad delivery predictability is ${rate}%, providing dependable roadmapping accuracy for executive product forecasting.`
