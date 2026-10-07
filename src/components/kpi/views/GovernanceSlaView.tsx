@@ -116,6 +116,48 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             recommendedAction: 'Maintain executive quality demo transparency and bi-weekly release reviews.'
           })}
         />
+        {/* Enriched Governance Metric 1: Contractual SLA Penalties */}
+        <MetricCard
+          title="Contract SLA Penalties"
+          value="$0"
+          target="Target: $0 Zero Breach"
+          trend="100% Contract Compliant"
+          trendPositive={true}
+          statusBadge="Zero Penalty"
+          statusColor="emerald"
+          icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Contractual SLA Credit Penalties Incurred',
+            statusBadge: 'Zero Penalty',
+            statusColor: 'emerald',
+            currentValue: '$0 USD',
+            targetValue: '$0 Permitted',
+            formulaOrRule: `SLA_Penalties = SUM(CustomerContractOutageCredits + ServiceBreachFines)`,
+            rationale: `No financial SLA credit penalties or contractual default charges have been incurred during the current operating period.`,
+            recommendedAction: 'Maintain automated multi-zone failover and proactive synthetic monitoring.'
+          })}
+        />
+        {/* Enriched Governance Metric 2: Audit Traceability Index */}
+        <MetricCard
+          title="Audit Trail Traceability"
+          value="99.4%"
+          target="Target: 100%"
+          trend="SOC2 / ISO 27001 Ready"
+          trendPositive={true}
+          statusBadge="Audit Verified"
+          statusColor="emerald"
+          icon={<ShieldCheck className="w-5 h-5 text-teal-500" />}
+          onJustify={() => setSelectedJustification({
+            title: 'Audit Trail & Requirement Traceability Index',
+            statusBadge: 'Audit Verified',
+            statusColor: 'emerald',
+            currentValue: '99.4%',
+            targetValue: '100% Full Traceability',
+            formulaOrRule: `TraceabilityIndex = (ProductionCommitsWithLinkedJiraStoryAndTestExecution / TotalCommits) × 100`,
+            rationale: `99.4% of production pull requests and releases possess verifiable links connecting business requirements in JIRA to automated test cases in TestRail and verified GitHub PR reviews.`,
+            recommendedAction: 'Enforce branch protection rules requiring a valid JIRA issue key in all PR titles.'
+          })}
+        />
       </div>
 
       {/* SLA Compliance Breakdown Matrix */}

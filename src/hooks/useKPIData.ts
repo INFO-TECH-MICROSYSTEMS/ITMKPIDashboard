@@ -168,10 +168,10 @@ export function useKPIData() {
     [jiraItems, testRailExecutions]
   );
 
-  const productivityMetrics = useMemo(() => 
-    KPICalculatorService.calculateProductivityMetrics(testRailExecutions, jiraItems),
-    [testRailExecutions, jiraItems]
-  );
+  const { productivityMetrics, squadSummary } = useMemo(() => {
+    const res = KPICalculatorService.calculateProductivityMetrics(testRailExecutions, jiraItems);
+    return { productivityMetrics: res.metrics, squadSummary: res.summary };
+  }, [testRailExecutions, jiraItems]);
 
   const automationHealth = useMemo(() => 
     KPICalculatorService.calculateAutomationHealth(testRailExecutions, githubPRs),
@@ -210,6 +210,7 @@ export function useKPIData() {
       defectTrends,
       componentRisks,
       productivityMetrics,
+      squadSummary,
       automationHealth,
       mttrMttd
     }

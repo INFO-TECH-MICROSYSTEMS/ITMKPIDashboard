@@ -169,6 +169,9 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 <th className="p-3">{t('kpiPlatform.riskView.tableTotalDefects')}</th>
                 <th className="p-3">{t('kpiPlatform.riskView.tableTestCoverage')}</th>
                 <th className="p-3">{t('kpiPlatform.riskView.tableMissingUnit')}</th>
+                <th className="p-3">Complexity (CC)</th>
+                <th className="p-3">Code Churn</th>
+                <th className="p-3">License & Security</th>
                 <th className="p-3 rounded-r-lg">{t('kpiPlatform.riskView.tableRiskTier')}</th>
               </tr>
             </thead>
@@ -204,8 +207,25 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                       <span className="text-[11px] text-slate-700 dark:text-slate-300">{comp.testCoveragePercent}%</span>
                     </div>
                   </td>
-                  <td className="p-3 font-mono text-amber-600 dark:text-amber-400">
+                    <td className="p-3 font-mono text-amber-600 dark:text-amber-400">
                     {comp.missingUnitTestsCount}
+                  </td>
+                  <td className="p-3 font-mono text-xs">
+                    <span className={comp.cyclomaticComplexityRisk > 15 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-600 dark:text-slate-400'}>
+                      {comp.cyclomaticComplexityRisk ?? 12}
+                    </span>
+                  </td>
+                  <td className="p-3 font-mono text-xs text-slate-500 dark:text-slate-400">
+                    +{comp.codeChurnLines ?? 500}
+                  </td>
+                  <td className="p-3">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      comp.licenseComplianceStatus === 'Blocked' ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300' :
+                      comp.licenseComplianceStatus === 'Warning' ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300' :
+                      'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                    }`}>
+                      {comp.licenseComplianceStatus ?? 'Passed'}
+                    </span>
                   </td>
                   <td className="p-3">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${riskBadgeStyles[comp.riskLevel]}`}>

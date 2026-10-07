@@ -233,6 +233,11 @@ export interface ComponentRiskMetric {
   testCoveragePercent: number;
   missingUnitTestsCount: number;
   riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
+  // Enriched Risk Metrics
+  cyclomaticComplexityRisk: number; // Avg complexity (Benchmark < 15)
+  codeChurnLines: number; // Lines of code added/modified
+  securityVulnerabilityCount: number; // Package & SAST findings
+  licenseComplianceStatus: 'Passed' | 'Warning' | 'Blocked';
 }
 
 export interface PersonProductivityMetric {
@@ -243,6 +248,39 @@ export interface PersonProductivityMetric {
   delayedExecutions: number;
   isOverCommitted: boolean;
   avgHoursPerTest: number;
+}
+
+export interface SquadProductivitySummary {
+  avgCompletionRate: number;
+  overCommittedCount: number;
+  flowEfficiencyPercent: number; // Active work time vs total lead time
+  sprintSpilloverRate: number; // % of committed points carried over
+  devToQaRatio: string; // e.g., "1:3.2"
+}
+
+export interface QualityDiagnosticsSummary {
+  avgMttrHours: number;
+  avgMttdHours: number;
+  reopenRate: number;
+  reopenedCount: number;
+  defectDensityKloc: number; // Defects per 1,000 lines of code
+  firstTimeFixRate: number; // % defects fixed without reopening
+  netDefectIntakeVelocity: number; // Bugs in minus bugs closed
+}
+
+export interface AutomationHealthSummary {
+  totalAutomated: number;
+  totalManual: number;
+  flakyCount: number;
+  flakyRate: number;
+  totalReruns: number;
+  avgPipelineMins: number;
+  manualHoursSaved: number;
+  automationRatioPercent: number;
+  // Enriched Automation Metrics
+  cicdComputeCostDollars: number; // CI runner compute cost in USD
+  mtbfHours: number; // Mean Time Between Flakes
+  automationCatchRatio: number; // % defects caught by CI automation vs manual
 }
 
 // ==========================================

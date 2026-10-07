@@ -220,6 +220,7 @@ export const KPIPlatformPage: React.FC = () => {
             {activeCategory === 'productivity' && (
               <ProductivityView
                 productivityMetrics={metrics.productivityMetrics}
+                squadSummary={metrics.squadSummary}
                 jiraItems={jiraItems}
               />
             )}
