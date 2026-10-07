@@ -186,7 +186,11 @@ export const QUALITY_THRESHOLDS = {
   slaTriageP2Hours: 24,
   p95BenchmarkMs: 180,
   p99BenchmarkMs: 450,
-  wcagComplianceMin: 92.0 // percent
+  wcagComplianceMin: 92.0, // percent
+  changeFailureRateMax: 5.0, // DORA Elite tier < 5%
+  sprintPredictabilityMin: 85.0, // %
+  contractUptimeMin: 99.95, // %
+  engineerHourlyBlendedRate: 95 // USD/hour for rework & savings calculations
 };
 
 // ==========================================

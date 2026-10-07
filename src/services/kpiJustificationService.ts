@@ -375,4 +375,73 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
         : 'Focus on accelerating defect triage turnaround and prioritizing customer-facing hotfix PRs.'
     };
   }
+
+  /**
+   * 10. Cost of Poor Quality (CoPQ) & Rework Justification
+   */
+  static getCostOfPoorQualityJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const copq = scorecard.costOfPoorQuality;
+    const savings = scorecard.costSavingsAutomated;
+    const isOptimal = copq < 25000;
+
+    return {
+      title: 'Cost of Poor Quality (CoPQ) & Rework Impact',
+      statusBadge: isOptimal ? 'Under Budget' : 'High Rework Cost',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `$${copq.toLocaleString()} Rework`,
+      targetValue: '< $25,000 / Sprint',
+      formulaOrRule: `CoPQ = (CustomerAPARs × 22 hrs + InternalBugs × 10 hrs) × $${QUALITY_THRESHOLDS.engineerHourlyBlendedRate}/hr`,
+      rationale: `Estimated financial expenditure caused by defect remediation and customer hotfixes stands at $${copq.toLocaleString()}. Automated regression testing has offset this by an estimated $${savings.toLocaleString()} in saved manual test labor.`,
+      recommendedAction: isOptimal
+        ? 'Continue shifting quality verification left to catch regressions before integration.'
+        : 'Prioritize unit and contract test coverage to prevent high-cost customer APAR investigations.'
+    };
+  }
+
+  /**
+   * 11. DORA Change Failure Rate (CFR) Justification
+   */
+  static getChangeFailureRateJustification(rate: number): KPIJustification {
+    const target = QUALITY_THRESHOLDS.changeFailureRateMax || 5.0;
+    const isElite = rate <= target;
+    const isWarning = rate <= 15.0;
+
+    return {
+      title: 'DORA Change Failure Rate (CFR)',
+      statusBadge: isElite ? 'DORA Elite' : isWarning ? 'High' : 'Needs Focus',
+      statusColor: isElite ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${rate}% Failures`,
+      targetValue: `< ${target}% (Elite)`,
+      formulaOrRule: `CFR = (Deployments Requiring Remediation / Total Production Deployments) × 100`,
+      rationale: isElite
+        ? `Change Failure Rate is ${rate}%, qualifying for Google DORA "Elite" tier (< 5%). Deployed changes rarely degrade production stability.`
+        : `Change Failure Rate is ${rate}%, exceeding the Elite tier threshold of ${target}%. Releases require rollbacks or emergency patches too frequently.`,
+      recommendedAction: isElite
+        ? 'Preserve canary deployment strategies and automated smoke validation.'
+        : 'Implement automated canary analysis and mandatory staging validation prior to traffic cutover.'
+    };
+  }
+
+  /**
+   * 12. Sprint Predictability Index (SPI) Justification
+   */
+  static getSprintPredictabilityJustification(rate: number): KPIJustification {
+    const target = QUALITY_THRESHOLDS.sprintPredictabilityMin || 85.0;
+    const isOptimal = rate >= target && rate <= 100.0;
+
+    return {
+      title: 'Sprint Predictability Index (SPI)',
+      statusBadge: isOptimal ? 'Predictable' : rate > 100 ? 'Over-Delivered' : 'Under-Delivered',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${rate}% Delivered`,
+      targetValue: `${target}% - 100%`,
+      formulaOrRule: `SPI = (Completed Story Points / Committed Sprint Story Points) × 100`,
+      rationale: isOptimal
+        ? `Squad delivery predictability is ${rate}%, providing dependable roadmapping accuracy for executive product forecasting.`
+        : `Sprint predictability is ${rate}%. Significant deviations from committed story points hinder cross-team release scheduling.`,
+      recommendedAction: isOptimal
+        ? 'Maintain realistic squad velocity baselines during sprint planning.'
+        : 'Decompose large epics into smaller, independently testable user stories and avoid late scope-creep injections.'
+    };
+  }
 }

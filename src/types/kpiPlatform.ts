@@ -206,6 +206,15 @@ export interface ReleaseQualityScorecard {
   performanceP95Ms: number;
   performanceP99Ms: number;
   performanceErrorRate: number; // %
+  // Executive & Senior Management Scorecard Enhancements
+  costOfPoorQuality: number; // Estimated dollar rework impact ($)
+  costSavingsAutomated: number; // Estimated testing hours saved * rate ($)
+  changeFailureRate: number; // % of releases/deployments needing hotfixes/reverts
+  meanTimeToRestoreHours: number; // MTTR for critical production incidents (hours)
+  sprintPredictabilityIndex: number; // % of committed story points delivered
+  featureLeadTimeDays: number; // Average cycle time commit/story to production (days)
+  criticalVulnerabilitiesCount: number; // Active CVE / security gate blockers
+  contractUptimePercentage: number; // Composite production availability (e.g. 99.98%)
 }
 
 export interface TrendPoint {
