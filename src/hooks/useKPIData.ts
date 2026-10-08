@@ -163,6 +163,11 @@ export function useKPIData() {
     [jiraItems]
   );
 
+  const testBurnoutForecast = useMemo(() => 
+    KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutions, 14),
+    [testRailExecutions]
+  );
+
   const componentRisks = useMemo(() => 
     KPICalculatorService.calculateComponentRisks(jiraItems, testRailExecutions),
     [jiraItems, testRailExecutions]
@@ -208,6 +213,7 @@ export function useKPIData() {
       testDistributionAutomated,
       testDistributionManual,
       defectTrends,
+      testBurnoutForecast,
       componentRisks,
       productivityMetrics,
       squadSummary,

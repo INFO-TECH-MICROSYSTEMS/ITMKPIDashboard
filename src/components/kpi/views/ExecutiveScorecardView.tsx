@@ -22,9 +22,10 @@ import type {
   TestStatusDistribution, 
   JiraWorkItem, 
   TestRailExecution, 
-  KPIJustification 
+  KPIJustification,
+  TestExecutionBurnoutForecast 
 } from '../../../types/kpiPlatform';
-import { GaugeMeter, MetricCard, StackedProgressBar } from '../VisualWidgets';
+import { GaugeMeter, MetricCard, StackedProgressBar, AreaTrendChart } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
 
@@ -33,6 +34,7 @@ import { KPI_STATUS_THEMES } from '../../../constants/kpiConstants';
 interface ExecutiveScorecardViewProps {
   scorecard: ReleaseQualityScorecard;
   testDistribution: TestStatusDistribution;
+  testBurnoutForecast?: TestExecutionBurnoutForecast;
   jiraItems?: JiraWorkItem[];
   testRailExecutions?: TestRailExecution[];
 }
@@ -40,6 +42,7 @@ interface ExecutiveScorecardViewProps {
 export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
   scorecard,
   testDistribution,
+  testBurnoutForecast,
   jiraItems = [],
   testRailExecutions = []
 }) => {
@@ -401,6 +404,85 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           title="Consolidated QA Execution Health (Automated + Manual)"
         />
       </div>
+
+      {/* Test Execution Scope Added vs. Completed Burnout with Velocity Projection */}
+      {testBurnoutForecast && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                {t('kpiPlatform.executiveView.burnoutTitle')}
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.executiveView.burnoutSubtitle')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
+                testBurnoutForecast.isVelocityHealthy 
+                  ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                  : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+              }`}>
+                {testBurnoutForecast.isVelocityHealthy 
+                  ? `● ${t('kpiPlatform.executiveView.onTrack')}` 
+                  : `▲ ${t('kpiPlatform.executiveView.atRisk')}`}
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Velocity KPI Badges */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.executiveView.dailyVelocity')}
+              </div>
+              <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
+                {testBurnoutForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/day</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.executiveView.untestedRemaining')}
+              </div>
+              <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
+                {testBurnoutForecast.remainingUntested.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.executiveView.projectedRunway')}
+              </div>
+              <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
+                {testBurnoutForecast.daysToCompletion} <span className="text-xs font-normal text-slate-500">days</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.executiveView.estimatedCompletion')}
+              </div>
+              <div className="text-lg font-bold font-['Outfit'] text-emerald-600 dark:text-emerald-400 mt-1">
+                {testBurnoutForecast.estimatedCompletionDate}
+              </div>
+            </div>
+          </div>
+
+          {/* Area Trend & Burnout Chart with Extrapolated Velocity Runway */}
+          <AreaTrendChart
+            data={testBurnoutForecast.historyAndForecast}
+            title={`${t('kpiPlatform.executiveView.burnoutTitle')} (Historical + Projected Runway)`}
+            series1Name={t('kpiPlatform.executiveView.scopeAddedSeries')}
+            series2Name={t('kpiPlatform.executiveView.completedVelocitySeries')}
+            series1Color="#f43f5e" // Scope / added line (Rose)
+            series2Color="#10b981" // Historical completed velocity (Emerald)
+            projectionLineColor="#06b6d4" // Future velocity projected runway (Cyan dashed)
+            forecastBadge={`Target Complete: ${testBurnoutForecast.estimatedCompletionDate}`}
+            height={260}
+          />
+        </div>
+      )}
 
       {/* KPI Decision & Audit Justification Modal */}
       <MetricJustificationModal
