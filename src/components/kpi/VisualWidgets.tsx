@@ -154,7 +154,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   series1Color = '#f43f5e', // Rose (Total Tests)
   series2Color = '#10b981', // Emerald (Completed Tests)
   series3Color = '#f59e0b', // Amber (Remaining Tests)
-  height = 200,
+  height = 170,
   projectionLineColor = '#06b6d4', // Cyan dashed (Completed Forecast)
   series3ProjectionLineColor = '#fbbf24', // Amber dashed (Remaining Burnout Forecast)
   forecastBadge,
@@ -168,8 +168,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   );
 
   const width = 640;
-  const paddingX = 42;
-  const paddingY = 28;
+  const paddingX = 40;
+  const paddingY = 18;
   const chartW = width - paddingX * 2;
   const chartH = height - paddingY * 2;
 
