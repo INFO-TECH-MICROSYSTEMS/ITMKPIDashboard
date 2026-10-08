@@ -20,6 +20,7 @@ import type {
   KPIJustification,
   KPIContributingFactor,
   TestExecutionBurnoutForecast,
+  TestAutomationBurnoutForecast,
   AgingBuckets,
   DefectSeverityCounts,
   ComponentRiskMetric,
@@ -1498,6 +1499,69 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       recommendedAction: isOptimal
         ? 'Maintain database read replicas and CDN edge caching policies.'
         : 'Optimize slow SQL queries on heavy reporting endpoints and enable auto-scaling worker nodes.'
+    };
+  }
+
+  /**
+   * 51. Test Automation Burnout & Predictive Velocity Forecast Justification
+   */
+  static getTestAutomationBurnoutForecastJustification(
+    forecast: TestAutomationBurnoutForecast
+  ): KPIJustification {
+    const isOptimal = forecast.isVelocityHealthy;
+    const runwayDays = forecast.daysToAllAutomated;
+
+    const factors: KPIContributingFactor[] = [
+      {
+        factor: 'Daily Automation Velocity',
+        impact: `${forecast.currentDailyVelocity} tests/day`,
+        status: forecast.currentDailyVelocity >= 10 ? 'positive' : 'warning',
+        details: `Squad is converting and deploying automated tests at an average moving pace of ${forecast.currentDailyVelocity} test cases per day.`
+      },
+      {
+        factor: 'Manual Tests Remaining to Automate',
+        impact: `${forecast.manualTestsRemaining.toLocaleString()} tests`,
+        status: forecast.manualTestsRemaining < 500 ? 'positive' : forecast.manualTestsRemaining < 1200 ? 'warning' : 'critical',
+        details: `There are ${forecast.manualTestsRemaining.toLocaleString()} manual test cases remaining in the repository awaiting automated script implementation.`
+      },
+      {
+        factor: 'Current Automation Maturity',
+        impact: `${forecast.automationPercent}% Automated`,
+        status: forecast.automationPercent >= 75 ? 'positive' : 'warning',
+        details: `${forecast.automatedSoFar.toLocaleString()} of ${forecast.totalScope.toLocaleString()} total test cases are fully automated in CI pipelines.`
+      },
+      {
+        factor: 'Projected 100% Automation Date',
+        impact: `${forecast.estimatedAllAutomatedDate}`,
+        status: isOptimal ? 'positive' : 'warning',
+        details: `Based on current velocity, 100% test automation completion will be reached in ${runwayDays} days (${forecast.estimatedAllAutomatedDate}).`
+      }
+    ];
+
+    const overviewText = `This KPI is a multi-dimensional test automation velocity burnout model tracking cumulative total tests, automated test coverage expansion, and manual tests remaining over time, dynamically projecting when full test automation will be achieved.\n\nIt provides information that aggregates historical TestRail execution modes, tracking daily automation conversion velocity, active manual test backlogs, and mathematical runway forecasting to project the exact date when all test suites reach 100% automation.\n\nIts significance is accelerating regression turnaround, eliminating manual testing bottlenecks, and driving engineering shift-left maturity while providing executives with dependable visibility into automated quality runway.`;
+
+    return {
+      title: 'Test Automation Burnout & Predictive Velocity Forecast',
+      statusBadge: isOptimal ? 'On Schedule' : 'Pace Warning',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${forecast.currentDailyVelocity} tests/day (${forecast.automationPercent}% Automated)`,
+      targetValue: `100% Automated by ${forecast.estimatedAllAutomatedDate}`,
+      overviewAndSignificance: overviewText,
+      description: overviewText,
+      trackedInfo: 'Aggregates historical TestRail test execution modes, tracking daily automation conversion velocity, active manual test backlogs, and mathematical runway forecasting to project the exact date when all test suites reach 100% automation.',
+      businessImportance: 'Accelerates regression turnaround, eliminates manual testing bottlenecks, and drives engineering shift-left maturity while providing executives with dependable visibility into automated quality runway.',
+      formulaOrRule: `DailyAutomationVelocity = AVERAGE(NewlyAutomatedTests / Day across last 14 days)
+DaysToAllAutomated = ManualTestsRemaining / DailyAutomationVelocity
+ProjectedCompletionDate = CurrentDate + DaysToAllAutomated
+
+Runway Rule: If DaysToAllAutomated <= 60 Days → On Schedule (Healthy)`,
+      rationale: isOptimal
+        ? `Current automation conversion velocity is ${forecast.currentDailyVelocity} tests/day with ${forecast.manualTestsRemaining.toLocaleString()} manual tests remaining (${forecast.automationPercent}% already automated). At this velocity, 100% test automation completion is projected for ${forecast.estimatedAllAutomatedDate} (${runwayDays} days runway), remaining within corporate delivery targets.`
+        : `Automation velocity of ${forecast.currentDailyVelocity} tests/day requires ${runwayDays} days to convert the remaining ${forecast.manualTestsRemaining.toLocaleString()} manual tests, placing full automation completion on ${forecast.estimatedAllAutomatedDate}. Additional SDET capacity is recommended to compress the runway.`,
+      factors,
+      recommendedAction: isOptimal
+        ? 'Maintain current automation development sprint commitments and continue pre-merge automated API/UI test assertions.'
+        : 'Allocate additional SDET engineers to high-frequency manual regression suites or leverage AI-assisted test authoring to accelerate daily conversion pace.'
     };
   }
 }

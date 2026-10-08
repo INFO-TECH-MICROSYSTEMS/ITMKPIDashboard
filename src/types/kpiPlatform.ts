@@ -237,6 +237,18 @@ export interface TestExecutionBurnoutForecast {
   isVelocityHealthy: boolean;
 }
 
+export interface TestAutomationBurnoutForecast {
+  historyAndForecast: TrendPoint[];
+  currentDailyVelocity: number;      // e.g. 18 tests/day automated
+  manualTestsRemaining: number;      // Manual tests remaining to be automated
+  totalScope: number;                // Total tests in suite
+  automatedSoFar: number;            // Tests automated so far
+  estimatedAllAutomatedDate: string; // e.g. "Oct 28, 2026"
+  daysToAllAutomated: number;        // Days until 100% tests are automated
+  isVelocityHealthy: boolean;        // Whether automation runway is within corporate target
+  automationPercent: number;         // Current automation coverage %
+}
+
 export interface ComponentRiskMetric {
   component: string;
   failureRate: number;

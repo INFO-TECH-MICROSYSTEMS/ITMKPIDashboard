@@ -183,6 +183,11 @@ export function useKPIData() {
     [testRailExecutions, githubPRs]
   );
 
+  const testAutomationForecast = useMemo(() => 
+    KPICalculatorService.calculateTestAutomationBurnoutForecast(testRailExecutions, filters.dateRangeDays),
+    [testRailExecutions, filters.dateRangeDays]
+  );
+
   const mttrMttd = useMemo(() => 
     KPICalculatorService.calculateMttrAndMttd(jiraItems),
     [jiraItems]
@@ -214,6 +219,7 @@ export function useKPIData() {
       testDistributionManual,
       defectTrends,
       testBurnoutForecast,
+      testAutomationForecast,
       componentRisks,
       productivityMetrics,
       squadSummary,

@@ -215,6 +215,7 @@ export const KPIPlatformPage: React.FC = () => {
                 manualDistribution={metrics.testDistributionManual}
                 automationHealth={metrics.automationHealth}
                 testRailExecutions={testRailExecutions}
+                testAutomationForecast={metrics.testAutomationForecast}
               />
             )}
 

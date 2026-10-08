@@ -487,7 +487,19 @@
       "tableCaseId": "Case ID",
       "tableSuiteType": "Suite Type",
       "tableRerunCount": "Rerun Count",
-      "tableDuration": "Duration"
+      "tableDuration": "Duration",
+      "burnoutTitle": "Test Automation Burnout & Predictive Velocity Forecast",
+      "burnoutSubtitle": "Total tests, automated tests, and remaining manual tests over time with forecast projection",
+      "dailyVelocity": "Daily Automation Velocity",
+      "manualRemaining": "Manual Tests Remaining",
+      "projectedRunway": "Projected Automation Runway",
+      "estimatedAllAutomated": "Projected 100% Automated",
+      "totalTestsSeries": "Total Tests",
+      "automatedTestsSeries": "Automated Tests",
+      "manualTestsSeries": "Manual Tests",
+      "explainForecast": "Explain Forecast",
+      "onSchedule": "On Schedule",
+      "paceWarning": "Pace Warning"
     },
     "productivityView": {
       "title": "Planning, Velocity & Throughput",
