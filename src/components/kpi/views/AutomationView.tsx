@@ -189,22 +189,22 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
       {/* Flaky Test Quarantine Table */}
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
-            <AlertCircle className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
+            <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsList.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')})</span>
+            <button
+              type="button"
+              onClick={() => setSelectedJustification(KPIJustificationService.getFlakyTestsJustification(flakyTestsList, automationHealth.totalReruns))}
+              className="p-1 rounded-full text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Click for Flaky Tests quarantine policy and rerun audit"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-[11px] font-mono text-slate-400">
               {t('kpiPlatform.automationView.totalPipelineReruns')}: <strong className="text-slate-700 dark:text-slate-200">{automationHealth.totalReruns}</strong>
             </span>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getFlakyTestsJustification(flakyTestsList, automationHealth.totalReruns))}
-              title="Explain Flaky Tests Quarantine Policy"
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-amber-200 dark:border-amber-900/40 transition-colors"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Clarify Policy</span>
-            </button>
           </div>
         </div>
 

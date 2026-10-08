@@ -339,18 +339,18 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
       {gatingDefectsList.length > 0 && (
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
-              <AlertTriangle className="w-4 h-4" />
+            <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsList.length} {t('kpiPlatform.qualityView.requireSignoff')})</span>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getGatingDefectsTableJustification(gatingDefectsList))}
+                className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Click for Gating Defects policy and sign-off justification"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getGatingDefectsTableJustification(gatingDefectsList))}
-              title="Explain Gating Defects Policy"
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-rose-200 dark:border-rose-900/40 transition-colors"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Clarify Policy</span>
-            </button>
           </div>
           
           <div className="overflow-x-auto">
