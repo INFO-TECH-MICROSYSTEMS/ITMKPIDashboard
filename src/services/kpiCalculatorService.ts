@@ -380,66 +380,83 @@ export class KPICalculatorService {
 
     const historyPoints: TrendPoint[] = [];
 
-    // Track daily additions and completions across the historical window
+    // Track daily completions and build cumulative totals across the historical window
     for (let i = daysHistory - 1; i >= 0; i--) {
       const targetDate = new Date(now - i * 86400000);
       const dateStr = targetDate.toISOString().split('T')[0];
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-      // Daily executions completed on this date
-      const completedOnDate = testRailExecutions.filter(t => {
-        if (t.status === 'Unattempted') return false;
-        const execDate = t.executionDate.split('T')[0];
-        return execDate === dateStr;
-      }).length;
+      const targetMs = targetDate.getTime();
 
       // Cumulative tests planned / in scope up to this date
-      const targetMs = targetDate.getTime();
       const cumulativePlanned = testRailExecutions.filter(t => {
         const itemMs = new Date(t.executionDate).getTime();
         return itemMs <= targetMs + 86400000;
       }).length;
+      const totalTestsAtDate = cumulativePlanned > 0 
+        ? cumulativePlanned 
+        : Math.round(totalScope * (0.85 + 0.15 * ((daysHistory - i) / daysHistory)));
+
+      // Cumulative completed tests up to this date
+      const cumulativeCompleted = testRailExecutions.filter(t => {
+        if (t.status === 'Unattempted') return false;
+        const itemMs = new Date(t.executionDate).getTime();
+        return itemMs <= targetMs + 86400000;
+      }).length;
+      const completedTestsAtDate = Math.min(
+        totalTestsAtDate, 
+        cumulativeCompleted > 0 
+          ? cumulativeCompleted 
+          : Math.max(0, Math.round(completedSoFar * ((daysHistory - i) / daysHistory)))
+      );
+
+      const remainingTestsAtDate = Math.max(0, totalTestsAtDate - completedTestsAtDate);
 
       historyPoints.push({
         date: dateStr,
         label,
-        value1: cumulativePlanned > 0 ? cumulativePlanned : Math.round(totalScope * (0.85 + 0.15 * ((daysHistory - i) / daysHistory))), // Cumulative Scope / Added
-        value2: completedOnDate, // Daily completed velocity
+        value1: totalTestsAtDate,      // Total Tests (scope added over time)
+        value2: completedTestsAtDate,  // Completed Tests (cumulative executions completed)
+        value3: remainingTestsAtDate,  // Remaining Tests (unexecuted/untested remaining burnout)
         isProjected: false
       });
     }
 
-    // Calculate moving average daily velocity over the non-zero active days
-    const recentCompletedSlice = historyPoints.map(p => p.value2 ?? 0);
-    const activeDays = recentCompletedSlice.filter(v => v > 0);
-    const sumRecent = recentCompletedSlice.reduce((a, b) => a + b, 0);
-    const rawVelocity = activeDays.length > 0 
-      ? sumRecent / activeDays.length 
+    // Calculate moving average daily velocity over the last 7 days of historical completions
+    const recentDifferences: number[] = [];
+    for (let i = 1; i < historyPoints.length; i++) {
+      const diff = (historyPoints[i].value2 ?? 0) - (historyPoints[i - 1].value2 ?? 0);
+      if (diff > 0) recentDifferences.push(diff);
+    }
+    const sumDiff = recentDifferences.reduce((a, b) => a + b, 0);
+    const rawVelocity = recentDifferences.length > 0 
+      ? sumDiff / recentDifferences.length 
       : Math.max(1, Math.round(completedSoFar / daysHistory));
     const currentDailyVelocity = Math.max(1, Math.round(rawVelocity));
 
     const remainingUntested = unexecuted;
-    const daysToCompletion = Math.ceil(remainingUntested / currentDailyVelocity);
+    const daysToCompletion = Math.max(1, Math.ceil(remainingUntested / currentDailyVelocity));
 
     // Build extended projection points into the future
     const forecastPoints: TrendPoint[] = [];
     const maxForecastDays = Math.min(14, Math.max(3, daysToCompletion));
+
+    let projectedCompleted = historyPoints[historyPoints.length - 1]?.value2 ?? completedSoFar;
 
     for (let f = 1; f <= maxForecastDays; f++) {
       const futureDate = new Date(now + f * 86400000);
       const dateStr = futureDate.toISOString().split('T')[0];
       const label = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-      // Projected daily completion velocity decaying slightly as remaining tests taper off
-      const dayProjected = f <= daysToCompletion 
-        ? Math.min(remainingUntested, Math.round(currentDailyVelocity * (1 + (Math.sin(f) * 0.15)))) 
-        : 0;
+      // Project completed tests advancing toward total scope
+      projectedCompleted = Math.min(totalScope, projectedCompleted + currentDailyVelocity);
+      const projectedRemaining = Math.max(0, totalScope - projectedCompleted);
 
       forecastPoints.push({
         date: dateStr,
         label,
-        value1: totalScope, // Fixed full scope target
-        value2: Math.max(0, dayProjected),
+        value1: totalScope,           // Total tests stays at full scope
+        value2: projectedCompleted,   // Projected completed line extending up to total tests
+        value3: projectedRemaining,   // Projected remaining line burning down to 0
         isProjected: true
       });
     }
