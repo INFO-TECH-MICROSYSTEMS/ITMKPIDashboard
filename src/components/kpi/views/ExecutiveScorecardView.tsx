@@ -491,6 +491,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             projectionLineColor="#06b6d4" // Completed forecast trajectory (Cyan dashed)
             series3ProjectionLineColor="#fbbf24" // Remaining tests burnout trajectory (Amber dashed)
             forecastBadge={`Target Complete: ${testBurnoutForecast.estimatedCompletionDate}`}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast))}
             height={280}
           />
         </div>

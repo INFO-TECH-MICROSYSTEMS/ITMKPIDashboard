@@ -142,6 +142,7 @@ interface AreaTrendChartProps {
   projectionLineColor?: string;
   series3ProjectionLineColor?: string;
   forecastBadge?: string;
+  onJustify?: () => void;
 }
 
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
@@ -156,7 +157,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   height = 200,
   projectionLineColor = '#06b6d4', // Cyan dashed (Completed Forecast)
   series3ProjectionLineColor = '#fbbf24', // Amber dashed (Remaining Burnout Forecast)
-  forecastBadge
+  forecastBadge,
+  onJustify
 }) => {
   if (!data || data.length === 0) return null;
 
@@ -221,9 +223,31 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             {title}
           </h4>
           {forecastBadge && (
-            <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
-              {forecastBadge}
-            </span>
+            onJustify ? (
+              <button
+                type="button"
+                onClick={onJustify}
+                className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer"
+                title="Click to view explanation, formulas, and audit clarification"
+              >
+                <span>{forecastBadge}</span>
+                <HelpCircle className="w-2.5 h-2.5 opacity-70" />
+              </button>
+            ) : (
+              <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
+                {forecastBadge}
+              </span>
+            )
+          )}
+          {onJustify && (
+            <button
+              type="button"
+              onClick={onJustify}
+              className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Click to view metric clarification & audit modal"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono">
