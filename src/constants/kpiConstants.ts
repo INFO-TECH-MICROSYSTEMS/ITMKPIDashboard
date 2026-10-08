@@ -14,21 +14,68 @@
 import type { DataSourceConfig, RetrievalFrequency } from '../types/kpiPlatform';
 
 export const APP_PRODUCTS = [
-  'Enterprise Cloud Gateway',
-  'Microservices Core Engine',
-  'Payment & Billing Ledger',
-  'Mobile Client Suite (iOS/Android)',
-  'Analytics & Reporting Portal'
+  'YouTube',
+  'GMail',
+  'LinkedIn',
+  'Shopify',
+  'Amazon'
 ] as const;
 
-export const APP_COMPONENTS = [
-  'Authentication & RBAC',
-  'Transaction Processor',
-  'API Gateway & Ingress',
-  'Web Dashboard UI',
-  'Data Pipeline & Ingestion',
-  'Notification Broker'
-] as const;
+export type AppProduct = typeof APP_PRODUCTS[number];
+
+export const PRODUCT_COMPONENTS_MAP: Record<AppProduct, readonly string[]> = {
+  YouTube: [
+    'Video Transcoding & Ingestion',
+    'Recommendation Feed Algorithm',
+    'Player Runtime & DRM',
+    'Creator Studio & Analytics',
+    'Live Streaming & Chat Broker',
+    'Monetization & Ad Insertion'
+  ],
+  GMail: [
+    'Smart Inbox & Threading',
+    'Spam & Phishing AI Shield',
+    'MIME Parser & Attachments',
+    'IMAP/SMTP Gateway Protocol',
+    'Search Index & Offline Sync',
+    'Contact Manager & Autocomplete'
+  ],
+  LinkedIn: [
+    'Member Profile & Graph Network',
+    'Newsfeed & Content Ranking',
+    'Recruiter ATS & Job Match',
+    'Enterprise Ads Campaign Manager',
+    'Messaging & WebSockets',
+    'Learning Platform & Video Streaming'
+  ],
+  Shopify: [
+    'Storefront Liquid Engine',
+    'Checkout & Multi-Currency Gateway',
+    'Inventory & Order Fulfillment',
+    'Merchant Admin Dashboard',
+    'App Bridge & GraphQL API',
+    'Discounts & Promotion Rules'
+  ],
+  Amazon: [
+    'Product Catalog & Search Ranking',
+    '1-Click Checkout & Payments',
+    'Prime Delivery & Logistics Routing',
+    'Customer Reviews & Sentiment NLP',
+    'Fulfillment by Amazon (FBA) Service',
+    'Cart & Recommendation Carousel'
+  ]
+};
+
+export const PRODUCT_RELEASES_MAP: Record<AppProduct, readonly string[]> = {
+  YouTube: ['21.4.2', '21.4.0', '21.3.1', '21.2.0', '21.1.0'],
+  GMail: ['2026.4.1', '2026.3.0', '2026.2.2', '2026.1.0', '2025.12.0'],
+  LinkedIn: ['5.12.0', '5.11.2', '5.11.0', '5.10.1', '5.9.0'],
+  Shopify: ['2026.3.2', '2026.3.0', '2026.2.1', '2026.1.0', '2025.4.0'],
+  Amazon: ['4.8.2', '4.8.0', '4.7.1', '4.6.0', '4.5.0']
+};
+
+export const APP_COMPONENTS = Object.values(PRODUCT_COMPONENTS_MAP).flat();
+export const APP_RELEASES = Object.values(PRODUCT_RELEASES_MAP).flat();
 
 export const APP_SPRINTS = [
   'Sprint 2026.1 (Jan)',
@@ -36,13 +83,6 @@ export const APP_SPRINTS = [
   'Sprint 2026.3 (Mar)',
   'Sprint 2026.4 (Apr)',
   'Sprint 2026.5 (Current)'
-] as const;
-
-export const APP_RELEASES = [
-  'Release v3.2.0 (GA)',
-  'Release v3.3.0 (GA)',
-  'Release v3.4.0 (RC-1)',
-  'Release v3.5.0-Dev'
 ] as const;
 
 export const QA_ENGINEERS = [
@@ -131,11 +171,11 @@ export const DEFAULT_CONNECTOR_CONFIGS: DataSourceConfig[] = [
     endpointUrl: 'https://jira.infotechmicro.internal/rest/api/3',
     authType: 'apiKey',
     apiTokenOrKey: 'jira_pat_sec_9942a178bcde45f899b101',
-    projectOrOrgKey: 'ITM_GATEWAY, ITM_BILLING, ITM_MOBILE',
+    projectOrOrgKey: 'YOUTUBE, GMAIL, LINKEDIN, SHOPIFY, AMAZON',
     frequency: 'daily',
     lastSyncTimestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
     lastSyncStatus: 'success',
-    recordCount: 520
+    recordCount: 10500
   },
   {
     id: 'testrail',
@@ -144,11 +184,11 @@ export const DEFAULT_CONNECTOR_CONFIGS: DataSourceConfig[] = [
     endpointUrl: 'https://infotechmicro.testrail.io/index.php?/api/v2',
     authType: 'apiKey',
     apiTokenOrKey: 'tr_key_841bcfa73001889e47',
-    projectOrOrgKey: 'Suite_Platform_Regression_v3',
+    projectOrOrgKey: 'Enterprise_MultiProduct_Test_Suites',
     frequency: 'hourly',
     lastSyncTimestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
     lastSyncStatus: 'success',
-    recordCount: 2840
+    recordCount: 12500
   },
   {
     id: 'github',
@@ -157,11 +197,11 @@ export const DEFAULT_CONNECTOR_CONFIGS: DataSourceConfig[] = [
     endpointUrl: 'https://api.github.com/orgs/InfoTechMicrosystems',
     authType: 'bearerToken',
     apiTokenOrKey: 'ghp_liveTokenForQAMiningPlatform_9831',
-    projectOrOrgKey: 'ITMWebSite, ITM-Core-Engine, ITM-Mobile',
+    projectOrOrgKey: 'YouTube-Core, GMail-Web, LinkedIn-Feed, Shopify-Checkout, Amazon-Retail',
     frequency: 'hourly',
     lastSyncTimestamp: new Date(Date.now() - 3600000 * 1).toISOString(),
     lastSyncStatus: 'success',
-    recordCount: 412
+    recordCount: 1200
   }
 ];
 

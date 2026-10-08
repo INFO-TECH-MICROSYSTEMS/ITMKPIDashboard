@@ -7,9 +7,11 @@
  */
 
 /**
- * High-Volume Realistic Sample Data Generator
- * Seeds the database with hundreds of JIRA, TestRail, and GitHub records
- * matching realistic enterprise Quality Engineering schemas and distributions.
+ * High-Volume Realistic Enterprise Dataset Generator
+ * Generates >10,000 JIRA work items and >12,000 TestRail test executions
+ * across 5 major real-world products (YouTube, GMail, LinkedIn, Shopify, Amazon)
+ * with dedicated per-product components, realistic release timelines (e.g. 21.4.2, 4.8.2),
+ * and rich QA telemetry providing deep, meaningful insights for every view.
  */
 
 import type { 
@@ -26,11 +28,11 @@ import type {
 } from '../types/kpiPlatform';
 import { 
   APP_PRODUCTS, 
-  APP_COMPONENTS, 
-  APP_SPRINTS, 
-  APP_RELEASES, 
+  PRODUCT_COMPONENTS_MAP, 
+  PRODUCT_RELEASES_MAP, 
+  APP_SPRINTS,
   QA_ENGINEERS, 
-  DEV_ENGINEERS 
+  DEV_ENGINEERS
 } from '../constants/kpiConstants';
 
 // Deterministic pseudo-random number generator for consistent seed data
@@ -54,8 +56,17 @@ class PseudoRandom {
   }
 }
 
+// Release age offsets in days from today (most recent release is current, older releases represent past milestones)
+const RELEASE_AGE_OFFSETS: Record<number, { minDays: number; maxDays: number; defaultStatus: WorkItemStatus[] }> = {
+  0: { minDays: 0, maxDays: 20, defaultStatus: ['Under QA', 'Done', 'In Development', 'Blocked', 'Done', 'Done'] },   // Latest release: active in QA
+  1: { minDays: 14, maxDays: 45, defaultStatus: ['Done', 'Done', 'Done', 'Done', 'Reopened', 'Done'] },              // Previous release: mostly done
+  2: { minDays: 35, maxDays: 75, defaultStatus: ['Done', 'Done', 'Done', 'Done'] },                                  // Older: completed
+  3: { minDays: 60, maxDays: 110, defaultStatus: ['Done', 'Done', 'Done', 'Done'] },                                 // Older: completed
+  4: { minDays: 90, maxDays: 160, defaultStatus: ['Done', 'Done', 'Done', 'Done'] }                                  // Oldest
+};
+
 export function generateSampleDataset() {
-  const rng = new PseudoRandom(1337);
+  const rng = new PseudoRandom(20261008);
   const now = Date.now();
 
   const jiraItems: JiraWorkItem[] = [];
@@ -65,169 +76,196 @@ export function generateSampleDataset() {
 
   const types: WorkItemType[] = ['Story', 'Story', 'Bug', 'Bug', 'Task', 'CustomerAPAR', 'Epic'];
   const severities: WorkItemSeverity[] = ['P1-Blocker', 'P2-Critical', 'P3-Major', 'P3-Major', 'P4-Minor'];
-  const statuses: WorkItemStatus[] = ['Done', 'Done', 'Done', 'Under QA', 'In Development', 'Blocked', 'Reopened'];
-
-  // 1. Generate 550 JIRA Work Items
-  for (let i = 1; i <= 550; i++) {
-    const id = `ITM-${1000 + i}`;
-    const itemType = rng.choice(types);
-    const severity = rng.choice(severities);
-    const status = rng.choice(statuses);
-    const product = rng.choice(APP_PRODUCTS);
-    const component = rng.choice(APP_COMPONENTS);
-    const sprint = rng.choice(APP_SPRINTS);
-    const releaseVersion = rng.choice(APP_RELEASES);
-    const assignee = rng.choice(DEV_ENGINEERS);
-    const qaOwner = rng.choice(QA_ENGINEERS);
-    
-    // Calculate realistic timestamps within the last 60 days
-    const daysAgoCreated = rng.range(2, 60);
-    const createdAt = new Date(now - daysAgoCreated * 86400000).toISOString();
-    
-    // For aging pending tests: distribute QA entry dates between 3 to 35 days ago
-    let qaQueueEntryDate: string | undefined = undefined;
-    if (status === 'Under QA' || status === 'Blocked') {
-      const daysInQA = rng.range(2, 35);
-      qaQueueEntryDate = new Date(now - daysInQA * 86400000).toISOString();
-    }
-
-    const isBug = itemType === 'Bug' || itemType === 'CustomerAPAR';
-    const isGating = isBug && (severity === 'P1-Blocker' || (severity === 'P2-Critical' && rng.boolean(0.5)));
-    const isRegression = isBug && rng.boolean(0.35);
-    const isCustomer = itemType === 'CustomerAPAR' || (isBug && rng.boolean(0.18));
-    const isReopened = rng.boolean(0.12);
-
-    let resolvedAt: string | undefined = undefined;
-    if (status === 'Done') {
-      const daysAgoResolved = Math.max(1, daysAgoCreated - rng.range(1, 10));
-      resolvedAt = new Date(now - daysAgoResolved * 86400000).toISOString();
-    }
-
-    jiraItems.push({
-      id,
-      title: `${itemType}: Enhance ${component} handling for ${product}`,
-      type: itemType,
-      status,
-      severity,
-      product,
-      component,
-      sprint,
-      releaseVersion,
-      assignee,
-      qaOwner,
-      storyPoints: rng.choice([1, 2, 3, 5, 8, 13]),
-      dependencyDepth: rng.range(1, 6),
-      isGatingDefect: isGating,
-      isRegressionDefect: isRegression,
-      isCustomerDefect: isCustomer,
-      isReopened,
-      reopenCount: isReopened ? rng.range(1, 3) : 0,
-      hasTestPlan: rng.boolean(0.85),
-      hasUnitTests: rng.boolean(0.78),
-      hasApiTests: rng.boolean(0.68),
-      createdAt,
-      qaQueueEntryDate,
-      resolvedAt,
-      testingHoursSpent: rng.range(2, 28)
-    });
-  }
-
-  // 2. Generate 2,800 TestRail Executions
   const suiteTypes: TestSuiteType[] = [
     'Unit', 'API', 'Contract', 'UI', 'Regression', 
     'Performance', 'Accessibility', 'Security'
   ];
 
-  for (let i = 1; i <= 2800; i++) {
-    const id = `TR-RUN-${8000 + i}`;
-    const caseId = `C${rng.range(100, 999)}`;
-    const suiteType = rng.choice(suiteTypes);
-    // Unit & API are mostly automated; UI & Exploratory have manual components
-    const isAutomated = suiteType === 'Unit' || suiteType === 'API' || suiteType === 'Contract' 
-      ? rng.boolean(0.95) 
-      : rng.boolean(0.60);
-    const mode: TestExecutionMode = isAutomated ? 'Automated' : 'Manual';
-    
-    // Status probability: ~82% Pass, ~10% Fail, ~4% Blocked, ~4% Unattempted
-    const statusRoll = rng.next();
-    let status: TestExecutionStatus = 'Passed';
-    if (statusRoll > 0.96) status = 'Unattempted';
-    else if (statusRoll > 0.92) status = 'Blocked';
-    else if (statusRoll > 0.82) status = 'Failed';
+  let jiraGlobalId = 1000;
+  let testGlobalId = 10000;
 
-    const isFlaky = isAutomated && rng.boolean(0.045);
-    const rerunCount = isFlaky ? rng.range(1, 4) : 0;
-    const executionDaysAgo = rng.range(0, 45);
-    const executionDate = new Date(now - executionDaysAgo * 86400000).toISOString();
+  // 1. Generate 2,100 JIRA Work Items PER PRODUCT -> 10,500 total (>10,000)
+  for (const product of APP_PRODUCTS) {
+    const components = PRODUCT_COMPONENTS_MAP[product];
+    const releases = PRODUCT_RELEASES_MAP[product];
 
-    const durationSeconds = isAutomated 
-      ? rng.range(1, 45) 
-      : rng.range(120, 1800);
+    for (let i = 0; i < 2100; i++) {
+      jiraGlobalId++;
+      const id = `${product.substring(0, 3).toUpperCase()}-${jiraGlobalId}`;
+      const itemType = rng.choice(types);
+      const severity = rng.choice(severities);
+      const component = rng.choice(components);
+      
+      // Distribute items across releases: weighted towards latest releases
+      const releaseIdx = rng.choice([0, 0, 0, 1, 1, 2, 3, 4]);
+      const releaseVersion = releases[releaseIdx] || releases[0];
+      const ageProfile = RELEASE_AGE_OFFSETS[releaseIdx] || RELEASE_AGE_OFFSETS[0];
 
-    const linkedJiraKey = status === 'Failed' && rng.boolean(0.7) 
-      ? `ITM-${rng.range(1001, 1500)}` 
-      : undefined;
+      // Status determined by release stage
+      const status = rng.choice(ageProfile.defaultStatus);
+      const sprint = rng.choice(APP_SPRINTS);
+      const assignee = rng.choice(DEV_ENGINEERS);
+      const qaOwner = rng.choice(QA_ENGINEERS);
 
-    testRailExecutions.push({
-      id,
-      caseId,
-      title: `Verify ${suiteType} validation for ${rng.choice(APP_COMPONENTS)}`,
-      suiteType,
-      mode,
-      status,
-      product: rng.choice(APP_PRODUCTS),
-      component: rng.choice(APP_COMPONENTS),
-      sprint: rng.choice(APP_SPRINTS),
-      releaseVersion: rng.choice(APP_RELEASES),
-      executedBy: isAutomated ? 'CI/CD GitHub Runner' : rng.choice(QA_ENGINEERS),
-      executionDate,
-      durationSeconds,
-      isFlaky,
-      rerunCount,
-      linkedJiraKey,
-      errorMessage: status === 'Failed' ? 'AssertionError: HTTP 500 response code received during payload assert' : undefined
-    });
+      // Realistic creation timestamp according to release age
+      const daysAgoCreated = rng.range(ageProfile.minDays, ageProfile.maxDays);
+      const createdAt = new Date(now - daysAgoCreated * 86400000).toISOString();
+
+      let qaQueueEntryDate: string | undefined = undefined;
+      if (status === 'Under QA' || status === 'Blocked') {
+        const daysInQA = rng.range(1, Math.min(28, Math.max(2, daysAgoCreated)));
+        qaQueueEntryDate = new Date(now - daysInQA * 86400000).toISOString();
+      }
+
+      const isBug = itemType === 'Bug' || itemType === 'CustomerAPAR';
+      const isGating = isBug && (severity === 'P1-Blocker' || (severity === 'P2-Critical' && rng.boolean(0.4)));
+      const isRegression = isBug && rng.boolean(0.32);
+      const isCustomer = itemType === 'CustomerAPAR' || (isBug && rng.boolean(0.18));
+      const isReopened = status === 'Reopened' || (status === 'Done' && rng.boolean(0.08));
+
+      let resolvedAt: string | undefined = undefined;
+      if (status === 'Done') {
+        const daysAgoResolved = Math.max(0, daysAgoCreated - rng.range(1, 8));
+        resolvedAt = new Date(now - daysAgoResolved * 86400000).toISOString();
+      }
+
+      jiraItems.push({
+        id,
+        title: `${itemType}: ${component} validation for ${product} v${releaseVersion}`,
+        type: itemType,
+        status,
+        severity,
+        product,
+        component,
+        sprint,
+        releaseVersion,
+        assignee,
+        qaOwner,
+        storyPoints: rng.choice([1, 2, 3, 5, 8, 13]),
+        dependencyDepth: rng.range(1, 5),
+        isGatingDefect: isGating,
+        isRegressionDefect: isRegression,
+        isCustomerDefect: isCustomer,
+        isReopened,
+        reopenCount: isReopened ? rng.range(1, 3) : 0,
+        hasTestPlan: rng.boolean(0.88),
+        hasUnitTests: rng.boolean(0.82),
+        hasApiTests: rng.boolean(0.74),
+        createdAt,
+        qaQueueEntryDate,
+        resolvedAt,
+        testingHoursSpent: rng.range(2, 24)
+      });
+    }
   }
 
-  // 3. Generate 350 GitHub Pull Requests
-  for (let i = 1; i <= 350; i++) {
-    const number = 300 + i;
+  // 2. Generate 2,500 TestRail Executions PER PRODUCT -> 12,500 total (>10,000)
+  for (const product of APP_PRODUCTS) {
+    const components = PRODUCT_COMPONENTS_MAP[product];
+    const releases = PRODUCT_RELEASES_MAP[product];
+
+    for (let i = 0; i < 2500; i++) {
+      testGlobalId++;
+      const id = `TR-RUN-${testGlobalId}`;
+      const caseId = `C${rng.range(100, 999)}`;
+      const suiteType = rng.choice(suiteTypes);
+      const component = rng.choice(components);
+
+      // Weighted towards latest release (current active validation)
+      const releaseIdx = rng.choice([0, 0, 0, 0, 1, 1, 2, 3, 4]);
+      const releaseVersion = releases[releaseIdx] || releases[0];
+      const ageProfile = RELEASE_AGE_OFFSETS[releaseIdx] || RELEASE_AGE_OFFSETS[0];
+
+      // Automated mode: Unit, API, Contract, Performance, Security are mostly automated
+      const isAutomated = (suiteType === 'Unit' || suiteType === 'API' || suiteType === 'Contract' || suiteType === 'Performance')
+        ? rng.boolean(0.94)
+        : rng.boolean(0.68);
+      const mode: TestExecutionMode = isAutomated ? 'Automated' : 'Manual';
+
+      // Status distribution: ~84% Passed, ~9% Failed, ~4% Blocked, ~3% Unattempted
+      const statusRoll = rng.next();
+      let status: TestExecutionStatus = 'Passed';
+      if (statusRoll > 0.97) status = 'Unattempted';
+      else if (statusRoll > 0.93) status = 'Blocked';
+      else if (statusRoll > 0.84) status = 'Failed';
+
+      const isFlaky = isAutomated && rng.boolean(0.04);
+      const rerunCount = isFlaky ? rng.range(1, 4) : 0;
+      const executionDaysAgo = rng.range(ageProfile.minDays, ageProfile.maxDays);
+      const executionDate = new Date(now - executionDaysAgo * 86400000).toISOString();
+
+      const durationSeconds = isAutomated 
+        ? rng.range(1, 40) 
+        : rng.range(120, 1500);
+
+      const linkedJiraKey = status === 'Failed' && rng.boolean(0.7) 
+        ? `${product.substring(0, 3).toUpperCase()}-${rng.range(1001, 2000)}` 
+        : undefined;
+
+      testRailExecutions.push({
+        id,
+        caseId,
+        title: `Verify ${suiteType} validation for ${component}`,
+        suiteType,
+        mode,
+        status,
+        product,
+        component,
+        sprint: rng.choice(APP_SPRINTS),
+        releaseVersion,
+        executedBy: isAutomated ? 'CI/CD GitHub Runner' : rng.choice(QA_ENGINEERS),
+        executionDate,
+        durationSeconds,
+        isFlaky,
+        rerunCount,
+        linkedJiraKey,
+        errorMessage: status === 'Failed' ? 'AssertionError: HTTP 500 payload response check failed' : undefined
+      });
+    }
+  }
+
+  // 3. Generate 1,200 GitHub Pull Requests across all products
+  for (let i = 1; i <= 1200; i++) {
+    const number = 1000 + i;
     const id = `PR-${number}`;
-    const prDaysAgo = rng.range(1, 50);
+    const product = rng.choice(APP_PRODUCTS);
+    const component = rng.choice(PRODUCT_COMPONENTS_MAP[product]);
+    const prDaysAgo = rng.range(1, 55);
     const createdAt = new Date(now - prDaysAgo * 86400000).toISOString();
-    const isMerged = rng.boolean(0.85);
-    const mergedAt = isMerged ? new Date(now - (prDaysAgo - 1) * 86400000).toISOString() : undefined;
-    
+    const isMerged = rng.boolean(0.86);
+    const mergedAt = isMerged ? new Date(now - Math.max(0, prDaysAgo - 1) * 86400000).toISOString() : undefined;
+
     githubPRs.push({
       id,
       number,
-      title: `feat(${rng.choice(APP_COMPONENTS)}): upgrade resilience & retry logic`,
+      title: `feat(${component}): enhance resilience for ${product}`,
       author: rng.choice(DEV_ENGINEERS),
-      repository: rng.choice(['ITMWebSite', 'ITM-Core-Engine', 'ITM-Cloud-Gateway']),
-      targetBranch: rng.choice(['main', 'release/3.4', 'develop']),
+      repository: `${product.toLowerCase()}-service`,
+      targetBranch: rng.choice(['main', 'develop', 'release']),
       status: isMerged ? 'Merged' : rng.boolean(0.7) ? 'Open' : 'Closed',
       createdAt,
       mergedAt,
-      linesAdded: rng.range(15, 650),
-      linesDeleted: rng.range(5, 220),
-      unitTestIncluded: rng.boolean(0.88),
-      apiTestIncluded: rng.boolean(0.72),
-      ciStatus: rng.boolean(0.89) ? 'Passed' : 'Failed',
-      pipelineDurationMinutes: rng.range(4, 32),
-      linkedJiraKey: `ITM-${rng.range(1001, 1500)}`
+      linesAdded: rng.range(25, 750),
+      linesDeleted: rng.range(5, 260),
+      unitTestIncluded: rng.boolean(0.90),
+      apiTestIncluded: rng.boolean(0.76),
+      ciStatus: rng.boolean(0.91) ? 'Passed' : 'Failed',
+      pipelineDurationMinutes: rng.range(4, 28),
+      linkedJiraKey: `${product.substring(0, 3).toUpperCase()}-${rng.range(1001, 2000)}`
     });
   }
 
-  // 4. Generate 500 GitHub Commits
-  for (let i = 1; i <= 500; i++) {
+  // 4. Generate 2,000 GitHub Commits
+  for (let i = 1; i <= 2000; i++) {
+    const product = rng.choice(APP_PRODUCTS);
     const commitDaysAgo = rng.range(1, 60);
     githubCommits.push({
       id: Math.random().toString(16).substring(2, 9),
-      message: `ci/test: sync quality hooks and compliance suite #${rng.range(100, 999)}`,
+      message: `ci/test(${product}): sync quality gates and compliance checks #${rng.range(100, 999)}`,
       author: rng.choice(DEV_ENGINEERS),
-      repository: rng.choice(['ITMWebSite', 'ITM-Core-Engine']),
+      repository: `${product.toLowerCase()}-service`,
       timestamp: new Date(now - commitDaysAgo * 86400000).toISOString(),
-      hasComplianceTest: rng.boolean(0.92)
+      hasComplianceTest: rng.boolean(0.93)
     });
   }
 

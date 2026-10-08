@@ -53,7 +53,10 @@ class KPIDataRepository implements IKPIDataRepository {
     if (this.initialized) return;
 
     const count = await kpiDb.jiraWorkItems.count();
-    if (count === 0) {
+    const firstItem = await kpiDb.jiraWorkItems.limit(1).first();
+    const isLegacy = !firstItem || !['YouTube', 'GMail', 'LinkedIn', 'Shopify', 'Amazon'].includes(firstItem.product);
+
+    if (count < 10000 || isLegacy) {
       await this.resetToSampleDataset();
     } else {
       // Ensure connector configs exist

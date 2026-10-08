@@ -26,11 +26,13 @@ import type {
   DataSourceType
 } from '../types/kpiPlatform';
 
+import { APP_PRODUCTS, PRODUCT_RELEASES_MAP, type AppProduct } from '../constants/kpiConstants';
+
 export const INITIAL_FILTER_STATE: KPIFilterState = {
-  product: 'All',
+  product: APP_PRODUCTS[0], // 'YouTube'
   component: 'All',
   sprint: 'All',
-  releaseVersion: 'All',
+  releaseVersion: PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][0], // '21.4.2'
   dateRangeDays: 30
 };
 
@@ -117,10 +119,22 @@ export function useKPIData() {
 
   // Update specific filter property
   const updateFilter = useCallback(<K extends keyof KPIFilterState>(key: K, value: KPIFilterState[K]) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    setFilters(prev => {
+      if (key === 'product') {
+        const prod = value as AppProduct;
+        const latestRelease = PRODUCT_RELEASES_MAP[prod]?.[0] || '1.0.0';
+        return {
+          ...prev,
+          product: prod,
+          component: 'All',
+          releaseVersion: latestRelease
+        };
+      }
+      return {
+        ...prev,
+        [key]: value
+      };
+    });
   }, []);
 
   const resetFilters = useCallback(() => {
