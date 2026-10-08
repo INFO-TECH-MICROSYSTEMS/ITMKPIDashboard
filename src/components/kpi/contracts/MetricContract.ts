@@ -100,3 +100,17 @@ export class MetricClarificationFactory {
     return justification;
   }
 }
+
+/**
+ * 6. Contract for Complex Container / Section Headers (Tables, Matrices, Audits, Ledgers).
+ *    Guarantees every major section or ledger table has a mandatory clarification trigger
+ *    with a standard, prominent (?) HelpCircle icon button.
+ */
+export interface ISectionHeaderContract extends IBaseMetricWidgetProps {
+  title: string;
+  badgeText?: string;
+  badgeVariant?: 'neutral' | 'rose' | 'amber' | 'emerald' | 'cyan' | 'purple';
+  icon?: React.ReactNode;
+  subtitle?: string;
+  actionText?: string; // e.g. "Clarify Policy" or "Explain Metric"
+}

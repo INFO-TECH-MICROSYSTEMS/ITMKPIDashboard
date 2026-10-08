@@ -15,7 +15,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  ShieldCheck, Eye, Zap, ThumbsUp 
+  ShieldCheck, Eye, Zap, ThumbsUp, HelpCircle 
 } from 'lucide-react';
 import type { 
   ReleaseQualityScorecard, 
@@ -117,9 +117,19 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
 
       {/* SLA Compliance Breakdown Matrix */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-          {t('kpiPlatform.governanceView.slaMatrixTitle')}
-        </h4>
+        <div className="flex items-center justify-between">
+          <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+            {t('kpiPlatform.governanceView.slaMatrixTitle')}
+          </h4>
+          <button
+            type="button"
+            onClick={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
+            className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Click for Enterprise Quality SLA Governance justification"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
@@ -192,8 +202,11 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                 title={t('kpiPlatform.governanceView.viewJustification', 'Click for SLA justification and compliance audit')}
               >
                 <div className="flex justify-between items-start gap-2">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit']">{sla.name}</span>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 ${slaTheme.badge}`}>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit'] truncate">{sla.name}</span>
+                    <HelpCircle className="w-3.5 h-3.5 text-slate-400 shrink-0 opacity-70" />
+                  </div>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 shrink-0 ${slaTheme.badge}`}>
                     <span>{statusLabel}</span>
                   </span>
                 </div>
@@ -212,11 +225,21 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Accessibility Card */}
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-cyan-500" />
-            <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
-            </h4>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-cyan-500" />
+              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
+              </h4>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedJustification(KPIJustificationService.getA11yAuditCardJustification(scorecard))}
+              className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Click for WCAG 2.2 AA Accessibility Audit clarification"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
           </div>
 
           <div className="space-y-2 text-xs">
@@ -243,11 +266,21 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
 
         {/* Performance Benchmarks Card */}
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-purple-500" />
-            <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
-            </h4>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-purple-500" />
+              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
+              </h4>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedJustification(KPIJustificationService.getPerfAuditCardJustification(scorecard))}
+              className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Click for SaaS Performance & Reliability Benchmarks clarification"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
           </div>
 
           <div className="space-y-2 text-xs">

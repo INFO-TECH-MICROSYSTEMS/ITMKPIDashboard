@@ -218,7 +218,17 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <XCircle className="w-4 h-4 text-rose-500" />
               <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItems.length})</span>
             </span>
-            <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItems))}
+                className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Click for Blocked Development Items clarification and policy audit"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -242,7 +252,17 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <Layers className="w-4 h-4 text-purple-500" />
               <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItems.length})</span>
             </span>
-            <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
+                className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Click for High Dependency Depth clarification and coupling audit"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
