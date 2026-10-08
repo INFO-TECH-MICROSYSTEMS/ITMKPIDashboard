@@ -134,10 +134,13 @@ interface AreaTrendChartProps {
   title: string;
   series1Name: string;
   series2Name?: string;
+  series3Name?: string;
   series1Color?: string;
   series2Color?: string;
+  series3Color?: string;
   height?: number;
   projectionLineColor?: string;
+  series3ProjectionLineColor?: string;
   forecastBadge?: string;
 }
 
@@ -146,16 +149,19 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   title,
   series1Name,
   series2Name,
-  series1Color = '#06b6d4', // Cyan
-  series2Color = '#8b5cf6', // Purple
+  series3Name,
+  series1Color = '#f43f5e', // Rose (Total Tests)
+  series2Color = '#10b981', // Emerald (Completed Tests)
+  series3Color = '#f59e0b', // Amber (Remaining Tests)
   height = 200,
-  projectionLineColor = '#38bdf8', // Light sky blue
+  projectionLineColor = '#06b6d4', // Cyan dashed (Completed Forecast)
+  series3ProjectionLineColor = '#fbbf24', // Amber dashed (Remaining Burnout Forecast)
   forecastBadge
 }) => {
   if (!data || data.length === 0) return null;
 
   const maxVal = Math.max(
-    ...data.map(d => Math.max(d.value1, d.value2 ?? 0)),
+    ...data.map(d => Math.max(d.value1, d.value2 ?? 0, d.value3 ?? 0)),
     8
   );
 
@@ -172,11 +178,11 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   const firstProjectedIndex = data.findIndex(d => d.isProjected);
   const hasProjection = firstProjectedIndex !== -1;
 
-  // Build path strings for Series 1
+  // Series 1: Total Tests (Scope)
   const points1 = data.map((d, i) => `${getX(i)},${getY(d.value1)}`).join(' ');
   const area1 = `${getX(0)},${paddingY + chartH} ${points1} ${getX(data.length - 1)},${paddingY + chartH}`;
 
-  // Series 2 Historical portion
+  // Series 2: Completed Tests (Historical)
   const historyData = hasProjection ? data.slice(0, firstProjectedIndex + 1) : data;
   const points2History = series2Name ? historyData.map((d, i) => `${getX(i)},${getY(d.value2 ?? 0)}`).join(' ') : '';
   const area2 = series2Name && historyData.length > 0 
@@ -193,6 +199,20 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
     ? `${getX(projectionStartIndex)},${paddingY + chartH} ${points2Projected} ${getX(data.length - 1)},${paddingY + chartH}`
     : '';
 
+  // Series 3: Remaining Tests (Historical)
+  const points3History = series3Name ? historyData.map((d, i) => `${getX(i)},${getY(d.value3 ?? 0)}`).join(' ') : '';
+  const area3 = series3Name && historyData.length > 0
+    ? `${getX(0)},${paddingY + chartH} ${points3History} ${getX(historyData.length - 1)},${paddingY + chartH}`
+    : '';
+
+  // Series 3 Projected portion (burning down to 0)
+  const points3Projected = hasProjection && series3Name
+    ? projectedData.map((d, idx) => `${getX(projectionStartIndex + idx)},${getY(d.value3 ?? 0)}`).join(' ')
+    : '';
+  const area3Projected = hasProjection && series3Name && projectedData.length > 0
+    ? `${getX(projectionStartIndex)},${paddingY + chartH} ${points3Projected} ${getX(data.length - 1)},${paddingY + chartH}`
+    : '';
+
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -206,7 +226,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             </span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series1Color }} />
             <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
@@ -217,10 +237,16 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
               <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
             </div>
           )}
+          {series3Name && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series3Color }} />
+              <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
+            </div>
+          )}
           {hasProjection && (
             <div className="flex items-center gap-1.5">
               <span className="w-4 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
-              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Forecast Velocity</span>
+              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Projected Forecast</span>
             </div>
           )}
         </div>
@@ -230,10 +256,16 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto min-w-[380px]">
           <defs>
             {hasProjection && (
-              <linearGradient id="forecastHatch" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={projectionLineColor} stopOpacity="0.25" />
-                <stop offset="100%" stopColor={projectionLineColor} stopOpacity="0.03" />
-              </linearGradient>
+              <>
+                <linearGradient id="forecastHatch" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={projectionLineColor} stopOpacity="0.22" />
+                  <stop offset="100%" stopColor={projectionLineColor} stopOpacity="0.02" />
+                </linearGradient>
+                <linearGradient id="remainingForecastHatch" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={series3ProjectionLineColor} stopOpacity="0.18" />
+                  <stop offset="100%" stopColor={series3ProjectionLineColor} stopOpacity="0.01" />
+                </linearGradient>
+              </>
             )}
           </defs>
 
@@ -277,8 +309,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             );
           })}
 
-          {/* Series 1 Area & Line */}
-          <polygon points={area1} fill={series1Color} fillOpacity="0.12" />
+          {/* Series 1 Area & Line: Total Tests */}
+          <polygon points={area1} fill={series1Color} fillOpacity="0.08" />
           <polyline
             fill="none"
             stroke={series1Color}
@@ -288,7 +320,38 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Series 2 Historical Area & Line */}
+          {/* Series 3 Area & Line: Remaining Tests (Historical) */}
+          {series3Name && (
+            <>
+              {area3 && <polygon points={area3} fill={series3Color} fillOpacity="0.10" />}
+              <polyline
+                fill="none"
+                stroke={series3Color}
+                strokeWidth="2.5"
+                points={points3History}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          )}
+
+          {/* Series 3 Projected Area & Dashed Line: Remaining Tests Burnout */}
+          {hasProjection && series3Name && (
+            <>
+              {area3Projected && <polygon points={area3Projected} fill="url(#remainingForecastHatch)" />}
+              <polyline
+                fill="none"
+                stroke={series3ProjectionLineColor}
+                strokeWidth="2.5"
+                strokeDasharray="5 3"
+                points={points3Projected}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          )}
+
+          {/* Series 2 Historical Area & Line: Completed Tests */}
           {series2Name && (
             <>
               {area2 && <polygon points={area2} fill={series2Color} fillOpacity="0.12" />}
@@ -303,7 +366,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             </>
           )}
 
-          {/* Series 2 Projected Area & Dashed Line */}
+          {/* Series 2 Projected Area & Dashed Line: Completed Forecast Runway */}
           {hasProjection && series2Name && (
             <>
               {area2Projected && <polygon points={area2Projected} fill="url(#forecastHatch)" />}
@@ -347,6 +410,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             const isPointProjected = Boolean(d.isProjected);
             return (
               <g key={i} className="group cursor-pointer">
+                {/* Total tests point */}
                 <circle
                   cx={getX(i)}
                   cy={getY(d.value1)}
@@ -354,6 +418,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                   fill={series1Color}
                   className="transition-transform group-hover:scale-150"
                 />
+
+                {/* Completed tests point */}
                 {series2Name && (
                   <circle
                     cx={getX(i)}
@@ -365,6 +431,20 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                     className="transition-transform group-hover:scale-150"
                   />
                 )}
+
+                {/* Remaining tests point */}
+                {series3Name && typeof d.value3 === 'number' && (
+                  <circle
+                    cx={getX(i)}
+                    cy={getY(d.value3)}
+                    r={isPointProjected ? '3' : '3.5'}
+                    fill={isPointProjected ? series3ProjectionLineColor : series3Color}
+                    stroke={isPointProjected ? '#fff' : undefined}
+                    strokeWidth={isPointProjected ? 1.5 : 0}
+                    className="transition-transform group-hover:scale-150"
+                  />
+                )}
+
                 {/* X Axis Labels */}
                 {i % 2 === 0 && (
                   <text
