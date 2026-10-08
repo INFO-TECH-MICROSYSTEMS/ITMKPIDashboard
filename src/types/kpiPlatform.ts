@@ -223,6 +223,18 @@ export interface TrendPoint {
   value1: number;
   value2?: number;
   value3?: number;
+  isProjected?: boolean;
+}
+
+export interface TestExecutionBurnoutForecast {
+  historyAndForecast: TrendPoint[];
+  currentDailyVelocity: number;
+  remainingUntested: number;
+  totalScope: number;
+  completedSoFar: number;
+  estimatedCompletionDate: string; // e.g. "Oct 19, 2026"
+  daysToCompletion: number;
+  isVelocityHealthy: boolean;
 }
 
 export interface ComponentRiskMetric {
