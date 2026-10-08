@@ -159,13 +159,13 @@ export function useKPIData() {
   );
 
   const defectTrends = useMemo(() => 
-    KPICalculatorService.calculateDefectDiscoveryTrends(jiraItems),
-    [jiraItems]
+    KPICalculatorService.calculateDefectDiscoveryTrends(jiraItems, filters.dateRangeDays),
+    [jiraItems, filters.dateRangeDays]
   );
 
   const testBurnoutForecast = useMemo(() => 
-    KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutions, 14),
-    [testRailExecutions]
+    KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutions, filters.dateRangeDays),
+    [testRailExecutions, filters.dateRangeDays]
   );
 
   const componentRisks = useMemo(() => 

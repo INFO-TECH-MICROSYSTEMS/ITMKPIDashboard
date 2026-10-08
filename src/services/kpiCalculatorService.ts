@@ -323,10 +323,9 @@ export class KPICalculatorService {
   }
 
   /**
-   * 5. Defect Discovery vs Burnout Trends over past 30 days
+   * 5. Defect Discovery vs Burnout Trends over selected time range window
    */
-  static calculateDefectDiscoveryTrends(jiraItems: JiraWorkItem[]): TrendPoint[] {
-    const days = 14;
+  static calculateDefectDiscoveryTrends(jiraItems: JiraWorkItem[], days = 30): TrendPoint[] {
     const now = Date.now();
     const points: TrendPoint[] = [];
 
@@ -366,7 +365,7 @@ export class KPICalculatorService {
    */
   static calculateTestExecutionBurnoutForecast(
     testRailExecutions: TestRailExecution[],
-    daysHistory = 14
+    daysHistory = 30
   ): TestExecutionBurnoutForecast {
     const totalScope = Math.max(1, testRailExecutions.length);
     const unexecuted = testRailExecutions.filter(t => t.status === 'Unattempted').length;

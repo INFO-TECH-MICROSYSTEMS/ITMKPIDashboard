@@ -469,17 +469,26 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                   />
                 )}
 
-                {/* X Axis Labels */}
-                {i % 2 === 0 && (
-                  <text
-                    x={getX(i)}
-                    y={height - 5}
-                    textAnchor="middle"
-                    className={`text-[10px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
-                  >
-                    {d.label}
-                  </text>
-                )}
+                {/* X Axis Labels (Adaptive step depending on time range window: 7d, 14d, 30d, 90d) */}
+                {(() => {
+                  const step = data.length > 50 ? 7 : data.length > 25 ? 4 : data.length > 14 ? 2 : 1;
+                  const isFirst = i === 0;
+                  const isLast = i === data.length - 1;
+                  const isFirstProjected = hasProjection && i === firstProjectedIndex;
+                  const shouldShow = isFirst || isLast || isFirstProjected || (i % step === 0);
+                  if (!shouldShow) return null;
+
+                  return (
+                    <text
+                      x={getX(i)}
+                      y={height - 5}
+                      textAnchor="middle"
+                      className={`text-[10px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
+                    >
+                      {d.label}
+                    </text>
+                  );
+                })()}
               </g>
             );
           })}
