@@ -18,7 +18,8 @@ import type {
   JiraWorkItem, 
   TestRailExecution, 
   KPIJustification,
-  KPIContributingFactor
+  KPIContributingFactor,
+  TestExecutionBurnoutForecast
 } from '../types/kpiPlatform';
 import { QUALITY_THRESHOLDS } from '../constants/kpiConstants';
 
@@ -478,6 +479,54 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
       recommendedAction: isOptimal
         ? 'Maintain realistic squad velocity baselines during sprint planning.'
         : 'Decompose large epics into smaller, independently testable user stories and avoid late scope-creep injections.'
+    };
+  }
+
+  /**
+   * 13. Test Execution Burnout & Velocity Forecast Justification
+   */
+  static getTestBurnoutForecastJustification(
+    forecast: TestExecutionBurnoutForecast
+  ): KPIJustification {
+    const isOptimal = forecast.isVelocityHealthy;
+    const factors: KPIContributingFactor[] = [
+      {
+        factor: 'Current Execution Run Rate',
+        impact: `${forecast.currentDailyVelocity.toLocaleString()} tests / day`,
+        status: forecast.currentDailyVelocity > 50 ? 'positive' : 'warning',
+        details: `Calculated from a 7-day moving average of successfully closed and passed TestRail execution runs.`
+      },
+      {
+        factor: 'Remaining Unexecuted Test Backlog',
+        impact: `${forecast.remainingUntested.toLocaleString()} tests remaining`,
+        status: forecast.remainingUntested === 0 ? 'positive' : forecast.remainingUntested > 500 ? 'critical' : 'warning',
+        details: `${forecast.remainingUntested} tests remain in the 'Unattempted' state out of ${forecast.totalScope.toLocaleString()} total scoped test cases.`
+      },
+      {
+        factor: 'Projected Runway to Full Test Completion',
+        impact: `${forecast.daysToCompletion} calendar days (${forecast.estimatedCompletionDate})`,
+        status: isOptimal ? 'positive' : 'critical',
+        details: `Based on deterministic velocity modeling: DaysToComplete = CEIL(RemainingTests / DailyVelocity). Target completion is ${forecast.estimatedCompletionDate}.`
+      }
+    ];
+
+    return {
+      title: 'Test Execution Burnout & Predictive Velocity Forecast',
+      statusBadge: isOptimal ? 'On Schedule' : 'Velocity At Risk',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${forecast.completedSoFar.toLocaleString()} / ${forecast.totalScope.toLocaleString()} Done (${((forecast.completedSoFar / forecast.totalScope) * 100).toFixed(1)}%)`,
+      targetValue: '100% Executed Prior to Release Gate',
+      description: 'A multi-dimensional velocity burnout chart tracking cumulative total tests planned, completed test executions over time, and unexecuted tests remaining, extending dynamically into future dates to forecast total test completion.',
+      trackedInfo: 'Aggregates historical TestRail test executions and planned test suite cases, computing a moving average daily run rate to project when remaining unexecuted tests will burn down to zero.',
+      businessImportance: 'Provides senior executives with empirical foresight on testing runway. Prevents premature release deployments and identifies execution bottlenecks early enough to allocate additional SDET / QA automation capacity.',
+      formulaOrRule: `VelocityRunwayDays = CEIL((TotalScopedTests - CompletedExecutions) / MovingAvgDailyExecutions) | TargetDate = Today + VelocityRunwayDays`,
+      rationale: isOptimal
+        ? `At current velocity (${forecast.currentDailyVelocity} tests/day), remaining test backlog will be burned down by ${forecast.estimatedCompletionDate} (${forecast.daysToCompletion} days remaining). Delivery velocity is aligned with release deadlines.`
+        : `At current velocity (${forecast.currentDailyVelocity} tests/day), burning down the remaining ${forecast.remainingUntested} tests will require ${forecast.daysToCompletion} days, extending to ${forecast.estimatedCompletionDate}. Additional test execution bandwidth or CI/CD test parallelization is required.`,
+      factors,
+      recommendedAction: isOptimal
+        ? 'Maintain current test execution pace and preserve automated pipeline concurrency.'
+        : 'Increase parallel worker nodes in CI test execution pipelines or triage low-priority manual test suites.'
     };
   }
 }

@@ -418,6 +418,15 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast))}
+                className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Explain Forecast</span>
+              </button>
               <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
                 testBurnoutForecast.isVelocityHealthy 
                   ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
