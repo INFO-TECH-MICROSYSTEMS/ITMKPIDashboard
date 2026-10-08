@@ -472,14 +472,17 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* Area Trend & Burnout Chart with Extrapolated Velocity Runway */}
           <AreaTrendChart
             data={testBurnoutForecast.historyAndForecast}
-            title={`${t('kpiPlatform.executiveView.burnoutTitle')} (Historical + Projected Runway)`}
-            series1Name={t('kpiPlatform.executiveView.scopeAddedSeries')}
-            series2Name={t('kpiPlatform.executiveView.completedVelocitySeries')}
-            series1Color="#f43f5e" // Scope / added line (Rose)
-            series2Color="#10b981" // Historical completed velocity (Emerald)
-            projectionLineColor="#06b6d4" // Future velocity projected runway (Cyan dashed)
+            title={t('kpiPlatform.executiveView.burnoutTitle')}
+            series1Name={t('kpiPlatform.executiveView.totalTestsSeries')}
+            series2Name={t('kpiPlatform.executiveView.completedTestsSeries')}
+            series3Name={t('kpiPlatform.executiveView.remainingTestsSeries')}
+            series1Color="#f43f5e" // Total Tests (Rose solid)
+            series2Color="#10b981" // Completed Tests (Emerald solid)
+            series3Color="#f59e0b" // Remaining Tests (Amber solid)
+            projectionLineColor="#06b6d4" // Completed forecast trajectory (Cyan dashed)
+            series3ProjectionLineColor="#fbbf24" // Remaining tests burnout trajectory (Amber dashed)
             forecastBadge={`Target Complete: ${testBurnoutForecast.estimatedCompletionDate}`}
-            height={260}
+            height={280}
           />
         </div>
       )}
