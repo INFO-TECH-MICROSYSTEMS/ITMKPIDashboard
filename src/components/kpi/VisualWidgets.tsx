@@ -505,7 +505,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 export const StackedProgressBar: React.FC<{
   distribution: TestStatusDistribution;
   title?: string;
-}> = ({ distribution, title }) => {
+  onJustify?: () => void;
+}> = ({ distribution, title, onJustify }) => {
   const { t } = useTranslation();
   const { passed, failed, blocked, unattempted, total } = distribution;
   if (total === 0) return null;
@@ -519,7 +520,19 @@ export const StackedProgressBar: React.FC<{
     <div className="space-y-2">
       {title && (
         <div className="flex justify-between items-center text-xs">
-          <span className="font-semibold text-slate-800 dark:text-slate-200">{title}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{title}</span>
+            {onJustify && (
+              <button
+                type="button"
+                onClick={onJustify}
+                className="p-0.5 rounded text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
+                title="Click for metric clarification & formula audit"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
           <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">{passedPct}% {t('kpiPlatform.executiveView.passed', 'Pass Rate')}</span>
         </div>
       )}

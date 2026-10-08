@@ -19,7 +19,12 @@ import type {
   TestRailExecution, 
   KPIJustification,
   KPIContributingFactor,
-  TestExecutionBurnoutForecast
+  TestExecutionBurnoutForecast,
+  AgingBuckets,
+  DefectSeverityCounts,
+  ComponentRiskMetric,
+  PersonProductivityMetric,
+  TestStatusDistribution
 } from '../types/kpiPlatform';
 import { QUALITY_THRESHOLDS } from '../constants/kpiConstants';
 
@@ -529,4 +534,253 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
         : 'Increase parallel worker nodes in CI test execution pipelines or triage low-priority manual test suites.'
     };
   }
+
+  /**
+   * 14. Items Pending Testing Aging Profile Justification
+   */
+  static getAgingProfileJustification(
+    agingBuckets: AgingBuckets,
+    bucketKey: 'under7' | '7to14' | '14to21' | '21plus' | 'all'
+  ): KPIJustification {
+    const total = agingBuckets.pending7Days + agingBuckets.pending7To14Days + agingBuckets.pending14To21Days + agingBuckets.pending21PlusDays;
+    const isStaleHigh = agingBuckets.pending21PlusDays > 10;
+
+    let bucketTitle = 'Items Pending Testing Aging Profile';
+    let currentVal = `${total} Total In QA Queue`;
+    let statusBadge = isStaleHigh ? 'Critical Backlog SLA Breach' : 'Normal Cadence';
+    let statusColor: 'emerald' | 'amber' | 'rose' = isStaleHigh ? 'rose' : 'emerald';
+
+    if (bucketKey === 'under7') {
+      bucketTitle = 'Items Pending Testing: Fresh (< 7 Days)';
+      currentVal = `${agingBuckets.pending7Days} Items`;
+      statusBadge = 'Fresh / Healthy';
+      statusColor = 'emerald';
+    } else if (bucketKey === '7to14') {
+      bucketTitle = 'Items Pending Testing: Moderate (7 - 14 Days)';
+      currentVal = `${agingBuckets.pending7To14Days} Items`;
+      statusBadge = 'Normal Cadence';
+      statusColor = 'emerald';
+    } else if (bucketKey === '14to21') {
+      bucketTitle = 'Items Pending Testing: At Risk (14 - 21 Days)';
+      currentVal = `${agingBuckets.pending14To21Days} Items`;
+      statusBadge = 'At Risk SLA';
+      statusColor = 'amber';
+    } else if (bucketKey === '21plus') {
+      bucketTitle = 'Items Pending Testing: Stale / Blocked (21+ Days)';
+      currentVal = `${agingBuckets.pending21PlusDays} Stale Items`;
+      statusBadge = 'Critical SLA Breach';
+      statusColor = 'rose';
+    }
+
+    return {
+      title: bucketTitle,
+      statusBadge,
+      statusColor,
+      currentValue: currentVal,
+      targetValue: 'Target: 0 Items in 21+ Days Stale Bucket',
+      description: 'Measures queue latency of JIRA work items and bug fixes waiting in "Under QA" state before verification completion and deployment sign-off.',
+      trackedInfo: 'Aggregates age distribution of tickets queued in QA state: Fresh (<7d), Normal (7-14d), At Risk (14-21d), and Stale/Breached (21+d).',
+      businessImportance: 'Uncovers QA verification bottlenecks. Work items idling in QA delay feature time-to-market, increase merge conflict risk, and inflate lead time for changes.',
+      formulaOrRule: `AgingBucket = CurrentTimestamp - DateEnteredUnderQAState | Threshold: Stale if Duration > 21 Days`,
+      rationale: `There are currently ${total} tickets awaiting testing, with ${agingBuckets.pending21PlusDays} items exceeding the 21-day stale threshold. Backlog latency prolongs delivery lead times and risks developer rework.`,
+      recommendedAction: isStaleHigh
+        ? 'Conduct emergency backlog swarm session to triage and verify items pending testing beyond 14 days.'
+        : 'Maintain current cadence and enforce maximum 7-day QA turnaround SLA per sprint.'
+    };
+  }
+
+  /**
+   * 15. Defect Severity Breakdown Justification
+   */
+  static getDefectSeverityJustification(
+    severityCounts: DefectSeverityCounts,
+    sevKey?: 'blocker' | 'critical' | 'major' | 'minor'
+  ): KPIJustification {
+    const total = severityCounts.blockerP1 + severityCounts.criticalP2 + severityCounts.majorP3 + severityCounts.minorP4;
+    const hasBlockers = severityCounts.blockerP1 > 0;
+
+    let title = 'Defect Severity Distribution & Triage Hierarchy';
+    let currentVal = `${total} Active Defects (P1: ${severityCounts.blockerP1}, P2: ${severityCounts.criticalP2})`;
+    let statusBadge = hasBlockers ? 'Gated by Blockers' : 'Controlled Severity';
+    let statusColor: 'emerald' | 'amber' | 'rose' = hasBlockers ? 'rose' : 'emerald';
+
+    if (sevKey === 'blocker') {
+      title = 'P1 - Blocker Defect Volume';
+      currentVal = `${severityCounts.blockerP1} Blockers`;
+      statusBadge = severityCounts.blockerP1 === 0 ? 'Gate Clear' : 'Hard Gate Lock';
+      statusColor = severityCounts.blockerP1 === 0 ? 'emerald' : 'rose';
+    } else if (sevKey === 'critical') {
+      title = 'P2 - Critical Release Defect Volume';
+      currentVal = `${severityCounts.criticalP2} Criticals`;
+      statusBadge = severityCounts.criticalP2 <= 5 ? 'Acceptable' : 'High Defect Churn';
+      statusColor = severityCounts.criticalP2 <= 5 ? 'emerald' : 'amber';
+    }
+
+    return {
+      title,
+      statusBadge,
+      statusColor,
+      currentValue: currentVal,
+      targetValue: 'Target: 0 P1 Blockers & ≤ 5 P2 Criticals at Release Cutoff',
+      description: 'Categorizes all open defects into standardized enterprise severity levels (P1-Blocker, P2-Critical, P3-Major, P4-Minor) to guide squad triage and release readiness.',
+      trackedInfo: 'Measures live defect counts and percentage allocations across four standardized JIRA severity tiers.',
+      businessImportance: 'Prevents critical customer-facing incidents. High-severity defects disrupt revenue transactions and cause brand reputation damage if released to production.',
+      formulaOrRule: `SeverityRatio = (CountBySeverity / TotalActiveDefects) × 100 | Zero P1 Blockers Mandatory for Gate Clearance`,
+      rationale: hasBlockers
+        ? `There are ${severityCounts.blockerP1} active P1 Blocker defects. Enterprise quality governance automatically halts production rollouts until all P1 blockers are certified resolved.`
+        : `Defect severity distribution is controlled with zero P1 blockers. Active defects are primarily functional or cosmetic (P3/P4).`,
+      recommendedAction: hasBlockers
+        ? 'Direct squad capacity toward P1 blocker remediation before committing to release cutover.'
+        : 'Continue routine sprint defect burndown and triage minor cosmetics.'
+    };
+  }
+
+  /**
+   * 16. Active Release Gating Defects Table Justification
+   */
+  static getGatingDefectsTableJustification(
+    gatingItems: JiraWorkItem[]
+  ): KPIJustification {
+    const count = gatingItems.length;
+    const isGated = count > 0;
+
+    return {
+      title: 'Active Release Gating Defects Sign-Off Ledger',
+      statusBadge: isGated ? 'Requires Sign-Off' : 'Gate Passed',
+      statusColor: isGated ? 'rose' : 'emerald',
+      currentValue: `${count} Gating Defects Unresolved`,
+      targetValue: '0 Permitted at Gate Sign-Off',
+      description: 'An executive audit ledger listing all unresolved P1/P2 defects identified as mandatory release blockers requiring explicit QA sign-off prior to production deployment.',
+      trackedInfo: 'Tracks issue key, summary, assigned product, impacted component, QA owner, and workflow status for every active blocking ticket.',
+      businessImportance: 'Strict compliance and release gating standard. Enforces zero-tolerance release policies to safeguard revenue transactions and user experience.',
+      formulaOrRule: `GatingCriteria = ALL(JiraItems WHERE isGatingDefect == true) MUST HAVE status == 'Done'`,
+      rationale: isGated
+        ? `${count} release gating defects remain unresolved. Deployment pipelines are locked until these specific items receive certified bug fixes and passing automated verification.`
+        : 'All release gating defects have been verified and resolved. Release quality gates are satisfied.',
+      offendingItems: gatingItems.slice(0, 5).map(item => ({
+        id: item.id,
+        title: item.title,
+        source: 'JIRA',
+        severityOrStatus: `${item.severity} (${item.status})`
+      })),
+      recommendedAction: isGated
+        ? 'Engage designated QA Owners and Engineering Leads to prioritize resolution and re-verification.'
+        : 'Proceed with standard staging deployment sign-off.'
+    };
+  }
+
+  /**
+   * 17. Component Risk & Dependency Gating Matrix Justification
+   */
+  static getComponentRiskMatrixJustification(
+    componentRisks: ComponentRiskMetric[]
+  ): KPIJustification {
+    const criticalCount = componentRisks.filter(c => c.riskLevel === 'Critical').length;
+    const isCritical = criticalCount > 0;
+
+    return {
+      title: 'Component Risk & Dependency Gating Matrix',
+      statusBadge: isCritical ? `${criticalCount} Critical Modules` : 'Low Module Risk',
+      statusColor: isCritical ? 'rose' : 'emerald',
+      currentValue: `${criticalCount} / ${componentRisks.length} Critical Modules`,
+      targetValue: '0 Critical Modules at Release Gate',
+      description: 'A multi-dimensional architectural risk index calculating vulnerability profiles across test failure rates, open gating bugs, cyclomatic complexity, code churn, and unit test coverage per module.',
+      trackedInfo: 'Aggregates test execution failure rates, gating defects, test coverage %, missing unit tests, cyclomatic complexity (CC), and code churn lines per component.',
+      businessImportance: 'Pinpoints architectural hotspots and blast radius. Modules with high churn and missing tests are primary sources of customer outages and regressions.',
+      formulaOrRule: `ModuleRiskScore = (TestFailureRate × 0.4) + (GatingDefects × 2.0) + (Complexity × 0.3) + (Churn / 1000)`,
+      rationale: isCritical
+        ? `${criticalCount} component modules exhibit elevated risk profiles due to high test failure rates and unresolved gating bugs. Releases touching these modules require dedicated regression suites.`
+        : 'All components maintain acceptable test pass rates and low cyclomatic complexity risk.',
+      recommendedAction: isCritical
+        ? 'Enforce automated unit test gate checks on high-churn components and prioritize architecture refactoring.'
+        : 'Maintain continuous integration coverage on all core services.'
+    };
+  }
+
+  /**
+   * 18. Flaky Automated Tests & Quarantine Ledger Justification
+   */
+  static getFlakyTestsJustification(
+    flakyTests: TestRailExecution[],
+    totalReruns: number
+  ): KPIJustification {
+    const count = flakyTests.length;
+    const isElevated = count > 20;
+
+    return {
+      title: 'Flaky Automated Tests & Quarantine Ledger',
+      statusBadge: isElevated ? 'High Flakiness' : 'Quarantine Active',
+      statusColor: isElevated ? 'rose' : 'amber',
+      currentValue: `${count} Flaky Cases (${totalReruns} Pipeline Reruns)`,
+      targetValue: '< 10 Cases Requiring Quarantine',
+      description: 'Tracks non-deterministic automated test cases that exhibit intermittent pass/fail results across identical code revisions, wasting CI runner compute and slowing build pipelines.',
+      trackedInfo: 'Monitors TestRail execution history for retry counts, non-deterministic status flips, execution durations, and impacted components.',
+      businessImportance: 'Protects developer trust in CI/CD pipeline signals. Persistent test flakiness causes squads to ignore real test failures and leads to customer defect escapes.',
+      formulaOrRule: `FlakyRate = (COUNT(TestCasesWithInconsistentRerunResults) / TotalAutomatedTestCases) × 100`,
+      rationale: `${count} automated test cases required ${totalReruns} pipeline reruns to achieve green status. Non-deterministic test runs erode CI confidence and inflate pipeline runtimes.`,
+      offendingItems: flakyTests.slice(0, 5).map(t => ({
+        id: t.caseId,
+        title: t.title,
+        source: 'TestRail',
+        severityOrStatus: `${t.rerunCount} reruns (${t.durationSeconds}s)`
+      })),
+      recommendedAction: 'Quarantine identified flaky test cases into an isolated monitoring suite until root cause timing or data dependencies are fixed.'
+    };
+  }
+
+  /**
+   * 19. QA Engineer Test Assignment & Throughput Ledger Justification
+   */
+  static getQaThroughputLedgerJustification(
+    metrics: PersonProductivityMetric[]
+  ): KPIJustification {
+    const overCommitted = metrics.filter(m => m.isOverCommitted).length;
+    const isBalanced = overCommitted === 0;
+
+    return {
+      title: 'QA Engineer Test Assignment & Throughput Ledger',
+      statusBadge: isBalanced ? 'Balanced Workload' : `${overCommitted} Over-Committed`,
+      statusColor: isBalanced ? 'emerald' : 'amber',
+      currentValue: `${metrics.length} Active Engineers (${overCommitted} Overloaded)`,
+      targetValue: '0 Over-Committed Engineers (Capacity < 140 Tests/Eng)',
+      description: 'Evaluates workload distribution, test assignment equity, execution completion rates, and individual velocity across QA team members.',
+      trackedInfo: 'Measures assigned test count, completed executions, completion rate %, delayed/blocked items, and average execution hours per engineer.',
+      businessImportance: 'Prevents engineer burnout and throughput bottlenecks. Unbalanced workloads lead to skipped edge-case exploratory testing and release delays.',
+      formulaOrRule: `OverCommitted = (AssignedTests > 140) OR (CompletionRate < 70% AND AssignedTests > 50)`,
+      rationale: isBalanced
+        ? 'All QA engineers maintain balanced workload allocations and healthy completion rates (> 80%).'
+        : `${overCommitted} QA team member(s) exceed safe capacity thresholds (> 140 tests assigned). Rebalancing is recommended to prevent verification delays.`,
+      recommendedAction: isBalanced
+        ? 'Maintain current assignment cadence and support exploratory pair testing.'
+        : 'Reassign test suites from overloaded specialists to peers with available bandwidth.'
+    };
+  }
+
+  /**
+   * 20. Automated vs Manual Test Execution Distribution Justification
+   */
+  static getTestExecutionDistributionJustification(
+    distribution: TestStatusDistribution,
+    mode: 'Automated' | 'Manual' | 'All'
+  ): KPIJustification {
+    const passRate = distribution.passRate;
+    const isOptimal = passRate >= 80.0;
+
+    return {
+      title: `${mode} Test Suite Execution Distribution`,
+      statusBadge: isOptimal ? 'Optimal Pass Rate' : 'Review Required',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${distribution.passed.toLocaleString()} / ${distribution.total.toLocaleString()} Passed (${passRate}%)`,
+      targetValue: '≥ 80.0% Pass Rate across Active Test Runs',
+      description: `Detailed execution status distribution for ${mode.toLowerCase()} test runs, analyzing passes, failures, blocked tests, and unattempted cases.`,
+      trackedInfo: 'Tracks execution status breakdown across TestRail runs: Passed, Failed, Blocked, and Unattempted.',
+      businessImportance: 'Fundamental quality assurance health check. Tracks raw execution progression toward pre-release coverage and stability targets.',
+      formulaOrRule: `PassRate = (PassedExecutions / TotalExecutions) × 100`,
+      rationale: `Out of ${distribution.total.toLocaleString()} test executions, ${distribution.passed.toLocaleString()} passed (${passRate}%), with ${distribution.failed.toLocaleString()} failures and ${distribution.blocked.toLocaleString()} blocked test cases.`,
+      recommendedAction: isOptimal
+        ? 'Continue scheduled test execution cycles and triage blocked items.'
+        : 'Investigate failing test assertions and verify underlying API/UI regression changes.'
+    };
+  }
 }
+

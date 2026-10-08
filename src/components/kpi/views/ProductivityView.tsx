@@ -15,7 +15,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  Users, TrendingUp, AlertCircle, CheckCircle2 
+  Users, TrendingUp, AlertCircle, CheckCircle2, HelpCircle 
 } from 'lucide-react';
 import type { 
   PersonProductivityMetric, 
@@ -190,13 +190,22 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
       {/* Engineer Assignments & Completion Ratios Table */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              {t('kpiPlatform.productivityView.ledgerTitle')}
-            </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {t('kpiPlatform.productivityView.ledgerSubtitle')}
-            </p>
+          <div className="flex items-center gap-2">
+            <div>
+              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.productivityView.ledgerTitle')}
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {t('kpiPlatform.productivityView.ledgerSubtitle')}
+              </p>
+            </div>
+            <button
+              onClick={() => setSelectedJustification(KPIJustificationService.getQaThroughputLedgerJustification(productivityMetrics))}
+              title="Explain QA Engineer Assignment & Throughput Metrics"
+              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
             {t('kpiPlatform.productivityView.capacityLimit')}
