@@ -291,24 +291,24 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* 5. Feature Lead Time Commit-to-GA */}
           <MetricCard
             title={t('kpiPlatform.executiveView.cardLeadTime', 'Feature Lead Time (Commit-to-GA)')}
-            value={`${scorecard.featureLeadTimeDays ?? 4.6} Days`}
+            value={`${scorecard.featureLeadTimeDays} Days`}
             target={t('kpiPlatform.executiveView.targetLeadTime', 'Target: < 7.0 Days')}
             trend="Rapid Flow"
-            trendPositive={(scorecard.featureLeadTimeDays ?? 4.6) <= 7.0}
-            statusBadge={(scorecard.featureLeadTimeDays ?? 4.6) <= 7.0 ? 'Optimal' : 'Bottlenecked'}
-            statusColor={(scorecard.featureLeadTimeDays ?? 4.6) <= 7.0 ? 'emerald' : 'amber'}
+            trendPositive={scorecard.featureLeadTimeDays <= 7.0}
+            statusBadge={scorecard.featureLeadTimeDays <= 7.0 ? 'Optimal' : 'Bottlenecked'}
+            statusColor={scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-teal-500" />}
             onJustify={() => setSelectedJustification({
               title: 'Feature Lead Time (Commit-to-Customer)',
-              statusBadge: (scorecard.featureLeadTimeDays ?? 4.6) <= 7.0 ? 'Optimal Flow' : 'Delayed',
-              statusColor: (scorecard.featureLeadTimeDays ?? 4.6) <= 7.0 ? 'emerald' : 'amber',
-              currentValue: `${scorecard.featureLeadTimeDays ?? 4.6} Days`,
+              statusBadge: scorecard.featureLeadTimeDays <= 7.0 ? 'Optimal Flow' : 'Delayed',
+              statusColor: scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber',
+              currentValue: `${scorecard.featureLeadTimeDays} Days`,
               targetValue: '< 7.0 Days',
               description: 'The average number of calendar days elapsed from a developer’s first commit on a branch until the feature successfully runs in customer-facing production.',
               trackedInfo: 'Measures lifecycle progression timestamp across Git commit history, pull request reviews, automated CI checks, and deployment release tags.',
               businessImportance: 'Google DORA core speed metric. Minimizes stale branching, accelerates customer feedback loops, and enables rapid competitive product iteration.',
               formulaOrRule: `LeadTime = AVERAGE(StoryProductionDeploymentTimestamp - FirstCommitTimestamp)`,
-              rationale: `Features require on average ${scorecard.featureLeadTimeDays ?? 4.6} days from initial commit to general availability. Shorter lead time allows agile business iterations and rapid competitive response.`,
+              rationale: `Features require on average ${scorecard.featureLeadTimeDays} days from initial commit to general availability. Shorter lead time allows agile business iterations and rapid competitive response.`,
               recommendedAction: 'Keep PR branch lifetimes short (< 48 hrs) and minimize handoff delays between dev and QA verification.'
             })}
           />
@@ -316,27 +316,27 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* 6. Security Gate Vulnerabilities */}
           <MetricCard
             title={t('kpiPlatform.executiveView.cardSecurity', 'Security Gate Vulnerabilities')}
-            value={`${scorecard.criticalVulnerabilitiesCount ?? 0} CVEs`}
+            value={`${scorecard.criticalVulnerabilitiesCount} CVEs`}
             target={t('kpiPlatform.executiveView.targetSecurity', 'Target: 0 Open CVEs')}
             trend="Zero Criticals"
-            trendPositive={(scorecard.criticalVulnerabilitiesCount ?? 0) === 0}
-            statusBadge={(scorecard.criticalVulnerabilitiesCount ?? 0) === 0 ? 'Gate Clear' : 'CISO Escalation'}
-            statusColor={(scorecard.criticalVulnerabilitiesCount ?? 0) === 0 ? 'emerald' : 'rose'}
+            trendPositive={scorecard.criticalVulnerabilitiesCount === 0}
+            statusBadge={scorecard.criticalVulnerabilitiesCount === 0 ? 'Gate Clear' : 'CISO Escalation'}
+            statusColor={scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
             onJustify={() => setSelectedJustification({
               title: 'Security Gate Vulnerabilities & CVE Compliance',
-              statusBadge: (scorecard.criticalVulnerabilitiesCount ?? 0) === 0 ? 'Passed' : 'Security Halt',
-              statusColor: (scorecard.criticalVulnerabilitiesCount ?? 0) === 0 ? 'emerald' : 'rose',
-              currentValue: `${scorecard.criticalVulnerabilitiesCount ?? 0} Critical CVEs`,
+              statusBadge: scorecard.criticalVulnerabilitiesCount === 0 ? 'Passed' : 'Security Halt',
+              statusColor: scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose',
+              currentValue: `${scorecard.criticalVulnerabilitiesCount} Critical CVEs`,
               targetValue: '0 Permitted at Gate',
               description: 'The count of unresolved Critical or High Common Vulnerabilities and Exposures (CVEs) or SAST/DAST security violations present in the release.',
               trackedInfo: 'Aggregates automated dependency vulnerability scans, container image audits, and static application security test findings.',
               businessImportance: 'Strict CISO and compliance gating standard. Eliminates cyber risk exposure, protects user data, and complies with SOC2, ISO 27001, and HIPAA mandates.',
               formulaOrRule: `SecurityGate = COUNT(SAST/DAST Critical Security Findings + Open CVEs in Production Dependencies)`,
-              rationale: (scorecard.criticalVulnerabilitiesCount ?? 0) === 0
+              rationale: scorecard.criticalVulnerabilitiesCount === 0
                 ? 'All automated security scans, dependency audits, and SAST/DAST test executions pass without critical findings.'
                 : `There are ${scorecard.criticalVulnerabilitiesCount} critical security issues detected. Releases cannot proceed until patched.`,
-              recommendedAction: (scorecard.criticalVulnerabilitiesCount ?? 0) === 0
+              recommendedAction: scorecard.criticalVulnerabilitiesCount === 0
                 ? 'Continue automated Dependabot and SAST pipeline gating.'
                 : 'Prioritize emergency security patching and redeploy to staging for re-scan.'
             })}
@@ -345,24 +345,24 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* 7. Contractual SLA Production Availability */}
           <MetricCard
             title={t('kpiPlatform.executiveView.cardUptime', 'Contractual SLA Uptime')}
-            value={`${scorecard.contractUptimePercentage ?? 99.98}%`}
+            value={`${scorecard.contractUptimePercentage}%`}
             target={t('kpiPlatform.executiveView.targetUptime', 'Target: ≥ 99.95%')}
             trend="Four Nines Tier"
-            trendPositive={(scorecard.contractUptimePercentage ?? 99.98) >= 99.95}
-            statusBadge={(scorecard.contractUptimePercentage ?? 99.98) >= 99.95 ? 'Four Nines' : 'Penalty Risk'}
-            statusColor={(scorecard.contractUptimePercentage ?? 99.98) >= 99.95 ? 'emerald' : 'rose'}
+            trendPositive={scorecard.contractUptimePercentage >= 99.95}
+            statusBadge={scorecard.contractUptimePercentage >= 99.95 ? 'Four Nines' : 'Penalty Risk'}
+            statusColor={scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose'}
             icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
             onJustify={() => setSelectedJustification({
               title: 'Contractual Production SLA Uptime',
-              statusBadge: (scorecard.contractUptimePercentage ?? 99.98) >= 99.95 ? 'Compliant' : 'Breached',
-              statusColor: (scorecard.contractUptimePercentage ?? 99.98) >= 99.95 ? 'emerald' : 'rose',
-              currentValue: `${scorecard.contractUptimePercentage ?? 99.98}%`,
+              statusBadge: scorecard.contractUptimePercentage >= 99.95 ? 'Compliant' : 'Breached',
+              statusColor: scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose',
+              currentValue: `${scorecard.contractUptimePercentage}%`,
               targetValue: '≥ 99.95%',
               description: 'The percentage of scheduled operational minutes during which production services, APIs, and customer interfaces remain accessible and fully functional.',
               trackedInfo: 'Measures synthetic API health-check probes, global uptime monitors, and recorded incident downtime minutes.',
               businessImportance: 'Protects contractual customer SLAs and avoids contractually mandated customer refund credits or financial service breach penalties.',
               formulaOrRule: `ContractUptime = 100% - (ProductionUnplannedDowntimeMinutes / TotalOperatingMinutes) × 100`,
-              rationale: `Current composite availability is ${scorecard.contractUptimePercentage ?? 99.98}%, successfully meeting high-availability enterprise customer service level commitments.`,
+              rationale: `Current composite availability is ${scorecard.contractUptimePercentage}%, successfully meeting high-availability enterprise customer service level commitments.`,
               recommendedAction: 'Preserve automated health-check synthetic probes and multi-region failover configs.'
             })}
           />

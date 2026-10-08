@@ -99,38 +99,38 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
         {/* Enriched Automation Metric 1: CI/CD Compute Cost */}
         <MetricCard
           title="CI/CD Runner Compute Cost"
-          value={`$${(automationHealth.cicdComputeCostDollars ?? 128).toLocaleString()}`}
+          value={`$${automationHealth.cicdComputeCostDollars.toLocaleString()}`}
           target="Target: < $250 / Sprint"
           trend="Cloud FinOps Optimal"
-          trendPositive={(automationHealth.cicdComputeCostDollars ?? 128) < 250}
-          statusBadge={(automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'Efficient' : 'High Compute'}
-          statusColor={(automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'emerald' : 'amber'}
+          trendPositive={automationHealth.cicdComputeCostDollars < 250}
+          statusBadge={automationHealth.cicdComputeCostDollars < 250 ? 'Efficient' : 'High Compute'}
+          statusColor={automationHealth.cicdComputeCostDollars < 250 ? 'emerald' : 'amber'}
           icon={<Cpu className="w-5 h-5 text-blue-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getCicdComputeCostJustification(automationHealth.cicdComputeCostDollars ?? 128))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getCicdComputeCostJustification(automationHealth.cicdComputeCostDollars))}
         />
         {/* Enriched Automation Metric 2: MTBF */}
         <MetricCard
           title="Mean Time Between Flakes (MTBF)"
-          value={`${automationHealth.mtbfHours ?? 36.5} hrs`}
+          value={`${automationHealth.mtbfHours} hrs`}
           target="Target: > 24.0 hrs"
           trend="Deterministic Signals"
-          trendPositive={(automationHealth.mtbfHours ?? 36.5) >= 24.0}
-          statusBadge={(automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'Trustworthy' : 'Flaky Alert'}
-          statusColor={(automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'emerald' : 'amber'}
+          trendPositive={automationHealth.mtbfHours >= 24.0}
+          statusBadge={automationHealth.mtbfHours >= 24.0 ? 'Trustworthy' : 'Flaky Alert'}
+          statusColor={automationHealth.mtbfHours >= 24.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getMtbfJustification(automationHealth.mtbfHours ?? 36.5))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMtbfJustification(automationHealth.mtbfHours))}
         />
         {/* Enriched Automation Metric 3: Automation Defect Catch Ratio */}
         <MetricCard
           title="Automation Defect Catch Ratio"
-          value={`${automationHealth.automationCatchRatio ?? 78.5}%`}
+          value={`${automationHealth.automationCatchRatio}%`}
           target="Target: > 70.0%"
           trend="Shift-Left Effective"
-          trendPositive={(automationHealth.automationCatchRatio ?? 78.5) >= 70.0}
-          statusBadge={(automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'Shift-Left Hero' : 'Manual Lag'}
-          statusColor={(automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'emerald' : 'amber'}
+          trendPositive={automationHealth.automationCatchRatio >= 70.0}
+          statusBadge={automationHealth.automationCatchRatio >= 70.0 ? 'Shift-Left Hero' : 'Manual Lag'}
+          statusColor={automationHealth.automationCatchRatio >= 70.0 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationCatchRatioJustification(automationHealth.automationCatchRatio ?? 78.5))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationCatchRatioJustification(automationHealth.automationCatchRatio))}
         />
       </div>
 

@@ -89,7 +89,7 @@ export class KPICalculatorService {
     // Dynamic SLA Metrics derived from actual JIRA, TestRail, and GitHub items
     const urgentDefects = defects.filter(d => d.severity === 'P1-Blocker' || d.severity === 'P2-Critical');
     const triagedOnTime = urgentDefects.filter(d => !d.isReopened).length;
-    const p1P2TriageRate = urgentDefects.length > 0 ? Number(((triagedOnTime / urgentDefects.length) * 100).toFixed(1)) : 95.0;
+    const p1P2TriageRate = urgentDefects.length > 0 ? Number(((triagedOnTime / urgentDefects.length) * 100).toFixed(1)) : 100.0;
 
     const regressionTotal = Math.max(1, regressionTests.length);
     const regressionExecuted = regressionTests.filter(t => t.status !== 'Unattempted').length;
@@ -97,7 +97,7 @@ export class KPICalculatorService {
 
     const totalStories = jiraItems.filter(i => i.type === 'Story' || i.type === 'Epic');
     const storiesWithPlan = totalStories.filter(s => s.hasTestPlan).length;
-    const testPlanCreationRate = totalStories.length > 0 ? Number(((storiesWithPlan / totalStories.length) * 100).toFixed(1)) : 90.0;
+    const testPlanCreationRate = totalStories.length > 0 ? Number(((storiesWithPlan / totalStories.length) * 100).toFixed(1)) : 100.0;
 
     const dailyReportRate = 100.0;
 
@@ -106,7 +106,7 @@ export class KPICalculatorService {
     const automationDeliveryRate = Number(((prsWithAutomation / totalPrs) * 100).toFixed(1));
 
     const resolvedCustomer = customerDefects.filter(c => c.status === 'Done').length;
-    const customerDefectResolutionRate = customerDefects.length > 0 ? Number(((resolvedCustomer / customerDefects.length) * 100).toFixed(1)) : 92.0;
+    const customerDefectResolutionRate = customerDefects.length > 0 ? Number(((resolvedCustomer / customerDefects.length) * 100).toFixed(1)) : 100.0;
 
     const slaAdherenceRate = Number((
       (p1P2TriageRate + regressionExecutionRate + testPlanCreationRate + dailyReportRate + automationDeliveryRate + customerDefectResolutionRate) / 6
@@ -172,7 +172,7 @@ export class KPICalculatorService {
     // Percentage of deployments / pull requests that failed CI or led to emergency rollback/hotfix
     const failedPRs = githubPRs.filter(p => p.ciStatus === 'Failed').length;
     const totalPRsCount = Math.max(1, githubPRs.length);
-    const changeFailureRate = Number(((failedPRs / totalPRsCount) * 100).toFixed(1));
+    const changeFailureRate = githubPRs.length > 0 ? Number(((failedPRs / totalPRsCount) * 100).toFixed(1)) : 0.0;
 
     // 4. DORA: Mean Time to Restore (MTTR) for Production / Critical Issues
     const resolvedBlockers = defects.filter(d => (d.severity === 'P1-Blocker' || d.severity === 'P2-Critical') && d.resolvedAt && d.createdAt);
@@ -183,7 +183,7 @@ export class KPICalculatorService {
     });
     const meanTimeToRestoreHours = resolvedBlockers.length > 0 
       ? Number((totalRestoreHours / resolvedBlockers.length).toFixed(1))
-      : 3.2;
+      : 0.0;
 
     // 5. Sprint Predictability Index (SPI)
     // Ratio of completed story points vs planned committed story points
@@ -192,7 +192,7 @@ export class KPICalculatorService {
     const completedPoints = sprintStories.filter(s => s.status === 'Done').reduce((acc, s) => acc + (s.storyPoints || 3), 0);
     const sprintPredictabilityIndex = totalCommittedPoints > 0
       ? Number(((completedPoints / totalCommittedPoints) * 100).toFixed(1))
-      : 88.5;
+      : 100.0;
 
     // 6. Feature Lead Time / Commit-to-Customer (Days)
     // Derived from resolved stories' creation-to-done duration
@@ -200,11 +200,11 @@ export class KPICalculatorService {
     let totalLeadTimeDays = 0;
     resolvedStories.forEach(s => {
       const diffDays = (new Date(s.resolvedAt!).getTime() - new Date(s.createdAt).getTime()) / (3600000 * 24);
-      totalLeadTimeDays += Math.max(1.0, diffDays);
+      totalLeadTimeDays += Math.max(0.5, diffDays);
     });
     const featureLeadTimeDays = resolvedStories.length > 0
       ? Number((totalLeadTimeDays / resolvedStories.length).toFixed(1))
-      : 4.8;
+      : 0.0;
 
     // 7. Critical Vulnerabilities & Security Blockers
     // TestRail security suite failures + unapproved dependency blockers
@@ -741,9 +741,27 @@ export class KPICalculatorService {
     const sprintItems = jiraItems || [];
     const totalCommitted = sprintItems.reduce((acc, i) => acc + (i.storyPoints || 3), 0);
     const incompletePoints = sprintItems.filter(i => i.status !== 'Done').reduce((acc, i) => acc + (i.storyPoints || 3), 0);
-    const sprintSpilloverRate = totalCommitted > 0 ? Number(((incompletePoints / totalCommitted) * 100).toFixed(1)) : 8.5;
-    const flowEfficiencyPercent = 72.4; // % active testing vs idle WIP time
-    const devToQaRatio = '1:3.5';
+    const sprintSpilloverRate = totalCommitted > 0 ? Number(((incompletePoints / totalCommitted) * 100).toFixed(1)) : 0.0;
+
+    // Dynamic Flow Efficiency: % active execution/working time vs total cycle duration
+    const totalTestingHours = sprintItems.reduce((acc, i) => acc + (i.testingHoursSpent || 0), 0);
+    const resolvedSprintItems = sprintItems.filter(i => i.status === 'Done' && i.resolvedAt && i.createdAt);
+    const totalCycleHours = resolvedSprintItems.reduce((acc, i) => {
+      const diffHours = (new Date(i.resolvedAt!).getTime() - new Date(i.createdAt).getTime()) / 3600000;
+      return acc + Math.max(diffHours, 1);
+    }, 0);
+    const flowEfficiencyPercent = totalCycleHours > 0
+      ? Number(Math.min(95, Math.max(25, (totalTestingHours / totalCycleHours) * 100)).toFixed(1))
+      : 75.0;
+
+    // Dynamic Dev-to-QA Ratio from actual distinct assignees and QA owners
+    const distinctDevs = new Set(sprintItems.map(i => i.assignee).filter(Boolean)).size || 1;
+    const distinctQa = new Set([
+      ...sprintItems.map(i => i.qaOwner).filter(Boolean),
+      ...testRailExecutions.map(t => t.executedBy).filter(p => p && !p.includes('CI/CD') && p !== 'Unassigned')
+    ]).size || 1;
+    const qaPerDev = (distinctQa / distinctDevs).toFixed(1);
+    const devToQaRatio = `1:${qaPerDev}`;
 
     return {
       metrics,
@@ -783,10 +801,17 @@ export class KPICalculatorService {
     const cicdComputeCostDollars = Math.round(totalRunnerMinutes * 0.08);
 
     // Mean Time Between Flakes (hours):
-    const mtbfHours = flakyTests.length > 0 ? Number((120 / flakyTests.length).toFixed(1)) : 48.0;
+    const mtbfHours = flakyTests.length > 0 
+      ? Number((120 / flakyTests.length).toFixed(1)) 
+      : (automated.length > 0 ? 72.0 : 0.0);
 
-    // Automation Defect Catch Ratio: Automated tests catch ~78% of bugs before staging
-    const automationCatchRatio = 78.5;
+    // Automation Defect Catch Ratio: automated failed detections vs all failed test detections
+    const automatedFails = automated.filter(t => t.status === 'Failed').length;
+    const manualFails = manual.filter(t => t.status === 'Failed').length;
+    const totalFails = automatedFails + manualFails;
+    const automationCatchRatio = totalFails > 0 
+      ? Number(((automatedFails / totalFails) * 100).toFixed(1))
+      : (automated.length > 0 ? 80.0 : 0.0);
 
     return {
       totalAutomated: automated.length,
@@ -821,24 +846,24 @@ export class KPICalculatorService {
 
     const avgMttrHours = resolvedBugs.length > 0 
       ? Number((totalResolutionHours / resolvedBugs.length).toFixed(1)) 
-      : 18.5;
+      : 0.0;
 
     // Dynamic Mean Time to Detect (hours between creation and QA queue entry or initial triage)
     const bugs = jiraItems.filter(i => i.type === 'Bug' || i.type === 'CustomerAPAR');
     let totalDetectionHours = 0;
     bugs.forEach(bug => {
       const created = new Date(bug.createdAt).getTime();
-      const detected = bug.qaQueueEntryDate ? new Date(bug.qaQueueEntryDate).getTime() : created + 3600000 * 3.5;
+      const detected = bug.qaQueueEntryDate ? new Date(bug.qaQueueEntryDate).getTime() : created + 3600000 * 2.0;
       totalDetectionHours += Math.max(0.5, Math.abs(detected - created) / 3600000);
     });
     const avgMttdHours = bugs.length > 0 
       ? Number((totalDetectionHours / bugs.length).toFixed(1)) 
-      : 3.5;
+      : 0.0;
 
     const reopenedBugs = jiraItems.filter(i => i.isReopened || i.reopenCount > 0);
-    const reopenRate = jiraItems.length > 0 
-      ? Number(((reopenedBugs.length / Math.max(1, resolvedBugs.length)) * 100).toFixed(1)) 
-      : 3.2;
+    const reopenRate = resolvedBugs.length > 0 
+      ? Number(((reopenedBugs.length / resolvedBugs.length) * 100).toFixed(1)) 
+      : 0.0;
 
     // Enriched Quality Metrics:
     // Defect Density per KLOC (estimated codebase 145 KLOC)
@@ -846,8 +871,8 @@ export class KPICalculatorService {
 
     // First Time Fix Rate: % of resolved bugs that were NOT reopened
     const firstTimeFixRate = resolvedBugs.length > 0
-      ? Number((((resolvedBugs.length - reopenedBugs.length) / resolvedBugs.length) * 100).toFixed(1))
-      : 96.8;
+      ? Number((Math.max(0, (resolvedBugs.length - reopenedBugs.length) / resolvedBugs.length) * 100).toFixed(1))
+      : 100.0;
 
     // Net Defect Intake Velocity: Bugs created minus bugs resolved in current scope
     const netDefectIntakeVelocity = bugs.length - resolvedBugs.length;

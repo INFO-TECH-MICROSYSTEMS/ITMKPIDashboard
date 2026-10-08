@@ -38,8 +38,8 @@ export interface IKPIDataRepository {
   ): Promise<void>;
   getJiraItems(filter?: KPIFilterState): Promise<JiraWorkItem[]>;
   getTestRailExecutions(filter?: KPIFilterState): Promise<TestRailExecution[]>;
-  getGitHubPullRequests(): Promise<GitHubPullRequest[]>;
-  getGitHubCommits(): Promise<GitHubCommit[]>;
+  getGitHubPullRequests(filter?: KPIFilterState): Promise<GitHubPullRequest[]>;
+  getGitHubCommits(filter?: KPIFilterState): Promise<GitHubCommit[]>;
   getConnectorConfigs(): Promise<DataSourceConfig[]>;
   saveConnectorConfig(config: DataSourceConfig): Promise<void>;
   getSyncLogs(): Promise<SyncAuditLog[]>;
@@ -247,12 +247,26 @@ class KPIDataRepository implements IKPIDataRepository {
     return await collection.toArray();
   }
 
-  async getGitHubPullRequests(): Promise<GitHubPullRequest[]> {
-    return await kpiDb.githubPullRequests.toArray();
+  async getGitHubPullRequests(filter?: KPIFilterState): Promise<GitHubPullRequest[]> {
+    let collection = kpiDb.githubPullRequests.toCollection();
+
+    if (filter && filter.dateRangeDays && filter.dateRangeDays > 0) {
+      const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
+      collection = collection.filter(pr => pr.createdAt >= cutoff);
+    }
+
+    return await collection.toArray();
   }
 
-  async getGitHubCommits(): Promise<GitHubCommit[]> {
-    return await kpiDb.githubCommits.toArray();
+  async getGitHubCommits(filter?: KPIFilterState): Promise<GitHubCommit[]> {
+    let collection = kpiDb.githubCommits.toCollection();
+
+    if (filter && filter.dateRangeDays && filter.dateRangeDays > 0) {
+      const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
+      collection = collection.filter(c => c.timestamp >= cutoff);
+    }
+
+    return await collection.toArray();
   }
 
   async getConnectorConfigs(): Promise<DataSourceConfig[]> {

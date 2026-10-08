@@ -98,38 +98,38 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
         {/* Enriched Productivity Metric 1: Flow Efficiency */}
         <MetricCard
           title="Flow Efficiency (Active vs Idle)"
-          value={`${squadSummary?.flowEfficiencyPercent ?? 72.4}%`}
+          value={`${squadSummary?.flowEfficiencyPercent ?? 0}%`}
           target="Target: > 65.0%"
           trend="Minimal Idle Staging"
-          trendPositive={(squadSummary?.flowEfficiencyPercent ?? 72.4) >= 65.0}
-          statusBadge={(squadSummary?.flowEfficiencyPercent ?? 72.4) >= 65.0 ? 'High Flow' : 'Handoff Delays'}
-          statusColor={(squadSummary?.flowEfficiencyPercent ?? 72.4) >= 65.0 ? 'emerald' : 'amber'}
+          trendPositive={(squadSummary?.flowEfficiencyPercent ?? 0) >= 65.0}
+          statusBadge={(squadSummary?.flowEfficiencyPercent ?? 0) >= 65.0 ? 'High Flow' : 'Handoff Delays'}
+          statusColor={(squadSummary?.flowEfficiencyPercent ?? 0) >= 65.0 ? 'emerald' : 'amber'}
           icon={<TrendingUp className="w-5 h-5 text-teal-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getFlowEfficiencyJustification(squadSummary?.flowEfficiencyPercent ?? 72.4))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getFlowEfficiencyJustification(squadSummary?.flowEfficiencyPercent ?? 0))}
         />
         {/* Enriched Productivity Metric 2: Sprint Carry-Over Spillover Rate */}
         <MetricCard
           title="Sprint Spillover Rate"
-          value={`${squadSummary?.sprintSpilloverRate ?? 8.5}%`}
+          value={`${squadSummary?.sprintSpilloverRate ?? 0}%`}
           target="Target: < 10.0%"
           trend="Scope Committed Delivered"
-          trendPositive={(squadSummary?.sprintSpilloverRate ?? 8.5) < 10.0}
-          statusBadge={(squadSummary?.sprintSpilloverRate ?? 8.5) < 10.0 ? 'Controlled' : 'High Spillover'}
-          statusColor={(squadSummary?.sprintSpilloverRate ?? 8.5) < 10.0 ? 'emerald' : 'amber'}
+          trendPositive={(squadSummary?.sprintSpilloverRate ?? 0) < 10.0}
+          statusBadge={(squadSummary?.sprintSpilloverRate ?? 0) < 10.0 ? 'Controlled' : 'High Spillover'}
+          statusColor={(squadSummary?.sprintSpilloverRate ?? 0) < 10.0 ? 'emerald' : 'amber'}
           icon={<AlertCircle className="w-5 h-5 text-orange-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getSprintSpilloverJustification(squadSummary?.sprintSpilloverRate ?? 8.5))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getSprintSpilloverJustification(squadSummary?.sprintSpilloverRate ?? 0))}
         />
         {/* Enriched Productivity Metric 3: Dev to QA Ratio */}
         <MetricCard
           title="Dev-to-QA Ratio"
-          value={squadSummary?.devToQaRatio ?? '1:3.5'}
+          value={squadSummary?.devToQaRatio ?? '1:1'}
           target="Benchmark: 1:3 to 1:5"
           trend="Balanced Squads"
           trendPositive={true}
           statusBadge="Balanced Pod"
           statusColor="emerald"
           icon={<Users className="w-5 h-5 text-blue-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getDevToQaRatioJustification(squadSummary?.devToQaRatio ?? '1:3.5'))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getDevToQaRatioJustification(squadSummary?.devToQaRatio ?? '1:1'))}
         />
       </div>
 

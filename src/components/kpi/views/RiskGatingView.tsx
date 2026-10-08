@@ -182,11 +182,11 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                   </td>
                   <td className="p-3 font-mono text-xs">
                     <span className={comp.cyclomaticComplexityRisk > 15 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-600 dark:text-slate-400'}>
-                      {comp.cyclomaticComplexityRisk ?? 12}
+                      {comp.cyclomaticComplexityRisk}
                     </span>
                   </td>
                   <td className="p-3 font-mono text-xs text-slate-500 dark:text-slate-400">
-                    +{comp.codeChurnLines ?? 500}
+                    +{comp.codeChurnLines}
                   </td>
                   <td className="p-3">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
@@ -194,7 +194,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                       comp.licenseComplianceStatus === 'Warning' ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300' :
                       'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                     }`}>
-                      {comp.licenseComplianceStatus ?? 'Passed'}
+                      {comp.licenseComplianceStatus}
                     </span>
                   </td>
                   <td className="p-3">

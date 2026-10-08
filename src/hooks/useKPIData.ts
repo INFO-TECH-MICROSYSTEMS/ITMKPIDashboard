@@ -56,8 +56,8 @@ export function useKPIData() {
       const [jira, tr, prs, commits, configs, logs] = await Promise.all([
         kpiRepository.getJiraItems(filters),
         kpiRepository.getTestRailExecutions(filters),
-        kpiRepository.getGitHubPullRequests(),
-        kpiRepository.getGitHubCommits(),
+        kpiRepository.getGitHubPullRequests(filters),
+        kpiRepository.getGitHubCommits(filters),
         kpiRepository.getConnectorConfigs(),
         kpiRepository.getSyncLogs()
       ]);
