@@ -37,9 +37,10 @@ export interface IMetricClarificationContract extends KPIJustification {
   statusColor: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
   currentValue: string | number;
   targetValue: string;
-  description: string;          // What the metric is (Mandatory overview piece 1)
-  trackedInfo: string;          // What info it exposes (Mandatory overview piece 2)
-  businessImportance: string;   // Why it matters (Mandatory overview piece 3)
+  overviewAndSignificance?: string; // Single unified, formatted overview string
+  description?: string;          // Formatted overview or description
+  trackedInfo?: string;          // Optional backwards compatibility
+  businessImportance?: string;   // Optional backwards compatibility
   formulaOrRule: string;        // Exact mathematical equation / policy
   rationale: string;            // Why current value triggered the status
   recommendedAction: string;    // Actionable remediation steps
@@ -91,9 +92,9 @@ export interface IMetricCardContract extends IBaseMetricWidgetProps {
 export class MetricClarificationFactory {
   public static create(justification: IMetricClarificationContract): IMetricClarificationContract {
     if (!justification.title) throw new Error('MetricClarification: title is mandatory.');
-    if (!justification.description) throw new Error(`MetricClarification [${justification.title}]: description is mandatory.`);
-    if (!justification.trackedInfo) throw new Error(`MetricClarification [${justification.title}]: trackedInfo is mandatory.`);
-    if (!justification.businessImportance) throw new Error(`MetricClarification [${justification.title}]: businessImportance is mandatory.`);
+    if (!justification.overviewAndSignificance && !justification.description) {
+      throw new Error(`MetricClarification [${justification.title}]: overviewAndSignificance is mandatory.`);
+    }
     if (!justification.formulaOrRule) throw new Error(`MetricClarification [${justification.title}]: formulaOrRule is mandatory.`);
     if (!justification.rationale) throw new Error(`MetricClarification [${justification.title}]: rationale is mandatory.`);
     if (!justification.recommendedAction) throw new Error(`MetricClarification [${justification.title}]: recommendedAction is mandatory.`);

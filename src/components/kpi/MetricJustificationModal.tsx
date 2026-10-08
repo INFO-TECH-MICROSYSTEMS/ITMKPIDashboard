@@ -67,19 +67,10 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
   const currentIcon = statusIcons[justification.statusColor] || statusIcons.cyan;
 
-  // Synthesize unified overview text combining definition, tracked scope, and business importance
-  const overviewSentences: string[] = [];
-  if (justification.description) {
-    overviewSentences.push(justification.description.trim().replace(/\.?$/, '.'));
-  }
-  if (justification.trackedInfo) {
-    overviewSentences.push(justification.trackedInfo.trim().replace(/\.?$/, '.'));
-  }
-  if (justification.businessImportance) {
-    overviewSentences.push(justification.businessImportance.trim().replace(/\.?$/, '.'));
-  }
-  const combinedOverviewText = overviewSentences.join(' ');
-  const isOverviewLong = combinedOverviewText.length > 240;
+  // Single externalized Metric Overview & Significance text
+  const rawOverview = justification.overviewAndSignificance || justification.description || '';
+  const overviewParagraphs = rawOverview.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+  const isOverviewLong = overviewParagraphs.length > 1 || rawOverview.length > 240;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-xs animate-fadeIn">
@@ -138,9 +129,9 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             </div>
           </div>
 
-          {/* Unified Educational Metric Overview (Proportional height, single cohesive summary with more... / less...) */}
-          {combinedOverviewText && (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-2">
+          {/* Unified Educational Metric Overview & Significance */}
+          {overviewParagraphs.length > 0 && (
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
                   <Info className="w-4 h-4 shrink-0" />
@@ -160,12 +151,14 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
               <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
                 {isOverviewExpanded || !isOverviewLong ? (
-                  <p className="animate-fadeIn">
-                    {combinedOverviewText}
-                  </p>
+                  <div className="space-y-2.5 animate-fadeIn">
+                    {overviewParagraphs.map((para, idx) => (
+                      <p key={idx}>{para}</p>
+                    ))}
+                  </div>
                 ) : (
                   <p>
-                    {combinedOverviewText.slice(0, 220)}...{' '}
+                    {overviewParagraphs[0]}{' '}
                     <button
                       type="button"
                       onClick={() => setIsOverviewExpanded(true)}
