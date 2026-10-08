@@ -137,6 +137,8 @@ interface AreaTrendChartProps {
   series1Color?: string;
   series2Color?: string;
   height?: number;
+  projectionLineColor?: string;
+  forecastBadge?: string;
 }
 
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
@@ -146,7 +148,9 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   series2Name,
   series1Color = '#06b6d4', // Cyan
   series2Color = '#8b5cf6', // Purple
-  height = 200
+  height = 200,
+  projectionLineColor = '#38bdf8', // Light sky blue
+  forecastBadge
 }) => {
   if (!data || data.length === 0) return null;
 
@@ -155,29 +159,54 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
     8
   );
 
-  const width = 600;
-  const paddingX = 40;
-  const paddingY = 25;
+  const width = 640;
+  const paddingX = 42;
+  const paddingY = 28;
   const chartW = width - paddingX * 2;
   const chartH = height - paddingY * 2;
 
   const getX = (index: number) => paddingX + (index / (data.length - 1)) * chartW;
   const getY = (val: number) => paddingY + chartH - (val / maxVal) * chartH;
 
-  // Build path strings
+  // Split history vs projection
+  const firstProjectedIndex = data.findIndex(d => d.isProjected);
+  const hasProjection = firstProjectedIndex !== -1;
+
+  // Build path strings for Series 1
   const points1 = data.map((d, i) => `${getX(i)},${getY(d.value1)}`).join(' ');
   const area1 = `${getX(0)},${paddingY + chartH} ${points1} ${getX(data.length - 1)},${paddingY + chartH}`;
 
-  const points2 = series2Name ? data.map((d, i) => `${getX(i)},${getY(d.value2 ?? 0)}`).join(' ') : '';
-  const area2 = series2Name ? `${getX(0)},${paddingY + chartH} ${points2} ${getX(data.length - 1)},${paddingY + chartH}` : '';
+  // Series 2 Historical portion
+  const historyData = hasProjection ? data.slice(0, firstProjectedIndex + 1) : data;
+  const points2History = series2Name ? historyData.map((d, i) => `${getX(i)},${getY(d.value2 ?? 0)}`).join(' ') : '';
+  const area2 = series2Name && historyData.length > 0 
+    ? `${getX(0)},${paddingY + chartH} ${points2History} ${getX(historyData.length - 1)},${paddingY + chartH}` 
+    : '';
+
+  // Series 2 Projected portion (connects from last historical point onwards)
+  const projectionStartIndex = hasProjection ? Math.max(0, firstProjectedIndex - 1) : -1;
+  const projectedData = hasProjection ? data.slice(projectionStartIndex) : [];
+  const points2Projected = hasProjection && series2Name 
+    ? projectedData.map((d, idx) => `${getX(projectionStartIndex + idx)},${getY(d.value2 ?? 0)}`).join(' ') 
+    : '';
+  const area2Projected = hasProjection && series2Name && projectedData.length > 0
+    ? `${getX(projectionStartIndex)},${paddingY + chartH} ${points2Projected} ${getX(data.length - 1)},${paddingY + chartH}`
+    : '';
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h4 className="text-sm font-bold text-slate-900 dark:text-white font-['Outfit']">
-          {title}
-        </h4>
-        <div className="flex items-center gap-4 text-xs font-mono">
+        <div className="flex items-center gap-2.5">
+          <h4 className="text-sm font-bold text-slate-900 dark:text-white font-['Outfit']">
+            {title}
+          </h4>
+          {forecastBadge && (
+            <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
+              {forecastBadge}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series1Color }} />
             <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
@@ -188,11 +217,39 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
               <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
             </div>
           )}
+          {hasProjection && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Forecast Velocity</span>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="w-full overflow-x-auto">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto min-w-[380px]">
+          <defs>
+            {hasProjection && (
+              <linearGradient id="forecastHatch" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={projectionLineColor} stopOpacity="0.25" />
+                <stop offset="100%" stopColor={projectionLineColor} stopOpacity="0.03" />
+              </linearGradient>
+            )}
+          </defs>
+
+          {/* Forecast background zone indicator */}
+          {hasProjection && (
+            <rect
+              x={getX(firstProjectedIndex)}
+              y={paddingY}
+              width={chartW - (getX(firstProjectedIndex) - paddingX)}
+              height={chartH}
+              fill="currentColor"
+              className="text-cyan-500/[0.04] dark:text-cyan-400/[0.04]"
+              rx="4"
+            />
+          )}
+
           {/* Horizontal gridlines */}
           {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
             const y = paddingY + chartH * (1 - pct);
@@ -221,7 +278,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
           })}
 
           {/* Series 1 Area & Line */}
-          <polygon points={area1} fill={series1Color} fillOpacity="0.15" />
+          <polygon points={area1} fill={series1Color} fillOpacity="0.12" />
           <polyline
             fill="none"
             stroke={series1Color}
@@ -231,53 +288,97 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Series 2 Area & Line */}
+          {/* Series 2 Historical Area & Line */}
           {series2Name && (
             <>
-              <polygon points={area2} fill={series2Color} fillOpacity="0.12" />
+              {area2 && <polygon points={area2} fill={series2Color} fillOpacity="0.12" />}
               <polyline
                 fill="none"
                 stroke={series2Color}
                 strokeWidth="2.5"
-                points={points2}
+                points={points2History}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </>
           )}
 
-          {/* Data Points */}
-          {data.map((d, i) => (
-            <g key={i} className="group cursor-pointer">
-              <circle
-                cx={getX(i)}
-                cy={getY(d.value1)}
-                r="3.5"
-                fill={series1Color}
-                className="transition-transform group-hover:scale-150"
+          {/* Series 2 Projected Area & Dashed Line */}
+          {hasProjection && series2Name && (
+            <>
+              {area2Projected && <polygon points={area2Projected} fill="url(#forecastHatch)" />}
+              <polyline
+                fill="none"
+                stroke={projectionLineColor}
+                strokeWidth="2.5"
+                strokeDasharray="6 4"
+                points={points2Projected}
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-              {series2Name && (
+            </>
+          )}
+
+          {/* Milestone demarcation line at transition into forecast */}
+          {hasProjection && (
+            <g>
+              <line
+                x1={getX(firstProjectedIndex)}
+                y1={paddingY}
+                x2={getX(firstProjectedIndex)}
+                y2={paddingY + chartH}
+                stroke={projectionLineColor}
+                strokeWidth="1.5"
+                strokeDasharray="2 2"
+                opacity="0.8"
+              />
+              <text
+                x={getX(firstProjectedIndex) + 4}
+                y={paddingY + 12}
+                className="text-[9px] fill-cyan-500 dark:fill-cyan-400 font-mono font-bold"
+              >
+                Today / Forecast →
+              </text>
+            </g>
+          )}
+
+          {/* Data Points */}
+          {data.map((d, i) => {
+            const isPointProjected = Boolean(d.isProjected);
+            return (
+              <g key={i} className="group cursor-pointer">
                 <circle
                   cx={getX(i)}
-                  cy={getY(d.value2 ?? 0)}
-                  r="3.5"
-                  fill={series2Color}
+                  cy={getY(d.value1)}
+                  r={isPointProjected ? '2.5' : '3.5'}
+                  fill={series1Color}
                   className="transition-transform group-hover:scale-150"
                 />
-              )}
-              {/* X Axis Labels */}
-              {i % 2 === 0 && (
-                <text
-                  x={getX(i)}
-                  y={height - 5}
-                  textAnchor="middle"
-                  className="text-[10px] fill-slate-400 font-mono"
-                >
-                  {d.label}
-                </text>
-              )}
-            </g>
-          ))}
+                {series2Name && (
+                  <circle
+                    cx={getX(i)}
+                    cy={getY(d.value2 ?? 0)}
+                    r={isPointProjected ? '3' : '3.5'}
+                    fill={isPointProjected ? projectionLineColor : series2Color}
+                    stroke={isPointProjected ? '#fff' : undefined}
+                    strokeWidth={isPointProjected ? 1.5 : 0}
+                    className="transition-transform group-hover:scale-150"
+                  />
+                )}
+                {/* X Axis Labels */}
+                {i % 2 === 0 && (
+                  <text
+                    x={getX(i)}
+                    y={height - 5}
+                    textAnchor="middle"
+                    className={`text-[10px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
+                  >
+                    {d.label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
         </svg>
       </div>
     </div>
