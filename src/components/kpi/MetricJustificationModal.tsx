@@ -13,11 +13,11 @@
  * Consistently styled using centralized KPI_STATUS_THEMES.
  */
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   X, AlertOctagon, AlertTriangle, CheckCircle2, 
-  HelpCircle, Lightbulb, Info 
+  HelpCircle, Lightbulb, Info, ChevronDown, ChevronUp 
 } from 'lucide-react';
 import type { KPIJustification } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
@@ -35,6 +35,8 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 }) => {
   const { t } = useTranslation();
 
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState<boolean>(false);
+
   // Handle ESC key to dismiss
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,6 +45,13 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  // Reset expanded state when modal opens for a new justification
+  useEffect(() => {
+    if (isOpen) {
+      setIsOverviewExpanded(false);
+    }
+  }, [isOpen, justification?.title]);
 
   if (!isOpen || !justification) return null;
 
@@ -57,6 +66,20 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
   };
 
   const currentIcon = statusIcons[justification.statusColor] || statusIcons.cyan;
+
+  // Synthesize unified overview text combining definition, tracked scope, and business importance
+  const overviewSentences: string[] = [];
+  if (justification.description) {
+    overviewSentences.push(justification.description.trim().replace(/\.?$/, '.'));
+  }
+  if (justification.trackedInfo) {
+    overviewSentences.push(justification.trackedInfo.trim().replace(/\.?$/, '.'));
+  }
+  if (justification.businessImportance) {
+    overviewSentences.push(justification.businessImportance.trim().replace(/\.?$/, '.'));
+  }
+  const combinedOverviewText = overviewSentences.join(' ');
+  const isOverviewLong = combinedOverviewText.length > 240;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-xs animate-fadeIn">
@@ -115,46 +138,44 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             </div>
           </div>
 
-          {/* Educational Metric Details: What it is, What it tracks, Why it is important */}
-          {(justification.description || justification.trackedInfo || justification.businessImportance) && (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
-                <Info className="w-4 h-4" />
-                <span>Metric Overview & Architectural Significance</span>
+          {/* Unified Educational Metric Overview (Proportional height, single cohesive summary with more... / less...) */}
+          {combinedOverviewText && (
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
+                  <Info className="w-4 h-4 shrink-0" />
+                  <span>Metric Overview & Significance</span>
+                </div>
+                {isOverviewLong && (
+                  <button
+                    type="button"
+                    onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                    className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors cursor-pointer"
+                  >
+                    <span>{isOverviewExpanded ? 'less...' : 'more...'}</span>
+                    {isOverviewExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                )}
               </div>
-              
-              {justification.description && (
-                <div className="space-y-1">
-                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
-                    What is this metric?
-                  </span>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {justification.description}
-                  </p>
-                </div>
-              )}
 
-              {justification.trackedInfo && (
-                <div className="space-y-1">
-                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
-                    What information does it track / expose?
-                  </span>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {justification.trackedInfo}
+              <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+                {isOverviewExpanded || !isOverviewLong ? (
+                  <p className="animate-fadeIn">
+                    {combinedOverviewText}
                   </p>
-                </div>
-              )}
-
-              {justification.businessImportance && (
-                <div className="space-y-1">
-                  <span className="text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">
-                    Why is it important?
-                  </span>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium text-emerald-800 dark:text-emerald-300">
-                    {justification.businessImportance}
+                ) : (
+                  <p>
+                    {combinedOverviewText.slice(0, 220)}...{' '}
+                    <button
+                      type="button"
+                      onClick={() => setIsOverviewExpanded(true)}
+                      className="text-cyan-600 dark:text-cyan-400 font-bold hover:underline font-mono ml-1 inline-flex items-center gap-0.5 cursor-pointer"
+                    >
+                      more...
+                    </button>
                   </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
