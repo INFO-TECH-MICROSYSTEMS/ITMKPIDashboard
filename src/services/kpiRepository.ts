@@ -253,9 +253,15 @@ class KPIDataRepository implements IKPIDataRepository {
   async getGitHubPullRequests(filter?: KPIFilterState): Promise<GitHubPullRequest[]> {
     let collection = kpiDb.githubPullRequests.toCollection();
 
-    if (filter && filter.dateRangeDays && filter.dateRangeDays > 0) {
-      const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-      collection = collection.filter(pr => pr.createdAt >= cutoff);
+    if (filter) {
+      if (filter.product && filter.product !== 'All') {
+        const repoPrefix = filter.product.toLowerCase();
+        collection = collection.filter(pr => pr.repository.toLowerCase().includes(repoPrefix));
+      }
+      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
+        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
+        collection = collection.filter(pr => pr.createdAt >= cutoff);
+      }
     }
 
     return await collection.toArray();
@@ -264,9 +270,15 @@ class KPIDataRepository implements IKPIDataRepository {
   async getGitHubCommits(filter?: KPIFilterState): Promise<GitHubCommit[]> {
     let collection = kpiDb.githubCommits.toCollection();
 
-    if (filter && filter.dateRangeDays && filter.dateRangeDays > 0) {
-      const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-      collection = collection.filter(c => c.timestamp >= cutoff);
+    if (filter) {
+      if (filter.product && filter.product !== 'All') {
+        const repoPrefix = filter.product.toLowerCase();
+        collection = collection.filter(c => c.repository.toLowerCase().includes(repoPrefix));
+      }
+      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
+        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
+        collection = collection.filter(c => c.timestamp >= cutoff);
+      }
     }
 
     return await collection.toArray();
