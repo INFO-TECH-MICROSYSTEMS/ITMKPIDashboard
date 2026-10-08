@@ -372,15 +372,12 @@ export class KPICalculatorService {
     const unexecuted = testRailExecutions.filter(t => t.status === 'Unattempted').length;
     const completedSoFar = totalScope - unexecuted;
 
-    // Use current time or fallback to latest execution date in dataset
-    const timestamps = testRailExecutions
-      .map(t => new Date(t.executionDate).getTime())
-      .filter(t => !isNaN(t));
-    const now = timestamps.length > 0 ? Math.max(...timestamps) : Date.now();
+    // Dynamically obtain today's date from the current system clock
+    const now = Date.now();
 
     const historyPoints: TrendPoint[] = [];
 
-    // Track daily completions and build cumulative totals across the historical window
+    // Track daily completions and build cumulative totals across the historical window ending on today
     for (let i = daysHistory - 1; i >= 0; i--) {
       const targetDate = new Date(now - i * 86400000);
       const dateStr = targetDate.toISOString().split('T')[0];
