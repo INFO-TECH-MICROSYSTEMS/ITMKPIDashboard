@@ -66,16 +66,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={scorecard.accessibilityScore >= 95.0 ? t('kpiPlatform.statusAuditPassed', 'Audit Passed') : scorecard.accessibilityScore >= 90.0 ? t('kpiPlatform.statusMinorViolations', 'Minor Violations') : t('kpiPlatform.statusNonCompliant', 'Non-Compliant')}
           statusColor={scorecard.accessibilityScore >= 95.0 ? 'emerald' : scorecard.accessibilityScore >= 90.0 ? 'amber' : 'rose'}
           icon={<Eye className="w-5 h-5 text-cyan-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'WCAG 2.2 AA Accessibility Compliance',
-            statusBadge: scorecard.accessibilityScore >= 95.0 ? 'Audit Passed' : 'Minor Violations',
-            statusColor: scorecard.accessibilityScore >= 95.0 ? 'emerald' : 'amber',
-            currentValue: `${scorecard.accessibilityScore}% Pass Rate`,
-            targetValue: '> 95.0%',
-            formulaOrRule: `AccessibilityScore = (PassedTestCasesInAccessibilitySuite / TotalAccessibilityTestCases) × 100`,
-            rationale: `Automated and manual axe-core audit tests verified ${scorecard.accessibilityScore}% compliance with WCAG 2.2 Level AA guidelines, including color contrast, ARIA tags, and keyboard focus traps.`,
-            recommendedAction: 'Verify screen-reader compatibility on newly added dynamic modal dialogs.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getAccessibilityJustification(scorecard.accessibilityScore))}
         />
         <MetricCard
           title={t('kpiPlatform.governanceView.performanceP95', 'Performance P95 Latency')}
@@ -85,16 +76,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={scorecard.performanceP95Ms <= 180 ? 'P99: 380 ms' : scorecard.performanceP95Ms <= 250 ? t('kpiPlatform.statusSpikeLatency', 'Spike Latency') : t('kpiPlatform.statusBreached', 'SLA Breached')}
           statusColor={scorecard.performanceP95Ms <= 180 ? 'emerald' : scorecard.performanceP95Ms <= 250 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Performance P95 Latency Benchmark',
-            statusBadge: scorecard.performanceP95Ms <= 180 ? 'Compliant' : 'Spike Latency',
-            statusColor: scorecard.performanceP95Ms <= 180 ? 'emerald' : 'amber',
-            currentValue: `${scorecard.performanceP95Ms} ms`,
-            targetValue: '< 180 ms',
-            formulaOrRule: `P95Latency = 95th Percentile Response Duration (ms) in Performance Suite executions`,
-            rationale: `P95 latency is ${scorecard.performanceP95Ms} ms, reflecting server response time under simulated multi-user concurrent workloads.`,
-            recommendedAction: 'Optimize database index scans on high-traffic query endpoints.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getPerformanceP95Justification(scorecard.performanceP95Ms))}
         />
         <MetricCard
           title={t('kpiPlatform.governanceView.csatTitle', 'Stakeholder Satisfaction (CSAT)')}
@@ -105,16 +87,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge={t('kpiPlatform.statusHighTrust', 'High Trust')}
           statusColor="emerald"
           icon={<ThumbsUp className="w-5 h-5 text-emerald-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Stakeholder Satisfaction (CSAT)',
-            statusBadge: 'High Trust',
-            statusColor: 'emerald',
-            currentValue: '4.8 / 5.0',
-            targetValue: '> 4.5',
-            formulaOrRule: `CSAT = AVERAGE(SurveyRatings across Product, Engineering, and Operations stakeholders)`,
-            rationale: `Stakeholder feedback scores quality governance and release velocity at 4.8 out of 5.0 (96% net positive trust rating).`,
-            recommendedAction: 'Maintain executive quality demo transparency and bi-weekly release reviews.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getCsatJustification())}
         />
         {/* Enriched Governance Metric 1: Contractual SLA Penalties */}
         <MetricCard
@@ -126,16 +99,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge="Zero Penalty"
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Contractual SLA Credit Penalties Incurred',
-            statusBadge: 'Zero Penalty',
-            statusColor: 'emerald',
-            currentValue: '$0 USD',
-            targetValue: '$0 Permitted',
-            formulaOrRule: `SLA_Penalties = SUM(CustomerContractOutageCredits + ServiceBreachFines)`,
-            rationale: `No financial SLA credit penalties or contractual default charges have been incurred during the current operating period.`,
-            recommendedAction: 'Maintain automated multi-zone failover and proactive synthetic monitoring.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getContractSlaPenaltiesJustification())}
         />
         {/* Enriched Governance Metric 2: Audit Traceability Index */}
         <MetricCard
@@ -147,16 +111,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusBadge="Audit Verified"
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-teal-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Audit Trail & Requirement Traceability Index',
-            statusBadge: 'Audit Verified',
-            statusColor: 'emerald',
-            currentValue: '99.4%',
-            targetValue: '100% Full Traceability',
-            formulaOrRule: `TraceabilityIndex = (ProductionCommitsWithLinkedJiraStoryAndTestExecution / TotalCommits) × 100`,
-            rationale: `99.4% of production pull requests and releases possess verifiable links connecting business requirements in JIRA to automated test cases in TestRail and verified GitHub PR reviews.`,
-            recommendedAction: 'Enforce branch protection rules requiring a valid JIRA issue key in all PR titles.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getAuditTraceabilityJustification())}
         />
       </div>
 
@@ -232,18 +187,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             return (
               <div 
                 key={sla.id} 
-                onClick={() => setSelectedJustification({
-                  title: sla.name,
-                  statusBadge: statusLabel,
-                  statusColor,
-                  currentValue: sla.rate,
-                  targetValue: `≥ ${sla.target}`,
-                  formulaOrRule: `SLA_Compliance = (ExecutedOnTimeItems / TotalApplicableItems) × 100`,
-                  rationale: `Actual adherence is ${sla.rate} against a corporate governance target of ${sla.target}. ${sla.desc}`,
-                  recommendedAction: isOptimal 
-                    ? 'Compliance target met. Continue daily monitoring.' 
-                    : 'Allocate dedicated QE and engineering triage capacity to address SLA bottlenecks.'
-                })}
+                onClick={() => setSelectedJustification(KPIJustificationService.getSlaBreakdownItemJustification(sla.name, sla.rate, sla.target, sla.desc, statusLabel, statusColor))}
                 className={`p-4 rounded-xl border transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${slaTheme.card}`}
                 title={t('kpiPlatform.governanceView.viewJustification', 'Click for SLA justification and compliance audit')}
               >

@@ -402,6 +402,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
         <StackedProgressBar
           distribution={testDistribution}
           title="Consolidated QA Execution Health (Automated + Manual)"
+          onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistribution, 'All'))}
         />
       </div>
 

@@ -78,16 +78,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={mttrMttd.avgMttdHours <= 6.0 ? t('kpiPlatform.statusFastDiscovery', 'Fast Discovery') : mttrMttd.avgMttdHours <= 12.0 ? t('kpiPlatform.statusLagging', 'Lagging') : t('kpiPlatform.statusCriticalLag', 'Critical Lag')}
           statusColor={mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : mttrMttd.avgMttdHours <= 12.0 ? 'amber' : 'rose'}
           icon={<Flame className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Mean Time to Detect (MTTD)',
-            statusBadge: mttrMttd.avgMttdHours <= 6.0 ? 'Fast Discovery' : 'Lagging',
-            statusColor: mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : 'amber',
-            currentValue: `${mttrMttd.avgMttdHours} hrs`,
-            targetValue: '< 6.0 hrs',
-            formulaOrRule: `MTTD = SUM(BugIdentificationTime - CodeCommitTime) / TotalDetectedBugs`,
-            rationale: `Mean Time to Detect is ${mttrMttd.avgMttdHours} hours. Rapid discovery minimizes defect blast radius and prevents downstream test dependencies.`,
-            recommendedAction: 'Keep automated smoke suites running on every branch commit to detect regressions within hours of authoring.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMttdJustification(mttrMttd.avgMttdHours))}
         />
         <MetricCard
           title={t('kpiPlatform.qualityView.reopenCard', 'Defect Reopen Rate')}
@@ -98,16 +89,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={mttrMttd.reopenRate < 5 ? t('kpiPlatform.statusStable', 'Stable') : mttrMttd.reopenRate <= 10 ? t('kpiPlatform.statusElevated', 'Elevated') : t('kpiPlatform.statusHighChurn', 'High Churn')}
           statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : mttrMttd.reopenRate <= 10 ? 'amber' : 'rose'}
           icon={<RefreshCw className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Defect Reopen Rate',
-            statusBadge: mttrMttd.reopenRate < 5 ? 'Stable' : 'Elevated',
-            statusColor: mttrMttd.reopenRate < 5 ? 'emerald' : 'amber',
-            currentValue: `${mttrMttd.reopenRate}% (${mttrMttd.reopenedCount} Reopened)`,
-            targetValue: '< 5.0%',
-            formulaOrRule: `ReopenRate = (COUNT(BugsWithStatusTransitionsFromDoneToInProgress) / TotalResolvedBugs) × 100`,
-            rationale: `Reopen rate stands at ${mttrMttd.reopenRate}%. A high reopen rate signals premature resolution by developers or inadequate reproduction verification by QA.`,
-            recommendedAction: 'Require automated unit/integration test coverage attached to defect resolution PRs before mark-as-done.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getReopenRateJustification(mttrMttd.reopenRate, mttrMttd.reopenedCount))}
         />
         <MetricCard
           title={t('kpiPlatform.qualityView.aparCard', 'Customer Escalations (APARs)')}
@@ -117,22 +99,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={customerAparList.length <= 10 ? t('kpiPlatform.statusControlledImpact', 'Controlled Impact') : customerAparList.length <= 20 ? t('kpiPlatform.statusElevatedApars', 'Elevated APARs') : t('kpiPlatform.statusSevereEscapes', 'Severe Escapes')}
           statusColor={customerAparList.length <= 10 ? 'emerald' : customerAparList.length <= 20 ? 'amber' : 'rose'}
           icon={<Bug className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Customer Escalations (APARs)',
-            statusBadge: customerAparList.length <= 10 ? 'Controlled' : 'Elevated APARs',
-            statusColor: customerAparList.length <= 10 ? 'emerald' : 'amber',
-            currentValue: `${customerAparList.length} APAR Tickets`,
-            targetValue: '< 10 Total',
-            formulaOrRule: `CustomerEscalations = COUNT(JiraItems WHERE isCustomerDefect == true OR type == 'CustomerAPAR')`,
-            rationale: `${customerAparList.length} customer issues have been escalated into engineering APAR tickets. High escape counts indicate gaps in production-like staging test datasets.`,
-            offendingItems: customerAparList.slice(0, 5).map(c => ({
-              id: c.id,
-              title: c.title,
-              source: 'JIRA',
-              severityOrStatus: `${c.severity} (${c.status})`
-            })),
-            recommendedAction: 'Run synthetic customer journey scenarios and load tests against mirrored production telemetry.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getCustomerAparJustification(customerAparList))}
         />
         {/* Enriched Quality Metrics: Defect Density per KLOC */}
         <MetricCard
@@ -144,16 +111,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={(mttrMttd.defectDensityKloc ?? 0.62) < 1.0 ? 'Optimal' : 'Elevated'}
           statusColor={(mttrMttd.defectDensityKloc ?? 0.62) < 1.0 ? 'emerald' : 'rose'}
           icon={<Bug className="w-5 h-5 text-teal-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Defect Density per 1,000 Lines of Code (KLOC)',
-            statusBadge: (mttrMttd.defectDensityKloc ?? 0.62) < 1.0 ? 'Optimal' : 'Elevated',
-            statusColor: (mttrMttd.defectDensityKloc ?? 0.62) < 1.0 ? 'emerald' : 'rose',
-            currentValue: `${mttrMttd.defectDensityKloc ?? 0.62} Bugs / KLOC`,
-            targetValue: '< 1.00 / KLOC',
-            formulaOrRule: `DefectDensity = (TotalIdentifiedDefects / TotalKLOCinScope)`,
-            rationale: `Defect density is ${mttrMttd.defectDensityKloc ?? 0.62} defects per 1,000 lines of code. Industry standard for mission-critical software targets under 1.0 defect per KLOC.`,
-            recommendedAction: 'Maintain clean architecture boundaries and pre-merge static code analysis.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getDefectDensityJustification(mttrMttd.defectDensityKloc ?? 0.62))}
         />
         {/* Enriched Quality Metrics: First-Time Fix Rate */}
         <MetricCard
@@ -165,16 +123,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={(mttrMttd.firstTimeFixRate ?? 96.8) >= 90.0 ? 'Rigorous' : 'Churn Risk'}
           statusColor={(mttrMttd.firstTimeFixRate ?? 96.8) >= 90.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-indigo-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'First-Time Fix Rate (FTFR)',
-            statusBadge: (mttrMttd.firstTimeFixRate ?? 96.8) >= 90.0 ? 'High Rigor' : 'Warning',
-            statusColor: (mttrMttd.firstTimeFixRate ?? 96.8) >= 90.0 ? 'emerald' : 'amber',
-            currentValue: `${mttrMttd.firstTimeFixRate ?? 96.8}%`,
-            targetValue: '> 90.0%',
-            formulaOrRule: `FTFR = ((ResolvedDefects - ReopenedDefects) / ResolvedDefects) × 100`,
-            rationale: `First-time fix rate is ${mttrMttd.firstTimeFixRate ?? 96.8}%. Patches reliably resolve underlying root causes without re-opening during QA regression verification.`,
-            recommendedAction: 'Require reproduction unit tests in bug fix pull requests before QA sign-off.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getFirstTimeFixRateJustification(mttrMttd.firstTimeFixRate ?? 96.8))}
         />
         {/* Enriched Quality Metrics: Net Defect Intake Velocity */}
         <MetricCard
@@ -186,16 +135,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusBadge={(mttrMttd.netDefectIntakeVelocity ?? 3) <= 0 ? 'Burndown' : 'Intake Growth'}
           statusColor={(mttrMttd.netDefectIntakeVelocity ?? 3) <= 0 ? 'emerald' : 'amber'}
           icon={<Flame className="w-5 h-5 text-orange-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Net Defect Intake Velocity',
-            statusBadge: (mttrMttd.netDefectIntakeVelocity ?? 3) <= 0 ? 'Burning Down' : 'Backlog Accumulation',
-            statusColor: (mttrMttd.netDefectIntakeVelocity ?? 3) <= 0 ? 'emerald' : 'amber',
-            currentValue: `${mttrMttd.netDefectIntakeVelocity ?? 3} Net Bugs`,
-            targetValue: '≤ 0 Net Intake',
-            formulaOrRule: `NetIntakeVelocity = DiscoveredBugs - ResolvedBugsInSprint`,
-            rationale: `Net intake stands at ${mttrMttd.netDefectIntakeVelocity ?? 3} tickets. Tracking whether defect discovery outpaces resolution capacity prevents hidden technical debt buildup.`,
-            recommendedAction: 'Dedicate 20% of squad sprint capacity to technical debt and backlog triage.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getNetDefectVelocityJustification(mttrMttd.netDefectIntakeVelocity ?? 3))}
         />
       </div>
 
@@ -351,16 +291,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             series1Color="#f43f5e" // Rose
             series2Color="#10b981" // Emerald
             height={240}
-            onJustify={() => setSelectedJustification({
-              title: 'Defect Discovery vs. Resolution Burnout Trend',
-              statusBadge: (mttrMttd.netDefectIntakeVelocity ?? 0) <= 0 ? 'Burning Down' : 'Discovery Ahead',
-              statusColor: (mttrMttd.netDefectIntakeVelocity ?? 0) <= 0 ? 'emerald' : 'amber',
-              currentValue: `Intake Velocity: ${mttrMttd.netDefectIntakeVelocity ?? 0} Net Bugs`,
-              targetValue: 'Resolution Rate ≥ Discovery Rate',
-              formulaOrRule: `NetIntakeRate = WeeklyDiscoveredDefects - WeeklyResolvedDefects`,
-              rationale: `Compares incoming defect discovery trajectory against resolution burndown across the active time window. A green curve (resolutions) consistently above or matching red (discoveries) confirms release stabilization.`,
-              recommendedAction: 'If discovery spikes persistently above burndown, pause non-critical feature branches and schedule a stabilization sprint.'
-            })}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getDefectTrendChartJustification(mttrMttd.netDefectIntakeVelocity ?? 0))}
           />
         </div>
 

@@ -80,22 +80,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={itemsWithNoApiTests.length === 0 ? t('kpiPlatform.statusCompliant', 'Compliant') : itemsWithNoApiTests.length < 5 ? t('kpiPlatform.statusAcceptable', 'Acceptable') : t('kpiPlatform.statusContractRisk', 'Contract Risk')}
           statusColor={itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose'}
           icon={<GitPullRequest className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Items With No API Tests',
-            statusBadge: itemsWithNoApiTests.length === 0 ? 'Compliant' : itemsWithNoApiTests.length < 5 ? 'Acceptable' : 'Contract Risk',
-            statusColor: itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose',
-            currentValue: `${itemsWithNoApiTests.length} Items`,
-            targetValue: '< 5 Exceptions',
-            formulaOrRule: `MissingApiTests = COUNT(JiraItems WHERE hasApiTests == false)`,
-            rationale: `${itemsWithNoApiTests.length} items lack automated API/endpoint integration coverage. Untested API payloads cause contract regressions across microservices.`,
-            offendingItems: itemsWithNoApiTests.slice(0, 5).map(m => ({
-              id: m.id,
-              title: m.title,
-              source: 'JIRA',
-              severityOrStatus: `No API Tests (${m.component})`
-            })),
-            recommendedAction: 'Attach Postman/REST-assured automated integration tests to PRs before QA signoff.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMissingApiTestsJustification(itemsWithNoApiTests))}
         />
         <MetricCard
           title={t('kpiPlatform.riskView.highDependency', 'High Dependency Depth (Depth ≥ 4)')}
@@ -105,22 +90,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={highDependencyItems.length === 0 ? t('kpiPlatform.statusLowCoupling', 'Low Coupling') : highDependencyItems.length <= 3 ? t('kpiPlatform.statusManageable', 'Manageable') : t('kpiPlatform.statusBlastRadiusAlert', 'Blast Radius Alert')}
           statusColor={highDependencyItems.length === 0 ? 'emerald' : highDependencyItems.length <= 3 ? 'amber' : 'rose'}
           icon={<Layers className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'High Dependency Depth (Depth ≥ 4)',
-            statusBadge: highDependencyItems.length === 0 ? 'Low Coupling' : 'Blast Radius Alert',
-            statusColor: highDependencyItems.length === 0 ? 'emerald' : 'rose',
-            currentValue: `${highDependencyItems.length} Items (Depth ≥ 4)`,
-            targetValue: '< 3 High Risk',
-            formulaOrRule: `HighDependencyDepth = COUNT(JiraItems WHERE dependencyDepth >= 4)`,
-            rationale: `${highDependencyItems.length} backlog items have recursive dependency trees spanning 4 or more tiers. Modifying these items risks cascading test failures across squads.`,
-            offendingItems: highDependencyItems.slice(0, 5).map(d => ({
-              id: d.id,
-              title: d.title,
-              source: 'JIRA',
-              severityOrStatus: `Depth: ${d.dependencyDepth}`
-            })),
-            recommendedAction: 'Schedule an architecture decoupling review and coordinate cross-squad regression testing.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
         />
         <MetricCard
           title="High Execution Time Tests (>300s)"
@@ -130,16 +100,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           statusBadge={highExecutionTests.length === 0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : highExecutionTests.length <= 5 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
           statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-cyan-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'High Execution Time Tests (>300s)',
-            statusBadge: highExecutionTests.length === 0 ? 'Fast Pipeline' : 'Pipeline Bottleneck',
-            statusColor: highExecutionTests.length === 0 ? 'emerald' : 'amber',
-            currentValue: `${highExecutionTests.length} Tests > 300s`,
-            targetValue: '0 Bottlenecks',
-            formulaOrRule: `HighExecutionTests = COUNT(TestRailExecutions WHERE durationSeconds > 300)`,
-            rationale: `${highExecutionTests.length} test cases take longer than 5 minutes each to complete, clogging CI worker pools and delaying developer feedback.`,
-            recommendedAction: 'Parallelize test data seeding and split monolithic E2E scenarios into targeted integration runs.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getHighExecutionTestsJustification(highExecutionTests))}
         />
       </div>
 

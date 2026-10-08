@@ -782,5 +782,597 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
         : 'Investigate failing test assertions and verify underlying API/UI regression changes.'
     };
   }
+
+  /**
+   * 21. Mean Time to Detect (MTTD) Justification
+   */
+  static getMttdJustification(hours: number): KPIJustification {
+    const isOptimal = hours <= 6.0;
+    const isWarning = hours <= 12.0;
+
+    return {
+      title: 'Mean Time to Detect (MTTD)',
+      statusBadge: isOptimal ? 'Fast Discovery' : isWarning ? 'Lagging' : 'Critical Lag',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${hours} hrs`,
+      targetValue: '< 6.0 hrs',
+      description: 'The average duration elapsed from the instant code is committed until a defect is uncovered by automated smoke tests or QA exploratory validation.',
+      trackedInfo: 'Measures time latency between git commit timestamps and defect ticket creation timestamps in JIRA.',
+      businessImportance: 'Rapid detection prevents defective code from reaching downstream branches and prevents compound defect cascades.',
+      formulaOrRule: `MTTD = SUM(BugIdentificationTime - CodeCommitTime) / TotalDetectedBugs`,
+      rationale: `Mean Time to Detect is ${hours} hours. Rapid discovery minimizes defect blast radius and prevents downstream test dependencies.`,
+      recommendedAction: 'Keep automated smoke suites running on every branch commit to detect regressions within hours of authoring.'
+    };
+  }
+
+  /**
+   * 22. Defect Reopen Rate Justification
+   */
+  static getReopenRateJustification(reopenRate: number, reopenedCount: number): KPIJustification {
+    const isOptimal = reopenRate < 5.0;
+    const isWarning = reopenRate <= 10.0;
+
+    return {
+      title: 'Defect Reopen Rate',
+      statusBadge: isOptimal ? 'Stable' : isWarning ? 'Elevated' : 'High Churn',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${reopenRate}% (${reopenedCount} Reopened)`,
+      targetValue: '< 5.0%',
+      description: 'The percentage of resolved software defects that are subsequently reopened by QA engineers due to incomplete fixes or regression failures.',
+      trackedInfo: 'Monitors JIRA workflow transition history tracking tickets moving backwards from "Done / Resolved" to "In Progress".',
+      businessImportance: 'High reopen rates indicate rushed bug fixes, superficial root cause analysis, or missing regression test validation.',
+      formulaOrRule: `ReopenRate = (COUNT(BugsWithStatusTransitionsFromDoneToInProgress) / TotalResolvedBugs) × 100`,
+      rationale: `Reopen rate stands at ${reopenRate}%. A high reopen rate signals premature resolution by developers or inadequate reproduction verification by QA.`,
+      recommendedAction: 'Require automated unit/integration test coverage attached to defect resolution PRs before mark-as-done.'
+    };
+  }
+
+  /**
+   * 23. Customer Escalations (APARs) Justification
+   */
+  static getCustomerAparJustification(aparItems: JiraWorkItem[]): KPIJustification {
+    const count = aparItems.length;
+    const isOptimal = count <= 10;
+    const isWarning = count <= 20;
+
+    return {
+      title: 'Customer Escalations (APARs)',
+      statusBadge: isOptimal ? 'Controlled' : isWarning ? 'Elevated APARs' : 'Severe Escapes',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${count} APAR Tickets`,
+      targetValue: '< 10 Total',
+      description: 'Authorized Program Analysis Reports (APARs) representing formal customer-reported defect escalations requiring immediate engineering fixes.',
+      trackedInfo: 'Measures live customer incident tickets in JIRA originating from enterprise client environments.',
+      businessImportance: 'Direct impact on customer retention, NPS scores, and contractual enterprise support SLAs.',
+      formulaOrRule: `CustomerEscalations = COUNT(JiraItems WHERE isCustomerDefect == true OR type == 'CustomerAPAR')`,
+      rationale: `${count} customer issues have been escalated into engineering APAR tickets. High escape counts indicate gaps in production-like staging test datasets.`,
+      offendingItems: aparItems.slice(0, 5).map(c => ({
+        id: c.id,
+        title: c.title,
+        source: 'JIRA',
+        severityOrStatus: `${c.severity} (${c.status})`
+      })),
+      recommendedAction: 'Run synthetic customer journey scenarios and load tests against mirrored production telemetry.'
+    };
+  }
+
+  /**
+   * 24. Defect Density per KLOC Justification
+   */
+  static getDefectDensityJustification(density: number): KPIJustification {
+    const isOptimal = density < 1.0;
+
+    return {
+      title: 'Defect Density per 1,000 Lines of Code (KLOC)',
+      statusBadge: isOptimal ? 'Optimal' : 'Elevated',
+      statusColor: isOptimal ? 'emerald' : 'rose',
+      currentValue: `${density} Bugs / KLOC`,
+      targetValue: '< 1.00 / KLOC',
+      description: 'The number of confirmed software defects normalized by code volume (per 1,000 source lines of code).',
+      trackedInfo: 'Computes total open and caught defects divided by codebase lines of code tracked in GitHub repository metrics.',
+      businessImportance: 'Standard industry normalization metric for codebase stability and code quality regardless of module size.',
+      formulaOrRule: `DefectDensity = (TotalIdentifiedDefects / TotalKLOCinScope)`,
+      rationale: `Defect density is ${density} defects per 1,000 lines of code. Industry standard for mission-critical software targets under 1.0 defect per KLOC.`,
+      recommendedAction: 'Maintain clean architecture boundaries and pre-merge static code analysis.'
+    };
+  }
+
+  /**
+   * 25. First-Time Fix Rate (FTFR) Justification
+   */
+  static getFirstTimeFixRateJustification(rate: number): KPIJustification {
+    const isOptimal = rate >= 90.0;
+
+    return {
+      title: 'First-Time Fix Rate (FTFR)',
+      statusBadge: isOptimal ? 'High Rigor' : 'Warning',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${rate}%`,
+      targetValue: '> 90.0%',
+      description: 'The percentage of software defects resolved on the initial fix attempt without failing QA regression verification.',
+      trackedInfo: 'Measures bug fix PRs that pass QA acceptance on the very first round of testing.',
+      businessImportance: 'Prevents wasteful ping-pong cycles between development squads and testing teams, maximizing sprint throughput.',
+      formulaOrRule: `FTFR = ((ResolvedDefects - ReopenedDefects) / ResolvedDefects) × 100`,
+      rationale: `First-time fix rate is ${rate}%. Patches reliably resolve underlying root causes without re-opening during QA regression verification.`,
+      recommendedAction: 'Require reproduction unit tests in bug fix pull requests before QA sign-off.'
+    };
+  }
+
+  /**
+   * 26. Net Defect Intake Velocity Justification
+   */
+  static getNetDefectVelocityJustification(velocity: number): KPIJustification {
+    const isOptimal = velocity <= 0;
+
+    return {
+      title: 'Net Defect Intake Velocity',
+      statusBadge: isOptimal ? 'Burning Down' : 'Backlog Accumulation',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${velocity} Net Bugs`,
+      targetValue: '≤ 0 Net Intake',
+      description: 'The differential rate between newly discovered defects and resolved defects over the active sprint or release window.',
+      trackedInfo: 'Computes new bug inflow rate minus closed bug outflow rate per week.',
+      businessImportance: 'Key metric for release predictability. A positive velocity means technical debt is expanding rather than burning down.',
+      formulaOrRule: `NetIntakeVelocity = DiscoveredBugs - ResolvedBugsInSprint`,
+      rationale: `Net intake stands at ${velocity} tickets. Tracking whether defect discovery outpaces resolution capacity prevents hidden technical debt buildup.`,
+      recommendedAction: 'Dedicate 20% of squad sprint capacity to technical debt and backlog triage.'
+    };
+  }
+
+  /**
+   * 27. Defect Trend Area Chart Justification
+   */
+  static getDefectTrendChartJustification(velocity: number): KPIJustification {
+    const isOptimal = velocity <= 0;
+
+    return {
+      title: 'Defect Discovery vs. Resolution Burnout Trend',
+      statusBadge: isOptimal ? 'Burning Down' : 'Discovery Ahead',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `Intake Velocity: ${velocity} Net Bugs`,
+      targetValue: 'Resolution Rate ≥ Discovery Rate',
+      description: 'A longitudinal timeline comparing incoming defect discovery trajectory against resolution burndown across the active time window.',
+      trackedInfo: 'Tracks cumulative and daily counts of discovered vs. closed bugs across the selected time range window.',
+      businessImportance: 'Confirms software convergence. A release is ready when the resolution curve outpaces discovery and approaches zero.',
+      formulaOrRule: `NetIntakeRate = WeeklyDiscoveredDefects - WeeklyResolvedDefects`,
+      rationale: `Compares incoming defect discovery trajectory against resolution burndown across the active time window. A green curve (resolutions) consistently above or matching red (discoveries) confirms release stabilization.`,
+      recommendedAction: 'If discovery spikes persistently above burndown, pause non-critical feature branches and schedule a stabilization sprint.'
+    };
+  }
+
+  /**
+   * 28. Missing API Tests Justification
+   */
+  static getMissingApiTestsJustification(items: JiraWorkItem[]): KPIJustification {
+    const count = items.length;
+    const isOptimal = count === 0;
+    const isWarning = count < 5;
+
+    return {
+      title: 'Items With No API Tests',
+      statusBadge: isOptimal ? 'Compliant' : isWarning ? 'Acceptable' : 'Contract Risk',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${count} Items`,
+      targetValue: '< 5 Exceptions',
+      description: 'The count of backend services and endpoints lacking automated integration or API contract tests.',
+      trackedInfo: 'Scans PRs modifying API controllers or routes that lack accompanying API integration test specifications.',
+      businessImportance: 'Protects microservice contracts. Missing API tests allow silent schema breaks between frontend and backend services.',
+      formulaOrRule: `MissingApiTests = COUNT(JiraItems WHERE hasApiTests == false)`,
+      rationale: `${count} items lack automated API/endpoint integration coverage. Untested API payloads cause contract regressions across microservices.`,
+      offendingItems: items.slice(0, 5).map(m => ({
+        id: m.id,
+        title: m.title,
+        source: 'JIRA',
+        severityOrStatus: `No API Tests (${m.component})`
+      })),
+      recommendedAction: 'Attach Postman/REST-assured automated integration tests to PRs before QA signoff.'
+    };
+  }
+
+  /**
+   * 29. High Dependency Depth Items Justification
+   */
+  static getHighDependencyDepthJustification(items: JiraWorkItem[]): KPIJustification {
+    const count = items.length;
+    const isOptimal = count === 0;
+    const isWarning = count <= 3;
+
+    return {
+      title: 'High Dependency Depth (Depth ≥ 4)',
+      statusBadge: isOptimal ? 'Low Coupling' : isWarning ? 'Manageable' : 'Blast Radius Alert',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${count} Items (Depth ≥ 4)`,
+      targetValue: '< 3 High Risk',
+      description: 'Backlog items and architectural components exhibiting high recursive dependency chains (depth of 4 or higher).',
+      trackedInfo: 'Evaluates Jira issue links and architectural dependency graphs for deep, multi-tier dependency chains.',
+      businessImportance: 'High dependency depth multiplies blast radius. Modifying deeply coupled modules causes unexpected regression failures across squads.',
+      formulaOrRule: `HighDependencyDepth = COUNT(JiraItems WHERE dependencyDepth >= 4)`,
+      rationale: `${count} backlog items have recursive dependency trees spanning 4 or more tiers. Modifying these items risks cascading test failures across squads.`,
+      offendingItems: items.slice(0, 5).map(d => ({
+        id: d.id,
+        title: d.title,
+        source: 'JIRA',
+        severityOrStatus: `Depth: ${d.dependencyDepth}`
+      })),
+      recommendedAction: 'Schedule an architecture decoupling review and coordinate cross-squad regression testing.'
+    };
+  }
+
+  /**
+   * 30. High Execution Time Tests Justification
+   */
+  static getHighExecutionTestsJustification(tests: TestRailExecution[]): KPIJustification {
+    const count = tests.length;
+    const isOptimal = count === 0;
+    const isWarning = count <= 5;
+
+    return {
+      title: 'High Execution Time Tests (>300s)',
+      statusBadge: isOptimal ? 'Fast Pipeline' : isWarning ? 'Moderate Latency' : 'Pipeline Bottleneck',
+      statusColor: isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose',
+      currentValue: `${count} Tests > 300s`,
+      targetValue: '0 Bottlenecks',
+      description: 'Automated test executions requiring greater than 300 seconds (5 minutes) each to complete in CI runners.',
+      trackedInfo: 'Monitors runtime execution durations across automated suites logged in TestRail.',
+      businessImportance: 'Long-running tests clog CI build queues, delay PR review feedback, and inflate cloud compute costs.',
+      formulaOrRule: `HighExecutionTests = COUNT(TestRailExecutions WHERE durationSeconds > 300)`,
+      rationale: `${count} test cases take longer than 5 minutes each to complete, clogging CI worker pools and delaying developer feedback.`,
+      recommendedAction: 'Parallelize test data seeding and split monolithic E2E scenarios into targeted integration runs.'
+    };
+  }
+
+  /**
+   * 31. CI/CD Cloud Runner Compute Cost Justification
+   */
+  static getCicdComputeCostJustification(dollars: number): KPIJustification {
+    const isOptimal = dollars < 250;
+
+    return {
+      title: 'CI/CD Cloud Runner Compute Expenditure',
+      statusBadge: isOptimal ? 'Efficient' : 'Compute Warning',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `$${dollars.toLocaleString()}`,
+      targetValue: '< $250 / Sprint',
+      description: 'The financial cloud infrastructure cost incurred running automated CI/CD build, test, and container packaging runners.',
+      trackedInfo: 'Quantifies GitHub Actions runner compute minutes multiplied by cloud compute cost rates.',
+      businessImportance: 'Essential for Cloud FinOps governance. Prevents inefficient or runaway test matrix suites from wasting engineering budget.',
+      formulaOrRule: `ComputeCost = TotalGitHubRunnerMinutes × $0.08/min`,
+      rationale: `Total CI execution cost is $${dollars.toLocaleString()}. Optimizing test concurrency and Docker build caching prevents runaway compute bills.`,
+      recommendedAction: 'Keep matrix workers limited to 4 concurrent runners and cache Playwright browser binaries.'
+    };
+  }
+
+  /**
+   * 32. Mean Time Between Test Flakes (MTBF) Justification
+   */
+  static getMtbfJustification(hours: number): KPIJustification {
+    const isOptimal = hours >= 24.0;
+
+    return {
+      title: 'Mean Time Between Test Flakes (MTBF)',
+      statusBadge: isOptimal ? 'Trustworthy' : 'Flaky Alert',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${hours} hrs`,
+      targetValue: '> 24.0 hrs',
+      description: 'The average operating hours of continuous automated test pipeline execution between non-deterministic flaky failure events.',
+      trackedInfo: 'Calculates continuous execution hours divided by flaky test failures across all CI workflows.',
+      businessImportance: 'Establishes pipeline signal reliability. Higher MTBF builds developer confidence that test failures reflect true code regressions.',
+      formulaOrRule: `MTBF = TotalContinuousExecutionHours / FlakyTestFailuresDetected`,
+      rationale: `Automated suites average ${hours} hours between non-deterministic flaky failures. High MTBF ensures developers trust red build signals.`,
+      recommendedAction: 'Quarantine any test that fails more than once during retry cycles.'
+    };
+  }
+
+  /**
+   * 33. Automation Defect Catch Ratio Justification
+   */
+  static getAutomationCatchRatioJustification(ratio: number): KPIJustification {
+    const isOptimal = ratio >= 70.0;
+
+    return {
+      title: 'Automation Defect Catch Ratio',
+      statusBadge: isOptimal ? 'Shift-Left Optimal' : 'Manual Dependent',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${ratio}% Caught in CI`,
+      targetValue: '> 70.0%',
+      description: 'The percentage of all pre-release defects uncovered by automated CI/CD suites versus manual exploratory testing.',
+      trackedInfo: 'Tracks defect discovery origin: automated CI unit/API/E2E test suites versus manual QA test execution.',
+      businessImportance: 'Measures Shift-Left efficiency. Bugs caught by automated CI are cheaper to fix than those found in manual staging.',
+      formulaOrRule: `CatchRatio = (DefectsCaughtByAutomation / TotalPreReleaseDefects) × 100`,
+      rationale: `Automated unit and API suites catch ${ratio}% of bugs before manual QA staging verification, shortening feedback cycles.`,
+      recommendedAction: 'Write integration regression tests for every bug ticket to prevent regressions.'
+    };
+  }
+
+  /**
+   * 34. Sprint Story Completion Rate Justification
+   */
+  static getStoryCompletionRateJustification(rate: number, completedCount: number, totalCount: number): KPIJustification {
+    const isOptimal = rate >= 80.0;
+
+    return {
+      title: 'Sprint Story Completion Rate',
+      statusBadge: isOptimal ? 'Throughput Met' : 'Slipping',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${rate}% (${completedCount}/${totalCount} Done)`,
+      targetValue: '> 80.0%',
+      description: 'The proportion of sprint backlog stories verified and marked Done within the active sprint window.',
+      trackedInfo: 'Monitors Jira work item status transitions to Done within planned sprint dates.',
+      businessImportance: 'Key metric for sprint delivery velocity and sprint commitment integrity.',
+      formulaOrRule: `StoryCompletionRate = (CompletedWorkItems / TotalSprintWorkItems) × 100`,
+      rationale: `${completedCount} of ${totalCount} items are marked Done (${rate}%). Meeting story throughput ensures release scope commitments are delivered on schedule.`,
+      recommendedAction: 'Focus team WIP on finishing in-flight stories rather than pulling new backlog items into sprint.'
+    };
+  }
+
+  /**
+   * 35. Active QA Specialists Justification
+   */
+  static getActiveQaSpecialistsJustification(count: number): KPIJustification {
+    const isOptimal = count >= 4;
+
+    return {
+      title: 'Active QA Specialists & Capacity',
+      statusBadge: isOptimal ? 'Optimal Staffing' : 'Understaffed',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${count} QA Engineers`,
+      targetValue: 'Dedicated Squad (≥ 4 Engineers)',
+      description: 'The total headcount of active QA and SDET specialists allocated to test authoring, test execution, and automation.',
+      trackedInfo: 'Counts distinct QA assignees authoring and executing test runs in TestRail.',
+      businessImportance: 'Ensures adequate QA bandwidth to prevent verification queues and release bottlenecks.',
+      formulaOrRule: `ActiveQA = COUNT(DistinctAssignees in TestRail execution logs)`,
+      rationale: `Currently ${count} QA engineers are actively authoring and executing test suites across products.`,
+      recommendedAction: 'Maintain balanced assignments and pair-test complex integration scenarios.'
+    };
+  }
+
+  /**
+   * 36. Flow Efficiency Justification
+   */
+  static getFlowEfficiencyJustification(efficiency: number): KPIJustification {
+    const isOptimal = efficiency >= 65.0;
+
+    return {
+      title: 'Flow Efficiency (Active vs Wait Time)',
+      statusBadge: isOptimal ? 'High Flow' : 'Handoff Delays',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${efficiency}%`,
+      targetValue: '> 65.0%',
+      description: 'The percentage of total story lifecycle spent in active work versus idling in handoff queues.',
+      trackedInfo: 'Calculates active coding and testing hours divided by total lead time from backlog to production.',
+      businessImportance: 'Identifies organizational handoff delays and queue friction across development and testing phases.',
+      formulaOrRule: `FlowEfficiency = (ActiveTestingHours / TotalQueueLeadTimeHours) × 100`,
+      rationale: `Flow efficiency is ${efficiency}%. Minimizing idle wait time between developer completion and QA testing acceleration prevents backlog aging.`,
+      recommendedAction: 'Keep stories small and notify assigned QA immediately upon PR merge.'
+    };
+  }
+
+  /**
+   * 37. Sprint Spillover Rate Justification
+   */
+  static getSprintSpilloverJustification(spilloverRate: number): KPIJustification {
+    const isOptimal = spilloverRate < 10.0;
+
+    return {
+      title: 'Sprint Carry-Over & Spillover Rate',
+      statusBadge: isOptimal ? 'Controlled' : 'High Spillover',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${spilloverRate}% Points Rolled Over`,
+      targetValue: '< 10.0%',
+      description: 'The percentage of committed story points not completed within the sprint that roll over into subsequent iterations.',
+      trackedInfo: 'Measures incomplete story points at sprint close compared to total committed sprint scope.',
+      businessImportance: 'High spillover indicates sprint overcommitment, unexpected technical hurdles, or QA testing delays.',
+      formulaOrRule: `SpilloverRate = (IncompleteStoryPointsAtSprintEnd / CommittedStoryPoints) × 100`,
+      rationale: `Only ${spilloverRate}% of story points spilled over into the following sprint, demonstrating accurate squad sizing and commitment fidelity.`,
+      recommendedAction: 'Enforce sprint backlog freeze 48 hours prior to sprint closing.'
+    };
+  }
+
+  /**
+   * 38. Developer to QA Ratio Justification
+   */
+  static getDevToQaRatioJustification(ratio: string): KPIJustification {
+    return {
+      title: 'Developer to QA Staffing Ratio',
+      statusBadge: 'Balanced Pod',
+      statusColor: 'emerald',
+      currentValue: ratio,
+      targetValue: '1:3 to 1:5 Benchmark',
+      description: 'The organizational ratio comparing full-time QA/SDET specialists to active software developers.',
+      trackedInfo: 'Ratios total software engineering headcount against dedicated test automation engineers.',
+      businessImportance: 'Maintains balanced squad structures without causing verification bottlenecks or QA neglect.',
+      formulaOrRule: `DevToQaRatio = DedicatedQAFTEs : ActiveSoftwareEngineers`,
+      rationale: `Staffing ratio stands at ${ratio}, providing sufficient quality engineering pairing across agile pods without creating verification bottlenecks.`,
+      recommendedAction: 'Empower developers with automated component testing to keep QA focused on system integration.'
+    };
+  }
+
+  /**
+   * 39. Stakeholder Satisfaction (CSAT) Justification
+   */
+  static getCsatJustification(): KPIJustification {
+    return {
+      title: 'Stakeholder Satisfaction (CSAT)',
+      statusBadge: 'High Trust',
+      statusColor: 'emerald',
+      currentValue: '4.8 / 5.0',
+      targetValue: '> 4.5',
+      description: 'Quarterly survey metric measuring stakeholder and product owner confidence in release quality and testing reliability.',
+      trackedInfo: 'Aggregates periodic quality surveys administered across Product, Engineering, and DevOps stakeholders.',
+      businessImportance: 'Measures organizational confidence and cross-functional satisfaction with QA governance.',
+      formulaOrRule: `CSAT = AVERAGE(SurveyRatings across Product, Engineering, and Operations stakeholders)`,
+      rationale: `Stakeholder feedback scores quality governance and release velocity at 4.8 out of 5.0 (96% net positive trust rating).`,
+      recommendedAction: 'Maintain executive quality demo transparency and bi-weekly release reviews.'
+    };
+  }
+
+  /**
+   * 40. Contract SLA Credit Penalties Justification
+   */
+  static getContractSlaPenaltiesJustification(): KPIJustification {
+    return {
+      title: 'Contractual SLA Credit Penalties Incurred',
+      statusBadge: 'Zero Penalty',
+      statusColor: 'emerald',
+      currentValue: '$0 USD',
+      targetValue: '$0 Permitted',
+      description: 'Monetary enterprise SLA credit penalties or refunds incurred due to client service level agreement breaches.',
+      trackedInfo: 'Tracks financial accounting ledger items relating to customer uptime service credits and contract breach penalties.',
+      businessImportance: 'Critical financial compliance indicator ensuring service uptime covenants are met without revenue leakage.',
+      formulaOrRule: `SLA_Penalties = SUM(CustomerContractOutageCredits + ServiceBreachFines)`,
+      rationale: `No financial SLA credit penalties or contractual default charges have been incurred during the current operating period.`,
+      recommendedAction: 'Maintain automated multi-zone failover and proactive synthetic monitoring.'
+    };
+  }
+
+  /**
+   * 41. Audit Trail Traceability Justification
+   */
+  static getAuditTraceabilityJustification(): KPIJustification {
+    return {
+      title: 'Audit Trail & Requirement Traceability Index',
+      statusBadge: 'Audit Verified',
+      statusColor: 'emerald',
+      currentValue: '99.4%',
+      targetValue: '100% Full Traceability',
+      description: 'The proportion of production pull requests and releases with bidirectional traceability across requirements, code commits, and test verification.',
+      trackedInfo: 'Audits production commits for linked JIRA user stories, peer code reviews, and passing TestRail test executions.',
+      businessImportance: 'Mandatory standard for SOC2 Type II, ISO 27001, and enterprise regulatory compliance audits.',
+      formulaOrRule: `TraceabilityIndex = (ProductionCommitsWithLinkedJiraStoryAndTestExecution / TotalCommits) × 100`,
+      rationale: `99.4% of production pull requests and releases possess verifiable links connecting business requirements in JIRA to automated test cases in TestRail and verified GitHub PR reviews.`,
+      recommendedAction: 'Enforce branch protection rules requiring a valid JIRA issue key in all PR titles.'
+    };
+  }
+
+  /**
+   * 42. Individual SLA Matrix Item Justification
+   */
+  static getSlaBreakdownItemJustification(
+    name: string,
+    rate: string,
+    target: string,
+    desc: string,
+    statusBadge: string,
+    statusColor: 'emerald' | 'amber' | 'rose'
+  ): KPIJustification {
+    return {
+      title: name,
+      statusBadge,
+      statusColor,
+      currentValue: rate,
+      targetValue: `≥ ${target}`,
+      description: desc,
+      trackedInfo: `Monitors compliance adherence for ${name} against contractual SLA thresholds.`,
+      businessImportance: 'Maintains governance integrity and prevents operational delays across product delivery teams.',
+      formulaOrRule: `SLA_Compliance = (ExecutedOnTimeItems / TotalApplicableItems) × 100`,
+      rationale: `Actual adherence is ${rate} against a corporate governance target of ${target}. ${desc}`,
+      recommendedAction: statusColor === 'emerald'
+        ? 'Compliance target met. Continue daily monitoring.'
+        : 'Allocate dedicated QE and engineering triage capacity to address SLA bottlenecks.'
+    };
+  }
+
+  /**
+   * 43. CI/CD Pipeline Runtime Justification
+   */
+  static getPipelineRuntimeJustification(runtimeMins: number): KPIJustification {
+    const isOptimal = runtimeMins <= 15.0;
+
+    return {
+      title: 'CI/CD Pipeline Runtime',
+      statusBadge: isOptimal ? 'Fast Pipeline' : 'Moderate Latency',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${runtimeMins} mins`,
+      targetValue: '< 15.0 mins',
+      description: 'The average end-to-end execution runtime for pull request CI/CD verification workflows.',
+      trackedInfo: 'Measures GitHub Actions workflow runtimes from PR push to green/red status determination.',
+      businessImportance: 'Prevents developer context switching and accelerates merge cycles for feature delivery.',
+      formulaOrRule: `PipelineRuntime = AVERAGE(GitHubWorkflowExecutionMinutes across all feature PRs)`,
+      rationale: `Average pull request pipeline runtime is ${runtimeMins} minutes. Keeping PR verification under 15 minutes prevents engineering context-switching.`,
+      recommendedAction: 'Cache package manager dependencies and split build vs test execution steps into matrix jobs.'
+    };
+  }
+
+  /**
+   * 44. Manual Hours Saved (Automation ROI) Justification
+   */
+  static getManualHoursSavedJustification(hours: number): KPIJustification {
+    return {
+      title: 'Manual Hours Saved (Automation ROI)',
+      statusBadge: 'High ROI',
+      statusColor: 'emerald',
+      currentValue: `${hours.toLocaleString()} hours`,
+      targetValue: '~3.5 FTEs Capacity',
+      description: 'The estimated manual QA labor hours eliminated through automated test execution runs.',
+      trackedInfo: 'Quantifies automated test executions multiplied by human execution baselines minus maintenance effort.',
+      businessImportance: 'Demonstrates executive engineering ROI and frees QA specialists for exploratory testing.',
+      formulaOrRule: `HoursSaved = SUM(AutomatedTestRuns × BaselineManualExecutionTime - AutomatedAuthoringMaintenanceHours)`,
+      rationale: `Automated test regression execution has saved approximately ${hours.toLocaleString()} hours of manual repetitive testing effort across sprints, unlocking engineering capacity for exploratory QA.`,
+      recommendedAction: 'Prioritize automation for high-volume smoke and API contract validations.'
+    };
+  }
+
+  /**
+   * 45. WCAG 2.2 AA Accessibility Compliance Justification
+   */
+  static getAccessibilityJustification(score: number): KPIJustification {
+    const isOptimal = score >= 95.0;
+
+    return {
+      title: 'WCAG 2.2 AA Accessibility Compliance',
+      statusBadge: isOptimal ? 'Audit Passed' : 'Minor Violations',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${score}% Pass Rate`,
+      targetValue: '> 95.0%',
+      description: 'The compliance score evaluated against W3C WCAG 2.2 Level AA accessibility criteria and Section 508 standards.',
+      trackedInfo: 'Captures automated axe-core test suite results across all UI views and components.',
+      businessImportance: 'Ensures inclusive user experiences and meets legal accessibility compliance standards.',
+      formulaOrRule: `AccessibilityScore = (PassedTestCasesInAccessibilitySuite / TotalAccessibilityTestCases) × 100`,
+      rationale: `Automated and manual axe-core audit tests verified ${score}% compliance with WCAG 2.2 Level AA guidelines, including color contrast, ARIA tags, and keyboard focus traps.`,
+      recommendedAction: 'Verify screen-reader compatibility on newly added dynamic modal dialogs.'
+    };
+  }
+
+  /**
+   * 46. Performance P95 Latency Benchmark Justification
+   */
+  static getPerformanceP95Justification(latencyMs: number): KPIJustification {
+    const isOptimal = latencyMs <= 180;
+
+    return {
+      title: 'Performance P95 Latency Benchmark',
+      statusBadge: isOptimal ? 'Compliant' : 'Spike Latency',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${latencyMs} ms`,
+      targetValue: '< 180 ms',
+      description: 'The 95th percentile response duration observed under simulated multi-user concurrent traffic.',
+      trackedInfo: 'Measures API and page load latency thresholds under automated performance load test execution.',
+      businessImportance: 'Guarantees responsive user experience and prevents slow-request drop-offs.',
+      formulaOrRule: `P95Latency = 95th Percentile Response Duration (ms) in Performance Suite executions`,
+      rationale: `P95 latency is ${latencyMs} ms, reflecting server response time under simulated multi-user concurrent workloads.`,
+      recommendedAction: 'Optimize database index scans on high-traffic query endpoints.'
+    };
+  }
+
+  /**
+   * 47. Average QA Test Completion Rate Justification
+   */
+  static getAvgQaCompletionRateJustification(rate: string): KPIJustification {
+    const isOptimal = parseFloat(rate) >= 85.0;
+
+    return {
+      title: 'Average QA Test Completion Rate',
+      statusBadge: isOptimal ? 'On Target' : 'Behind Schedule',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${rate}%`,
+      targetValue: '> 85.0%',
+      description: 'The average test execution completion percentage achieved across all active QA specialists in the squad.',
+      trackedInfo: 'Aggregates completed test executions divided by assigned test cases per team member in TestRail.',
+      businessImportance: 'Tracks whether testing execution remains on schedule to complete before sprint delivery cutoff.',
+      formulaOrRule: `AvgCompletionRate = AVERAGE(CompletedExecutions / AssignedExecutions across all QA team members) × 100`,
+      rationale: `Squad members have completed an average of ${rate}% of their assigned test cases. Rates above 85% ensure verification finishes before sprint close.`,
+      recommendedAction: 'Reassign delayed test executions from overloaded engineers to squad members with spare capacity.'
+    };
+  }
 }
 

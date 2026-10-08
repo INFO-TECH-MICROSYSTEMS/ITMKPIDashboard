@@ -312,10 +312,10 @@ export interface KPIJustification {
   statusColor: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
   currentValue: string | number;
   targetValue: string;
-  // Educational & Contextual Metric Metadata
-  description?: string; // What the metric is
-  trackedInfo?: string; // What information it tracks/exposes
-  businessImportance?: string; // Why it is important
+  // Educational & Contextual Metric Metadata (Mandatory in all justifications)
+  description: string; // What the metric is (Mandatory overview piece 1)
+  trackedInfo: string; // What information it tracks/exposes (Mandatory overview piece 2)
+  businessImportance: string; // Why it is important (Mandatory overview piece 3)
   formulaOrRule: string;
   rationale: string;
   factors?: KPIContributingFactor[];

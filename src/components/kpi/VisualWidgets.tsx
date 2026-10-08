@@ -17,18 +17,18 @@ import { useTranslation } from 'react-i18next';
 import { HelpCircle } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
+import type { IBaseMetricWidgetProps, IMetricCardContract } from './contracts/MetricContract';
 
 // ==========================================
-// 1. CIRCULAR GAUGE METER
+// 1. CIRCULAR GAUGE METER (Implements IBaseMetricWidgetProps)
 // ==========================================
 
-interface GaugeMeterProps {
+export interface GaugeMeterProps extends IBaseMetricWidgetProps {
   score: number; // 0 - 100
   title: string;
   subtitle?: string;
   size?: number;
   grade?: string;
-  onJustify?: () => void;
 }
 
 export const GaugeMeter: React.FC<GaugeMeterProps> = ({
@@ -96,7 +96,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
               title="Click for grade justification and breakdown"
             >
               <span>Grade {grade}</span>
-              {onJustify && <HelpCircle className="w-3 h-3 opacity-70" />}
+              <HelpCircle className="w-3 h-3 opacity-70" />
             </button>
           )}
         </div>
@@ -106,15 +106,13 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
         <span className="text-sm font-bold text-slate-900 dark:text-white text-center font-['Outfit']">
           {title}
         </span>
-        {onJustify && (
-          <button
-            onClick={onJustify}
-            className="p-1 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="Click to view KPI calculation formula and rule justifications"
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-          </button>
-        )}
+        <button
+          onClick={onJustify}
+          className="p-1 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="Click to view KPI calculation formula and rule justifications"
+        >
+          <HelpCircle className="w-3.5 h-3.5" />
+        </button>
       </div>
       {subtitle && (
         <span className="text-xs text-slate-600 dark:text-slate-400 text-center mt-0.5">
@@ -126,10 +124,10 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
 };
 
 // ==========================================
-// 2. MULTI-SERIES SVG AREA / TREND CHART
+// 2. MULTI-SERIES SVG AREA / TREND CHART (Implements IBaseMetricWidgetProps)
 // ==========================================
 
-interface AreaTrendChartProps {
+export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
   data: TrendPoint[];
   title: string;
   series1Name: string;
@@ -142,7 +140,6 @@ interface AreaTrendChartProps {
   projectionLineColor?: string;
   series3ProjectionLineColor?: string;
   forecastBadge?: string;
-  onJustify?: () => void;
 }
 
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
@@ -499,14 +496,19 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 };
 
 // ==========================================
-// 3. STACKED STATUS DISTRIBUTION BAR
+// 3. STACKED STATUS DISTRIBUTION BAR (Implements IBaseMetricWidgetProps)
 // ==========================================
 
-export const StackedProgressBar: React.FC<{
+export interface StackedProgressBarProps extends IBaseMetricWidgetProps {
   distribution: TestStatusDistribution;
   title?: string;
-  onJustify?: () => void;
-}> = ({ distribution, title, onJustify }) => {
+}
+
+export const StackedProgressBar: React.FC<StackedProgressBarProps> = ({ 
+  distribution, 
+  title, 
+  onJustify 
+}) => {
   const { t } = useTranslation();
   const { passed, failed, blocked, unattempted, total } = distribution;
   if (total === 0) return null;
@@ -585,20 +587,10 @@ export const StackedProgressBar: React.FC<{
 };
 
 // ==========================================
-// 4. METRIC KPI STAT CARD
+// 4. METRIC KPI STAT CARD (Implements IMetricCardContract)
 // ==========================================
 
-export const MetricCard: React.FC<{
-  title: string;
-  value: string | number;
-  target?: string;
-  trend?: string;
-  trendPositive?: boolean;
-  statusBadge?: string;
-  statusColor?: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
-  icon?: React.ReactNode;
-  onJustify?: () => void;
-}> = ({
+export const MetricCard: React.FC<IMetricCardContract> = ({
   title,
   value,
   target,
@@ -619,15 +611,13 @@ export const MetricCard: React.FC<{
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
             {title}
           </span>
-          {onJustify && (
-            <button
-              onClick={onJustify}
-              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
-              title="Click for KPI justification and audit details"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
-          )}
+          <button
+            onClick={onJustify}
+            className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
+            title="Click for KPI justification and audit details"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+          </button>
         </div>
         {icon && <div className={`shrink-0 ${theme.icon}`}>{icon}</div>}
       </div>
@@ -639,14 +629,11 @@ export const MetricCard: React.FC<{
         {statusBadge && (
           <button
             onClick={onJustify}
-            disabled={!onJustify}
-            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 transition-transform ${
-              onJustify ? 'hover:scale-105 cursor-pointer' : ''
-            } ${theme.badge}`}
-            title={onJustify ? 'Click for status audit and rule breakdown' : undefined}
+            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 transition-transform hover:scale-105 cursor-pointer ${theme.badge}`}
+            title="Click for status audit and rule breakdown"
           >
             <span>{statusBadge}</span>
-            {onJustify && <HelpCircle className="w-2.5 h-2.5 opacity-60" />}
+            <HelpCircle className="w-2.5 h-2.5 opacity-60" />
           </button>
         )}
       </div>

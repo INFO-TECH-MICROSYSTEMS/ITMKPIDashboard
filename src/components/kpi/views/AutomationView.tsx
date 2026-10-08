@@ -80,16 +80,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automationHealth.avgPipelineMins <= 15.0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : automationHealth.avgPipelineMins <= 25.0 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
           statusColor={automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : automationHealth.avgPipelineMins <= 25.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'CI/CD Pipeline Runtime',
-            statusBadge: automationHealth.avgPipelineMins <= 15.0 ? 'Fast Pipeline' : 'Moderate Latency',
-            statusColor: automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : 'amber',
-            currentValue: `${automationHealth.avgPipelineMins} mins`,
-            targetValue: '< 15.0 mins',
-            formulaOrRule: `PipelineRuntime = AVERAGE(GitHubWorkflowExecutionMinutes across all feature PRs)`,
-            rationale: `Average pull request pipeline runtime is ${automationHealth.avgPipelineMins} minutes. Keeping PR verification under 15 minutes prevents engineering context-switching.`,
-            recommendedAction: 'Cache package manager dependencies and split build vs test execution steps into matrix jobs.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getPipelineRuntimeJustification(automationHealth.avgPipelineMins))}
         />
         <MetricCard
           title={t('kpiPlatform.automationView.hoursSavedRoi', 'Manual Hours Saved (ROI)')}
@@ -100,16 +91,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={automationHealth.manualHoursSaved > 200 ? t('kpiPlatform.statusHighRoi', 'High ROI') : t('kpiPlatform.statusModerateRoi', 'Moderate ROI')}
           statusColor={automationHealth.manualHoursSaved > 200 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-emerald-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Manual Hours Saved (Automation ROI)',
-            statusBadge: 'High ROI',
-            statusColor: 'emerald',
-            currentValue: `${automationHealth.manualHoursSaved.toLocaleString()} hours`,
-            targetValue: '~3.5 FTEs Capacity',
-            formulaOrRule: `HoursSaved = SUM(AutomatedTestRuns × BaselineManualExecutionTime - AutomatedAuthoringMaintenanceHours)`,
-            rationale: `Automated test regression execution has saved approximately ${automationHealth.manualHoursSaved.toLocaleString()} hours of manual repetitive testing effort across sprints, unlocking engineering capacity for exploratory QA.`,
-            recommendedAction: 'Prioritize automation for high-volume smoke and API contract validations.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getManualHoursSavedJustification(automationHealth.manualHoursSaved))}
         />
         {/* Enriched Automation Metric 1: CI/CD Compute Cost */}
         <MetricCard
@@ -121,16 +103,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={(automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'Efficient' : 'High Compute'}
           statusColor={(automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'emerald' : 'amber'}
           icon={<Cpu className="w-5 h-5 text-blue-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'CI/CD Cloud Runner Compute Expenditure',
-            statusBadge: (automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'Efficient' : 'Compute Warning',
-            statusColor: (automationHealth.cicdComputeCostDollars ?? 128) < 250 ? 'emerald' : 'amber',
-            currentValue: `$${(automationHealth.cicdComputeCostDollars ?? 128).toLocaleString()}`,
-            targetValue: '< $250 / Sprint',
-            formulaOrRule: `ComputeCost = TotalGitHubRunnerMinutes × $0.08/min`,
-            rationale: `Total CI execution cost is $${(automationHealth.cicdComputeCostDollars ?? 128).toLocaleString()}. Optimizing test concurrency and Docker build caching prevents runaway compute bills.`,
-            recommendedAction: 'Keep matrix workers limited to 4 concurrent runners and cache Playwright browser binaries.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getCicdComputeCostJustification(automationHealth.cicdComputeCostDollars ?? 128))}
         />
         {/* Enriched Automation Metric 2: MTBF */}
         <MetricCard
@@ -142,16 +115,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={(automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'Trustworthy' : 'Flaky Alert'}
           statusColor={(automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Mean Time Between Test Flakes (MTBF)',
-            statusBadge: (automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'Trustworthy' : 'Flaky Pipeline',
-            statusColor: (automationHealth.mtbfHours ?? 36.5) >= 24.0 ? 'emerald' : 'rose',
-            currentValue: `${automationHealth.mtbfHours ?? 36.5} hrs`,
-            targetValue: '> 24.0 hrs',
-            formulaOrRule: `MTBF = TotalContinuousExecutionHours / FlakyTestFailuresDetected`,
-            rationale: `Automated suites average ${automationHealth.mtbfHours ?? 36.5} hours between non-deterministic flaky failures. High MTBF ensures developers trust red build signals.`,
-            recommendedAction: 'Quarantine any test that fails more than once during retry cycles.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMtbfJustification(automationHealth.mtbfHours ?? 36.5))}
         />
         {/* Enriched Automation Metric 3: Automation Defect Catch Ratio */}
         <MetricCard
@@ -163,16 +127,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusBadge={(automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'Shift-Left Hero' : 'Manual Lag'}
           statusColor={(automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Automation Defect Catch Ratio',
-            statusBadge: (automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'Shift-Left Optimal' : 'Manual Dependent',
-            statusColor: (automationHealth.automationCatchRatio ?? 78.5) >= 70.0 ? 'emerald' : 'amber',
-            currentValue: `${automationHealth.automationCatchRatio ?? 78.5}% Caught in CI`,
-            targetValue: '> 70.0%',
-            formulaOrRule: `CatchRatio = (DefectsCaughtByAutomation / TotalPreReleaseDefects) × 100`,
-            rationale: `Automated unit and API suites catch ${automationHealth.automationCatchRatio ?? 78.5}% of bugs before manual QA staging verification, shortening feedback cycles.`,
-            recommendedAction: 'Write integration regression tests for every bug ticket to prevent regressions.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationCatchRatioJustification(automationHealth.automationCatchRatio ?? 78.5))}
         />
       </div>
 
