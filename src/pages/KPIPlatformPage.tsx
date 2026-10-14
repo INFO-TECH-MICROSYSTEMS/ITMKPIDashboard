@@ -47,6 +47,7 @@ export const KPIPlatformPage: React.FC = () => {
 
   const {
     filters,
+    releaseWindow,
     updateFilter,
     resetFilters,
     jiraItems,
@@ -131,6 +132,7 @@ export const KPIPlatformPage: React.FC = () => {
       {/* Multi-Dimensional Filter Bar */}
       <KPIFilterBar
         filters={filters}
+        releaseWindow={releaseWindow}
         onFilterChange={updateFilter}
         onResetFilters={resetFilters}
         totalFilteredJira={jiraItems.length}

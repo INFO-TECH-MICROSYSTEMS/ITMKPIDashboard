@@ -145,12 +145,20 @@ export interface GitHubCommit {
 // 5. FILTERING & MULTI-DIMENSIONAL QUERY STATE
 // ==========================================
 
+export interface ReleaseWindow {
+  startDate: string; // ISO format: 'YYYY-MM-DD'
+  endDate: string;   // ISO format: 'YYYY-MM-DD'
+  totalDays: number;
+  isActive: boolean;
+  formattedRange: string;
+}
+
 export interface KPIFilterState {
   product: string; // 'All' or specific product
   component: string; // 'All' or specific component
   sprint: string; // 'All' or specific sprint
   releaseVersion: string; // 'All' or specific release
-  dateRangeDays: number; // 7, 14, 30, 90, 365
+  dateRangeDays?: number; // Optional legacy parameter
 }
 
 // ==========================================

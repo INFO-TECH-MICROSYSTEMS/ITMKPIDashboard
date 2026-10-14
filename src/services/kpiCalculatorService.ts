@@ -28,9 +28,10 @@ import type {
   QualityDiagnosticsSummary,
   AutomationHealthSummary,
   TestExecutionBurnoutForecast,
-  TestAutomationBurnoutForecast
+  TestAutomationBurnoutForecast,
+  ReleaseWindow
 } from '../types/kpiPlatform';
-import { QUALITY_THRESHOLDS } from '../constants/kpiConstants';
+import { QUALITY_THRESHOLDS, PRODUCT_RELEASES_MAP, type AppProduct } from '../constants/kpiConstants';
 
 export class KPICalculatorService {
 
@@ -324,24 +325,121 @@ export class KPICalculatorService {
   }
 
   /**
-   * 5. Defect Discovery vs Burnout Trends over selected time range window
+   * Automatically determines the start date and end date of the selected release
+   * based on actual database records (TestRail executions & Jira work items).
    */
-  static calculateDefectDiscoveryTrends(jiraItems: JiraWorkItem[], days = 30): TrendPoint[] {
+  static getReleaseWindow(
+    product: string,
+    releaseVersion: string,
+    testRailExecutions: TestRailExecution[] = [],
+    jiraItems: JiraWorkItem[] = []
+  ): ReleaseWindow {
+    const timestamps: number[] = [];
+
+    for (const t of testRailExecutions) {
+      if (!releaseVersion || releaseVersion === 'All' || t.releaseVersion === releaseVersion) {
+        const ms = new Date(t.executionDate).getTime();
+        if (!isNaN(ms)) timestamps.push(ms);
+      }
+    }
+
+    for (const j of jiraItems) {
+      if (!releaseVersion || releaseVersion === 'All' || j.releaseVersion === releaseVersion) {
+        const createMs = new Date(j.createdAt).getTime();
+        if (!isNaN(createMs)) timestamps.push(createMs);
+        if (j.resolvedAt) {
+          const resMs = new Date(j.resolvedAt).getTime();
+          if (!isNaN(resMs)) timestamps.push(resMs);
+        }
+      }
+    }
+
     const now = Date.now();
+    const productReleases = PRODUCT_RELEASES_MAP[product as AppProduct] || [];
+    const isLatestRelease = productReleases.length === 0 || productReleases[0] === releaseVersion;
+    const hasUnattempted = testRailExecutions.some(t => t.status === 'Unattempted');
+
+    let startMs: number;
+    let endMs: number;
+    let isActive = false;
+
+    if (timestamps.length > 0) {
+      startMs = Math.min(...timestamps);
+      const maxMs = Math.max(...timestamps);
+
+      // Active release if it's the latest release, has unattempted tests, or has executions within the last 7 days
+      if (isLatestRelease || hasUnattempted || (now - maxMs) < 7 * 86400000) {
+        isActive = true;
+        endMs = now;
+      } else {
+        isActive = false;
+        endMs = maxMs;
+      }
+    } else {
+      const releaseIdx = productReleases.indexOf(releaseVersion);
+      const daysBack = releaseIdx >= 0 ? (releaseIdx + 1) * 20 : 30;
+      startMs = now - daysBack * 86400000;
+      endMs = now;
+      isActive = true;
+    }
+
+    if (startMs > endMs) {
+      startMs = endMs - 86400000;
+    }
+
+    const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
+    const startDateObj = new Date(startMs);
+    const endDateObj = new Date(endMs);
+
+    const startDate = startDateObj.toISOString().split('T')[0];
+    const endDate = endDateObj.toISOString().split('T')[0];
+
+    const formatOpts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+    const formattedRange = `${startDateObj.toLocaleDateString('en-US', formatOpts)} – ${endDateObj.toLocaleDateString('en-US', formatOpts)}`;
+
+    return {
+      startDate,
+      endDate,
+      totalDays,
+      isActive,
+      formattedRange
+    };
+  }
+
+  /**
+   * 5. Defect Discovery vs Burnout Trends over selected release window
+   */
+  static calculateDefectDiscoveryTrends(
+    jiraItems: JiraWorkItem[], 
+    releaseWindow?: ReleaseWindow | number
+  ): TrendPoint[] {
+    let startMs: number;
+    let endMs: number;
+
+    if (typeof releaseWindow === 'object' && releaseWindow !== null) {
+      startMs = new Date(releaseWindow.startDate).getTime();
+      endMs = new Date(releaseWindow.endDate).getTime();
+    } else {
+      const days = typeof releaseWindow === 'number' ? releaseWindow : 30;
+      endMs = Date.now();
+      startMs = endMs - (days - 1) * 86400000;
+    }
+
+    const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
     const points: TrendPoint[] = [];
 
-    for (let i = days - 1; i >= 0; i--) {
-      const targetDate = new Date(now - i * 86400000);
+    for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+      const targetDate = new Date(startMs + dayOffset * 86400000);
       const dateStr = targetDate.toISOString().split('T')[0];
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-      // Discovered on or before this day
+      // Discovered on this day - EXCLUSIVELY FROM DATABASE
       const discovered = jiraItems.filter(item => {
         const itemCreated = item.createdAt.split('T')[0];
         return (item.type === 'Bug' || item.type === 'CustomerAPAR') && itemCreated === dateStr;
       }).length;
 
-      // Resolved on this day
+      // Resolved on this day - EXCLUSIVELY FROM DATABASE
       const resolved = jiraItems.filter(item => {
         if (!item.resolvedAt) return false;
         const itemResolved = item.resolvedAt.split('T')[0];
@@ -361,50 +459,54 @@ export class KPICalculatorService {
 
   /**
    * 5b. Test Execution Burnout & Completion Forecast
-   * Computes test execution scope added vs completed over historical window,
+   * Computes test execution scope added vs completed over the release window,
    * calculates moving-average daily velocity, and projects future completion trajectory until remaining tests reach 0.
+   * EXCLUSIVELY uses database data with no fabricated trends.
    */
   static calculateTestExecutionBurnoutForecast(
     testRailExecutions: TestRailExecution[],
-    daysHistory = 30
+    releaseWindow?: ReleaseWindow | number
   ): TestExecutionBurnoutForecast {
-    const totalScope = Math.max(1, testRailExecutions.length);
+    const totalScope = testRailExecutions.length;
     const unexecuted = testRailExecutions.filter(t => t.status === 'Unattempted').length;
-    const completedSoFar = totalScope - unexecuted;
+    const completedSoFar = Math.max(0, totalScope - unexecuted);
 
-    // Dynamically obtain today's date from the current system clock
-    const now = Date.now();
+    let startMs: number;
+    let endMs: number;
 
+    if (typeof releaseWindow === 'object' && releaseWindow !== null) {
+      startMs = new Date(releaseWindow.startDate).getTime();
+      endMs = new Date(releaseWindow.endDate).getTime();
+    } else {
+      const days = typeof releaseWindow === 'number' ? releaseWindow : 30;
+      endMs = Date.now();
+      startMs = endMs - (days - 1) * 86400000;
+    }
+
+    const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
     const historyPoints: TrendPoint[] = [];
 
-    // Track daily completions and build cumulative totals across the historical window ending on today
-    for (let i = daysHistory - 1; i >= 0; i--) {
-      const targetDate = new Date(now - i * 86400000);
+    // Track daily completions and build cumulative totals across the release window
+    for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+      const targetDate = new Date(startMs + dayOffset * 86400000);
       const dateStr = targetDate.toISOString().split('T')[0];
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const targetMs = targetDate.getTime();
 
-      // Cumulative tests planned / in scope up to this date
+      // Cumulative tests planned / in scope up to this date - EXCLUSIVELY FROM DATABASE
       const cumulativePlanned = testRailExecutions.filter(t => {
         const itemMs = new Date(t.executionDate).getTime();
         return itemMs <= targetMs + 86400000;
       }).length;
-      const totalTestsAtDate = cumulativePlanned > 0 
-        ? cumulativePlanned 
-        : Math.round(totalScope * (0.85 + 0.15 * ((daysHistory - i) / daysHistory)));
+      const totalTestsAtDate = cumulativePlanned;
 
-      // Cumulative completed tests up to this date
+      // Cumulative completed tests up to this date - EXCLUSIVELY FROM DATABASE
       const cumulativeCompleted = testRailExecutions.filter(t => {
         if (t.status === 'Unattempted') return false;
         const itemMs = new Date(t.executionDate).getTime();
         return itemMs <= targetMs + 86400000;
       }).length;
-      const completedTestsAtDate = Math.min(
-        totalTestsAtDate, 
-        cumulativeCompleted > 0 
-          ? cumulativeCompleted 
-          : Math.max(0, Math.round(completedSoFar * ((daysHistory - i) / daysHistory)))
-      );
+      const completedTestsAtDate = Math.min(totalTestsAtDate, cumulativeCompleted);
 
       const remainingTestsAtDate = Math.max(0, totalTestsAtDate - completedTestsAtDate);
 
@@ -427,43 +529,48 @@ export class KPICalculatorService {
     const sumDiff = recentDifferences.reduce((a, b) => a + b, 0);
     const rawVelocity = recentDifferences.length > 0 
       ? sumDiff / recentDifferences.length 
-      : Math.max(1, Math.round(completedSoFar / daysHistory));
+      : (totalDays > 0 && completedSoFar > 0 ? Math.round(completedSoFar / totalDays) : 1);
     const currentDailyVelocity = Math.max(1, Math.round(rawVelocity));
 
     const remainingUntested = unexecuted;
-    const daysToCompletion = Math.max(1, Math.ceil(remainingUntested / currentDailyVelocity));
+    const daysToCompletion = remainingUntested > 0 
+      ? Math.max(1, Math.ceil(remainingUntested / currentDailyVelocity))
+      : 0;
 
     // Build extended projection points into the future
     const forecastPoints: TrendPoint[] = [];
-    const maxForecastDays = Math.min(14, Math.max(3, daysToCompletion));
+    if (remainingUntested > 0) {
+      const maxForecastDays = Math.min(14, Math.max(3, daysToCompletion));
+      let projectedCompleted = historyPoints[historyPoints.length - 1]?.value2 ?? completedSoFar;
 
-    let projectedCompleted = historyPoints[historyPoints.length - 1]?.value2 ?? completedSoFar;
+      for (let f = 1; f <= maxForecastDays; f++) {
+        const futureDate = new Date(endMs + f * 86400000);
+        const dateStr = futureDate.toISOString().split('T')[0];
+        const label = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-    for (let f = 1; f <= maxForecastDays; f++) {
-      const futureDate = new Date(now + f * 86400000);
-      const dateStr = futureDate.toISOString().split('T')[0];
-      const label = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        // Project completed tests advancing toward total scope
+        projectedCompleted = Math.min(totalScope, projectedCompleted + currentDailyVelocity);
+        const projectedRemaining = Math.max(0, totalScope - projectedCompleted);
 
-      // Project completed tests advancing toward total scope
-      projectedCompleted = Math.min(totalScope, projectedCompleted + currentDailyVelocity);
-      const projectedRemaining = Math.max(0, totalScope - projectedCompleted);
-
-      forecastPoints.push({
-        date: dateStr,
-        label,
-        value1: totalScope,           // Total tests stays at full scope
-        value2: projectedCompleted,   // Projected completed line extending up to total tests
-        value3: projectedRemaining,   // Projected remaining line burning down to 0
-        isProjected: true
-      });
+        forecastPoints.push({
+          date: dateStr,
+          label,
+          value1: totalScope,           // Total tests stays at full scope
+          value2: projectedCompleted,   // Projected completed line extending up to total tests
+          value3: projectedRemaining,   // Projected remaining line burning down to 0
+          isProjected: true
+        });
+      }
     }
 
-    const estimatedCompletionDateObj = new Date(now + daysToCompletion * 86400000);
-    const estimatedCompletionDate = estimatedCompletionDateObj.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    const estimatedCompletionDateObj = new Date(endMs + daysToCompletion * 86400000);
+    const estimatedCompletionDate = remainingUntested === 0
+      ? 'Completed'
+      : estimatedCompletionDateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
 
     return {
       historyAndForecast: [...historyPoints, ...forecastPoints],
@@ -479,52 +586,58 @@ export class KPICalculatorService {
 
   /**
    * 5c. Test Automation Burnout & Predictive Velocity Forecast
-   * Tracks total tests, cumulative automated tests, and remaining manual tests over historical window,
+   * Tracks total tests, cumulative automated tests, and remaining manual tests over release window,
    * computes daily automation conversion velocity, and projects when all test suites reach 100% automation.
+   * EXCLUSIVELY uses database data with no fabricated trends.
    */
   static calculateTestAutomationBurnoutForecast(
     testRailExecutions: TestRailExecution[],
-    daysHistory = 30
+    releaseWindow?: ReleaseWindow | number
   ): TestAutomationBurnoutForecast {
-    const totalScope = Math.max(1, testRailExecutions.length);
+    const totalScope = testRailExecutions.length;
     const automatedSoFar = testRailExecutions.filter(t => t.mode === 'Automated').length;
     const manualTestsRemaining = Math.max(0, totalScope - automatedSoFar);
-    const automationPercent = Number(((automatedSoFar / totalScope) * 100).toFixed(1));
+    const automationPercent = totalScope > 0 
+      ? Number(((automatedSoFar / totalScope) * 100).toFixed(1))
+      : 0;
 
-    const now = Date.now();
+    let startMs: number;
+    let endMs: number;
+
+    if (typeof releaseWindow === 'object' && releaseWindow !== null) {
+      startMs = new Date(releaseWindow.startDate).getTime();
+      endMs = new Date(releaseWindow.endDate).getTime();
+    } else {
+      const days = typeof releaseWindow === 'number' ? releaseWindow : 30;
+      endMs = Date.now();
+      startMs = endMs - (days - 1) * 86400000;
+    }
+
+    const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
     const historyPoints: TrendPoint[] = [];
 
-    // Track daily automated test accumulation across historical window ending today
-    for (let i = daysHistory - 1; i >= 0; i--) {
-      const targetDate = new Date(now - i * 86400000);
+    // Track daily automated test accumulation across the release window
+    for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+      const targetDate = new Date(startMs + dayOffset * 86400000);
       const dateStr = targetDate.toISOString().split('T')[0];
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const targetMs = targetDate.getTime();
 
-      // Cumulative tests in scope up to this date
+      // Cumulative tests in scope up to this date - EXCLUSIVELY FROM DATABASE
       const cumulativeInScope = testRailExecutions.filter(t => {
         const itemMs = new Date(t.executionDate).getTime();
         return itemMs <= targetMs + 86400000;
       }).length;
-      const totalTestsAtDate = cumulativeInScope > 0
-        ? cumulativeInScope
-        : Math.round(totalScope * (0.85 + 0.15 * ((daysHistory - i) / daysHistory)));
+      const totalTestsAtDate = cumulativeInScope;
 
-      // Cumulative automated tests up to this date
+      // Cumulative automated tests up to this date - EXCLUSIVELY FROM DATABASE
       const cumulativeAutomated = testRailExecutions.filter(t => {
         if (t.mode !== 'Automated') return false;
         const itemMs = new Date(t.executionDate).getTime();
         return itemMs <= targetMs + 86400000;
       }).length;
 
-      // Realistic historical curve progressing toward automatedSoFar
-      const automatedAtDate = Math.min(
-        totalTestsAtDate,
-        cumulativeAutomated > 0
-          ? cumulativeAutomated
-          : Math.max(0, Math.round(automatedSoFar * (0.65 + 0.35 * ((daysHistory - i) / daysHistory))))
-      );
-
+      const automatedAtDate = Math.min(totalTestsAtDate, cumulativeAutomated);
       const manualAtDate = Math.max(0, totalTestsAtDate - automatedAtDate);
 
       historyPoints.push({
@@ -546,42 +659,47 @@ export class KPICalculatorService {
     const sumDiff = recentDiffs.reduce((a, b) => a + b, 0);
     const rawVelocity = recentDiffs.length > 0
       ? sumDiff / recentDiffs.length
-      : Math.max(1, Math.round(automatedSoFar / (daysHistory * 2)));
+      : (totalDays > 0 && automatedSoFar > 0 ? Math.round(automatedSoFar / totalDays) : 1);
     const currentDailyVelocity = Math.max(1, Math.round(rawVelocity));
 
     // Calculate runway in days to automate all remaining manual tests
-    const daysToAllAutomated = Math.max(1, Math.ceil(manualTestsRemaining / currentDailyVelocity));
+    const daysToAllAutomated = manualTestsRemaining > 0 
+      ? Math.max(1, Math.ceil(manualTestsRemaining / currentDailyVelocity))
+      : 0;
 
     // Build future projection points
     const forecastPoints: TrendPoint[] = [];
-    const maxForecastDays = Math.min(30, Math.max(5, daysToAllAutomated));
+    if (manualTestsRemaining > 0) {
+      const maxForecastDays = Math.min(30, Math.max(5, daysToAllAutomated));
+      let projectedAutomated = historyPoints[historyPoints.length - 1]?.value2 ?? automatedSoFar;
 
-    let projectedAutomated = historyPoints[historyPoints.length - 1]?.value2 ?? automatedSoFar;
+      for (let f = 1; f <= maxForecastDays; f++) {
+        const futureDate = new Date(endMs + f * 86400000);
+        const dateStr = futureDate.toISOString().split('T')[0];
+        const label = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-    for (let f = 1; f <= maxForecastDays; f++) {
-      const futureDate = new Date(now + f * 86400000);
-      const dateStr = futureDate.toISOString().split('T')[0];
-      const label = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        projectedAutomated = Math.min(totalScope, projectedAutomated + currentDailyVelocity);
+        const projectedManual = Math.max(0, totalScope - projectedAutomated);
 
-      projectedAutomated = Math.min(totalScope, projectedAutomated + currentDailyVelocity);
-      const projectedManual = Math.max(0, totalScope - projectedAutomated);
-
-      forecastPoints.push({
-        date: dateStr,
-        label,
-        value1: totalScope,          // Total Tests
-        value2: projectedAutomated,  // Automated Tests advancing toward 100%
-        value3: projectedManual,     // Manual Tests burning down to 0
-        isProjected: true
-      });
+        forecastPoints.push({
+          date: dateStr,
+          label,
+          value1: totalScope,          // Total Tests
+          value2: projectedAutomated,  // Automated Tests advancing toward 100%
+          value3: projectedManual,     // Manual Tests burning down to 0
+          isProjected: true
+        });
+      }
     }
 
-    const estimatedAllAutomatedDateObj = new Date(now + daysToAllAutomated * 86400000);
-    const estimatedAllAutomatedDate = estimatedAllAutomatedDateObj.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    const estimatedAllAutomatedDateObj = new Date(endMs + daysToAllAutomated * 86400000);
+    const estimatedAllAutomatedDate = manualTestsRemaining === 0
+      ? '100% Automated'
+      : estimatedAllAutomatedDateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
 
     return {
       historyAndForecast: [...historyPoints, ...forecastPoints],

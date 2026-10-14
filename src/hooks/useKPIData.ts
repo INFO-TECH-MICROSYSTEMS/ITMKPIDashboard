@@ -32,8 +32,7 @@ export const INITIAL_FILTER_STATE: KPIFilterState = {
   product: APP_PRODUCTS[0], // 'YouTube'
   component: 'All',
   sprint: 'All',
-  releaseVersion: PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][0], // '21.4.2'
-  dateRangeDays: 30
+  releaseVersion: PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][0] // '21.4.2'
 };
 
 export function useKPIData() {
@@ -172,14 +171,24 @@ export function useKPIData() {
     [testRailExecutions]
   );
 
+  const releaseWindow = useMemo(() => 
+    KPICalculatorService.getReleaseWindow(
+      filters.product,
+      filters.releaseVersion,
+      testRailExecutions,
+      jiraItems
+    ),
+    [filters.product, filters.releaseVersion, testRailExecutions, jiraItems]
+  );
+
   const defectTrends = useMemo(() => 
-    KPICalculatorService.calculateDefectDiscoveryTrends(jiraItems, filters.dateRangeDays),
-    [jiraItems, filters.dateRangeDays]
+    KPICalculatorService.calculateDefectDiscoveryTrends(jiraItems, releaseWindow),
+    [jiraItems, releaseWindow]
   );
 
   const testBurnoutForecast = useMemo(() => 
-    KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutions, filters.dateRangeDays),
-    [testRailExecutions, filters.dateRangeDays]
+    KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutions, releaseWindow),
+    [testRailExecutions, releaseWindow]
   );
 
   const componentRisks = useMemo(() => 
@@ -198,8 +207,8 @@ export function useKPIData() {
   );
 
   const testAutomationForecast = useMemo(() => 
-    KPICalculatorService.calculateTestAutomationBurnoutForecast(testRailExecutions, filters.dateRangeDays),
-    [testRailExecutions, filters.dateRangeDays]
+    KPICalculatorService.calculateTestAutomationBurnoutForecast(testRailExecutions, releaseWindow),
+    [testRailExecutions, releaseWindow]
   );
 
   const mttrMttd = useMemo(() => 
@@ -209,6 +218,7 @@ export function useKPIData() {
 
   return {
     filters,
+    releaseWindow,
     updateFilter,
     resetFilters,
     jiraItems,

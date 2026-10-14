@@ -14,8 +14,8 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Filter, RotateCcw, Layers, Box, GitBranch } from 'lucide-react';
-import type { KPIFilterState } from '../../types/kpiPlatform';
+import { Filter, RotateCcw, Layers, Box, GitBranch, Calendar } from 'lucide-react';
+import type { KPIFilterState, ReleaseWindow } from '../../types/kpiPlatform';
 import { 
   APP_PRODUCTS, 
   PRODUCT_COMPONENTS_MAP, 
@@ -29,6 +29,7 @@ interface KPIFilterBarProps {
   onResetFilters: () => void;
   totalFilteredJira: number;
   totalFilteredTests: number;
+  releaseWindow?: ReleaseWindow;
 }
 
 export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
@@ -36,7 +37,8 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
   onFilterChange,
   onResetFilters,
   totalFilteredJira,
-  totalFilteredTests
+  totalFilteredTests,
+  releaseWindow
 }) => {
   const { t } = useTranslation();
 
@@ -51,8 +53,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
   const isFiltered = 
     filters.product !== APP_PRODUCTS[0] || 
     filters.component !== 'All' || 
-    filters.releaseVersion !== defaultRelease || 
-    filters.dateRangeDays !== 30;
+    filters.releaseVersion !== defaultRelease;
 
   return (
     <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-cyan-500/20 shadow-sm space-y-3">
@@ -133,26 +134,20 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
           </select>
         </div>
 
-        {/* Time Window (Pills) */}
+        {/* Automatic Release Window Display */}
         <div className="space-y-1">
-          <label className="block text-slate-600 dark:text-slate-400 font-medium">
-            {t('kpiPlatform.timeRangeWindow')}
+          <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
+            <Calendar className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>{t('kpiPlatform.releaseWindow', 'Release Window')}</span>
+            <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 font-bold">Auto</span>
           </label>
-          <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-950 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800">
-            {[7, 14, 30, 90].map((days) => (
-              <button
-                key={days}
-                type="button"
-                onClick={() => onFilterChange('dateRangeDays', days)}
-                className={`flex-1 py-1 text-[11px] font-mono rounded-md font-semibold transition-all cursor-pointer ${
-                  filters.dateRangeDays === days
-                    ? 'bg-cyan-600 text-white shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {days}d
-              </button>
-            ))}
+          <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs font-mono font-medium">
+            <span className="truncate">{releaseWindow?.formattedRange || t('kpiPlatform.activeCycle', 'Active Cycle')}</span>
+            {releaseWindow && (
+              <span className="ml-1.5 text-[10px] text-cyan-600 dark:text-cyan-400 font-bold whitespace-nowrap bg-cyan-50 dark:bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-200 dark:border-cyan-800">
+                {releaseWindow.totalDays}d
+              </span>
+            )}
           </div>
         </div>
       </div>

@@ -164,9 +164,9 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
     8
   );
 
-  const width = 640;
-  const paddingX = 40;
-  const paddingY = 18;
+  const width = 920;
+  const paddingX = 46;
+  const paddingY = 24;
   const chartW = width - paddingX * 2;
   const chartH = height - paddingY * 2;
 
@@ -212,26 +212,56 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
     ? `${getX(projectionStartIndex)},${paddingY + chartH} ${points3Projected} ${getX(data.length - 1)},${paddingY + chartH}`
     : '';
 
+  // Pre-calculate non-overlapping X-axis label indices to guarantee zero visual collision
+  const minLabelGap = 55; // minimum px between label centers to avoid visual overlap
+  const labelIndices: number[] = [0];
+  let lastX = getX(0);
+
+  const approxLabelCount = Math.floor(chartW / minLabelGap);
+  const idealStep = Math.max(1, Math.round(data.length / approxLabelCount));
+
+  for (let i = idealStep; i < data.length - 1; i += idealStep) {
+    const x = getX(i);
+    const distFromLast = x - lastX;
+    const distToEnd = getX(data.length - 1) - x;
+
+    if (distFromLast >= minLabelGap && distToEnd >= minLabelGap) {
+      labelIndices.push(i);
+      lastX = x;
+    }
+  }
+
+  // Always show the final milestone date (or target completion date) at the end
+  if (data.length > 1) {
+    const endX = getX(data.length - 1);
+    if (endX - lastX < minLabelGap && labelIndices.length > 1) {
+      labelIndices.pop(); // Remove intermediate label if it crowds the final date
+    }
+    labelIndices.push(data.length - 1);
+  }
+
+  const labelIndexSet = new Set(labelIndices);
+
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <h4 className="text-sm font-bold text-slate-900 dark:text-white font-['Outfit']">
+    <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-bold text-slate-900 dark:text-white">
             {title}
-          </h4>
+          </span>
           {forecastBadge && (
             onJustify ? (
               <button
                 type="button"
                 onClick={onJustify}
-                className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer"
+                className="px-2 py-0.5 text-xs font-mono font-medium rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer"
                 title="Click to view explanation, formulas, and audit clarification"
               >
                 <span>{forecastBadge}</span>
-                <HelpCircle className="w-2.5 h-2.5 opacity-70" />
+                <HelpCircle className="w-3 h-3 opacity-70" />
               </button>
             ) : (
-              <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
+              <span className="px-2 py-0.5 text-xs font-mono font-medium rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
                 {forecastBadge}
               </span>
             )
@@ -247,26 +277,26 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             </button>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series1Color }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
             <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
           </div>
           {series2Name && (
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series2Color }} />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
               <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
             </div>
           )}
           {series3Name && (
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: series3Color }} />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
               <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
             </div>
           )}
           {hasProjection && (
             <div className="flex items-center gap-1.5">
-              <span className="w-4 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+              <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
               <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Projected Forecast</span>
             </div>
           )}
@@ -319,10 +349,10 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                   strokeDasharray="3 3"
                 />
                 <text
-                  x={paddingX - 10}
-                  y={y + 4}
+                  x={paddingX - 8}
+                  y={y + 3.5}
                   textAnchor="end"
-                  className="text-[10px] fill-slate-400 font-mono"
+                  className="text-[11px] fill-slate-400 font-mono font-normal"
                 >
                   {val}
                 </text>
@@ -403,7 +433,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             </>
           )}
 
-          {/* Milestone demarcation line at transition into forecast */}
+          {/* Milestone demarcation line at transition into forecast with label on top of the chart */}
           {hasProjection && (
             <g>
               <line
@@ -416,12 +446,15 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                 strokeDasharray="2 2"
                 opacity="0.8"
               />
+              {/* Placed on top of the chart canvas above the top plot line */}
               <text
-                x={getX(firstProjectedIndex) + 4}
-                y={paddingY + 12}
-                className="text-[9px] fill-cyan-500 dark:fill-cyan-400 font-mono font-bold"
+                x={getX(firstProjectedIndex)}
+                y={paddingY - 6}
+                textAnchor={getX(firstProjectedIndex) > width - paddingX - 70 ? 'end' : 'start'}
+                dx={getX(firstProjectedIndex) > width - paddingX - 70 ? -4 : 4}
+                className="text-[11px] fill-cyan-600 dark:fill-cyan-400 font-mono font-bold select-none"
               >
-                Today / Forecast →
+                Today ┆ Forecast →
               </text>
             </g>
           )}
@@ -466,26 +499,17 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                   />
                 )}
 
-                {/* X Axis Labels (Adaptive step depending on time range window: 7d, 14d, 30d, 90d) */}
-                {(() => {
-                  const step = data.length > 50 ? 7 : data.length > 25 ? 4 : data.length > 14 ? 2 : 1;
-                  const isFirst = i === 0;
-                  const isLast = i === data.length - 1;
-                  const isFirstProjected = hasProjection && i === firstProjectedIndex;
-                  const shouldShow = isFirst || isLast || isFirstProjected || (i % step === 0);
-                  if (!shouldShow) return null;
-
-                  return (
-                    <text
-                      x={getX(i)}
-                      y={height - 5}
-                      textAnchor="middle"
-                      className={`text-[10px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
-                    >
-                      {d.label}
-                    </text>
-                  );
-                })()}
+                {/* X Axis Labels: Collision-free, non-overlapping dates at consistent 11px font */}
+                {labelIndexSet.has(i) && (
+                  <text
+                    x={getX(i)}
+                    y={height - 6}
+                    textAnchor="middle"
+                    className={`text-[11px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
+                  >
+                    {d.label}
+                  </text>
+                )}
               </g>
             );
           })}

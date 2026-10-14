@@ -216,10 +216,6 @@ class KPIDataRepository implements IKPIDataRepository {
       if (filter.releaseVersion && filter.releaseVersion !== 'All') {
         collection = collection.filter(item => item.releaseVersion === filter.releaseVersion);
       }
-      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
-        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-        collection = collection.filter(item => item.createdAt >= cutoff);
-      }
     }
 
     return await collection.toArray();
@@ -241,10 +237,6 @@ class KPIDataRepository implements IKPIDataRepository {
       if (filter.releaseVersion && filter.releaseVersion !== 'All') {
         collection = collection.filter(t => t.releaseVersion === filter.releaseVersion);
       }
-      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
-        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-        collection = collection.filter(t => t.executionDate >= cutoff);
-      }
     }
 
     return await collection.toArray();
@@ -258,10 +250,6 @@ class KPIDataRepository implements IKPIDataRepository {
         const repoPrefix = filter.product.toLowerCase();
         collection = collection.filter(pr => pr.repository.toLowerCase().includes(repoPrefix));
       }
-      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
-        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-        collection = collection.filter(pr => pr.createdAt >= cutoff);
-      }
     }
 
     return await collection.toArray();
@@ -274,10 +262,6 @@ class KPIDataRepository implements IKPIDataRepository {
       if (filter.product && filter.product !== 'All') {
         const repoPrefix = filter.product.toLowerCase();
         collection = collection.filter(c => c.repository.toLowerCase().includes(repoPrefix));
-      }
-      if (filter.dateRangeDays && filter.dateRangeDays > 0) {
-        const cutoff = new Date(Date.now() - filter.dateRangeDays * 86400000).toISOString();
-        collection = collection.filter(c => c.timestamp >= cutoff);
       }
     }
 

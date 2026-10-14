@@ -311,6 +311,7 @@
     "releaseTarget": "Release Target",
     "allReleases": "All Releases",
     "timeRangeWindow": "Time Range Window",
+    "releaseWindow": "Release Window",
     "queryingDb": "Querying IndexedDB & Computing KPI aggregates...",
     "categories": {
       "executive": "Executive & Senior Management Scorecard",
