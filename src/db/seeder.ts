@@ -117,6 +117,18 @@ export function generateSampleDataset() {
         qaQueueEntryDate = new Date(now - daysInQA * 86400000).toISOString();
       }
 
+      const isBug = itemType === 'Bug' || itemType === 'CustomerAPAR';
+      const isGating = isBug && (severity === 'P1-Blocker' || (severity === 'P2-Critical' && rng.boolean(0.4)));
+      const isRegression = isBug && rng.boolean(0.32);
+      const isCustomer = itemType === 'CustomerAPAR' || (isBug && rng.boolean(0.18));
+      const isReopened = status === 'Reopened' || (status === 'Done' && rng.boolean(0.08));
+
+      let resolvedAt: string | undefined = undefined;
+      if (status === 'Done') {
+        const daysAgoResolved = Math.max(0, daysAgoCreated - rng.range(1, 8));
+        resolvedAt = new Date(now - daysAgoResolved * 86400000).toISOString();
+      }
+
       // Assign defect discovery method (formal vs automated vs exploratory vs dogfooding vs customer escape)
       let discoveryMethod: import('../types/kpiPlatform').DefectDiscoveryMethod | undefined = undefined;
       if (isBug) {
@@ -137,9 +149,36 @@ export function generateSampleDataset() {
         }
       }
 
+      let itemTitle = `${itemType}: ${component} validation for ${product} v${releaseVersion}`;
+      if (isBug) {
+        if (discoveryMethod === 'Exploratory / Ad-hoc') {
+          const exploratoryScenarios = [
+            `Unexpected memory leak in ${component} under high concurrency stress`,
+            `Deadlock race condition in ${component} worker thread pool`,
+            `Payload boundary overflow in ${component} edge gateway parser`,
+            `Unhandled WebSocket disconnect state corruption in ${component}`,
+            `Cache invalidation race leading to stale data in ${component}`,
+            `JWT authorization token replay vulnerability detected in ${component}`
+          ];
+          itemTitle = rng.choice(exploratoryScenarios);
+        } else if (discoveryMethod === 'Bug Bash / Dogfooding') {
+          const bugBashScenarios = [
+            `UI freezing on rapid double-click action in ${component}`,
+            `Visual rendering regression on dark theme toggle in ${component}`,
+            `Incorrect error dialog displayed on network drop in ${component}`,
+            `Accessibility focus trap discovered in ${component} modal`,
+            `Session logout bypass during fast navigation across ${component}`,
+            `Broken deep-link routing state in ${component}`
+          ];
+          itemTitle = rng.choice(bugBashScenarios);
+        } else if (discoveryMethod === 'Automated CI Pipeline') {
+          itemTitle = `Automated regression assertion failure in ${component} integration suite`;
+        }
+      }
+
       jiraItems.push({
         id,
-        title: `${itemType}: ${component} validation for ${product} v${releaseVersion}`,
+        title: itemTitle,
         type: itemType,
         status,
         severity,
