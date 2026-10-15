@@ -141,8 +141,8 @@ export const KPIPlatformPage: React.FC = () => {
         totalFilteredTests={testRailExecutions.length}
       />
 
-      {/* KPI Category Navigation (Full-Width Responsive Grid, No Horizontal Truncation) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5">
+      {/* KPI Category Navigation (Full-Width Responsive Grid, Uniform Height & Width across all 7 Categories) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7 gap-2.5 items-stretch">
         {KPI_CATEGORIES.map(category => {
           const isActive = activeCategory === category.id;
           return (
@@ -150,23 +150,23 @@ export const KPIPlatformPage: React.FC = () => {
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex flex-col justify-between p-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer text-left gap-2 border ${
+              className={`flex flex-col justify-between h-[88px] min-h-[88px] max-h-[88px] w-full p-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer text-left border ${
                 isActive
                   ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-purple-600 text-white border-transparent shadow-md shadow-cyan-600/20'
                   : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 shadow-2xs'
               }`}
             >
-              <div className="flex items-center justify-between gap-1.5">
-                <span className={`p-1.5 rounded-lg ${isActive ? 'bg-white/20 text-white' : 'bg-cyan-50 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400'}`}>
+              <div className="flex items-center justify-between gap-1.5 w-full">
+                <span className={`p-1.5 rounded-lg shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-cyan-50 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400'}`}>
                   {iconMap[category.iconName]}
                 </span>
-                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full truncate max-w-[120px] text-right ${
                   isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                 }`}>
                   {t(`kpiPlatform.categories.${category.id}Badge`, category.badge)}
                 </span>
               </div>
-              <span className="font-['Outfit'] font-bold leading-tight line-clamp-2">
+              <span className="font-['Outfit'] font-bold leading-tight line-clamp-2 mt-auto">
                 {t(`kpiPlatform.categories.${category.id}`, category.name)}
               </span>
             </button>
