@@ -9,7 +9,8 @@
 /**
  * Enterprise PowerPoint Presentation Export Service
  * Generates branded, editable 16:9 PowerPoint (.pptx) presentations
- * with dedicated cover slide, category breakdown slides, and status color cards.
+ * where each KPI is rendered as an authentic status-colored card widget with
+ * left accent border, status badge, hero metric value, and target indicators.
  */
 
 import pptxgen from 'pptxgenjs';
@@ -26,6 +27,56 @@ export interface PptxExportOptions {
   t: (key: string, defaultValue?: string) => string;
   language: string;
 }
+
+const PPT_THEMES: Record<string, {
+  cardBg: string;
+  cardBorder: string;
+  badgeBg: string;
+  badgeBorder: string;
+  text: string;
+  strip: string;
+}> = {
+  emerald: {
+    cardBg: 'F0FDF4',       // emerald-50
+    cardBorder: '6EE7B7',   // emerald-300
+    badgeBg: 'D1FAE5',      // emerald-100
+    badgeBorder: '6EE7B7',  // emerald-300
+    text: '059669',         // emerald-600
+    strip: '10B981'         // emerald-500
+  },
+  amber: {
+    cardBg: 'FEFCE8',       // amber-50
+    cardBorder: 'FCD34D',   // amber-300
+    badgeBg: 'FEF3C7',      // amber-100
+    badgeBorder: 'FCD34D',  // amber-300
+    text: 'D97706',         // amber-600
+    strip: 'F59E0B'         // amber-500
+  },
+  rose: {
+    cardBg: 'FFF1F2',       // rose-50
+    cardBorder: 'FDA4AF',   // rose-300
+    badgeBg: 'FFE4E6',      // rose-100
+    badgeBorder: 'FDA4AF',  // rose-300
+    text: 'E11D48',         // rose-600
+    strip: 'F43F5E'         // rose-500
+  },
+  cyan: {
+    cardBg: 'ECFEFF',       // cyan-50
+    cardBorder: '67E8F9',   // cyan-300
+    badgeBg: 'CFFAFE',      // cyan-100
+    badgeBorder: '67E8F9',  // cyan-300
+    text: '0891B2',         // cyan-600
+    strip: '06B6D4'         // cyan-500
+  },
+  purple: {
+    cardBg: 'FAF5FF',       // purple-50
+    cardBorder: 'D8B4FE',   // purple-300
+    badgeBg: 'F3E8FF',      // purple-100
+    badgeBorder: 'D8B4FE',  // purple-300
+    text: '9333EA',         // purple-600
+    strip: 'A855F7'         // purple-500
+  }
+};
 
 export class KPIPptxExportService {
   static async exportToPPTX(options: PptxExportOptions): Promise<void> {
@@ -60,7 +111,7 @@ export class KPIPptxExportService {
       fontSize: 12,
       fontFace: 'Helvetica',
       bold: true,
-      color: '06B6D4' // cyan-500
+      color: '38BDF8' // sky-400
     });
 
     // Main Title (Scoped)
@@ -114,8 +165,7 @@ export class KPIPptxExportService {
       w: 11.1,
       h: 1.4,
       fontSize: 12,
-      fontFace: 'Helvetica',
-      lineSpacing: 22
+      fontFace: 'Helvetica'
     });
 
     // ==========================================
@@ -125,155 +175,176 @@ export class KPIPptxExportService {
       cat.items.some(item => selectedKpiIds.has(item.id))
     );
 
-    const statusHexColors = {
-      emerald: '10B981', // Green
-      amber: 'F59E0B',   // Yellow
-      rose: 'F43F5E',    // Red
-      cyan: '06B6D4',    // Cyan
-      purple: 'A855F7'   // Purple
-    };
-
     for (const category of categoriesToRender) {
       const selectedItems = category.items.filter(item => selectedKpiIds.has(item.id));
       if (selectedItems.length === 0) continue;
 
-      const slide = pres.addSlide();
-      slide.background = { color: 'F8FAFC' }; // slate-50
-
-      // Category Header Bar
-      slide.addShape(pres.ShapeType.rect, {
-        x: 0,
-        y: 0,
-        w: 13.33,
-        h: 1.0,
-        fill: { color: '0F172A' }
-      });
-
       const categoryName = t(category.nameKey, category.defaultName);
       const categoryBadge = t(category.badgeKey, category.defaultBadge);
 
-      slide.addText(categoryName.toUpperCase(), {
-        x: 0.6,
-        y: 0.2,
-        w: 8.0,
-        h: 0.4,
-        fontSize: 16,
-        fontFace: 'Helvetica',
-        bold: true,
-        color: 'FFFFFF'
-      });
+      // Render items in groups of 6 (up to 2 rows x 3 columns per slide)
+      const pageSize = 6;
+      const totalSlidesForCategory = Math.ceil(selectedItems.length / pageSize);
 
-      slide.addText(`${filters.product} • ${filters.component} • v${filters.releaseVersion}  [${categoryBadge}]`, {
-        x: 0.6,
-        y: 0.6,
-        w: 12.0,
-        h: 0.3,
-        fontSize: 9,
-        fontFace: 'Helvetica',
-        color: '94A3B8'
-      });
+      for (let sIdx = 0; sIdx < totalSlidesForCategory; sIdx++) {
+        const slideItems = selectedItems.slice(sIdx * pageSize, (sIdx + 1) * pageSize);
 
-      // Render items in a 2-column or 3-column clean card grid
-      const cols = selectedItems.length <= 4 ? 2 : 3;
-      const cardW = cols === 2 ? 5.8 : 3.8;
-      const cardH = cols === 2 ? 2.1 : 1.9;
-      const gapX = 0.3;
-      const gapY = 0.3;
-      const originX = 0.6;
-      const originY = 1.3;
+        const slide = pres.addSlide();
+        slide.background = { color: 'F8FAFC' }; // slate-50
 
-      selectedItems.forEach((item, idx) => {
-        const col = idx % cols;
-        const row = Math.floor(idx / cols);
-        const cardX = originX + col * (cardW + gapX);
-        const cardY = originY + row * (cardH + gapY);
-
-        if (row >= 2) return; // Keep max 6 items per slide cleanly
-
-        const localizedName = t(item.nameKey, item.defaultName);
-        const kpiVal = item.getValue(metrics, jiraItems, testRailExecutions);
-        const accentHex = statusHexColors[kpiVal.statusColor] || '06B6D4';
-
-        // Card Container
-        slide.addShape(pres.ShapeType.roundRect, {
-          x: cardX,
-          y: cardY,
-          w: cardW,
-          h: cardH,
-          rectRadius: 0.12,
-          fill: { color: 'FFFFFF' },
-          line: { color: 'E2E8F0', width: 1 }
+        // Category Header Bar
+        slide.addShape(pres.ShapeType.rect, {
+          x: 0,
+          y: 0,
+          w: 13.33,
+          h: 1.0,
+          fill: { color: '0F172A' }
         });
 
-        // Top Accent Strip
-        slide.addShape(pres.ShapeType.roundRect, {
-          x: cardX,
-          y: cardY,
-          w: cardW,
-          h: 0.08,
-          rectRadius: 0.05,
-          fill: { color: accentHex }
-        });
+        const slideSubtitle = totalSlidesForCategory > 1
+          ? `${categoryName.toUpperCase()} (${sIdx + 1}/${totalSlidesForCategory})`
+          : categoryName.toUpperCase();
 
-        // Title
-        slide.addText(localizedName, {
-          x: cardX + 0.2,
-          y: cardY + 0.18,
-          w: cardW - 0.4,
-          h: 0.35,
-          fontSize: 10,
+        slide.addText(slideSubtitle, {
+          x: 0.6,
+          y: 0.18,
+          w: 8.5,
+          h: 0.4,
+          fontSize: 15,
           fontFace: 'Helvetica',
           bold: true,
-          color: '334155'
+          color: 'FFFFFF'
         });
 
-        // Value
-        slide.addText(String(kpiVal.value), {
-          x: cardX + 0.2,
-          y: cardY + 0.6,
-          w: cardW - 1.6,
-          h: 0.6,
-          fontSize: 22,
-          fontFace: 'Helvetica',
-          bold: true,
-          color: accentHex
-        });
-
-        // Status Badge Pill
-        slide.addShape(pres.ShapeType.roundRect, {
-          x: cardX + cardW - 1.4,
-          y: cardY + 0.65,
-          w: 1.2,
-          h: 0.35,
-          rectRadius: 0.08,
-          fill: { color: `${accentHex}20` },
-          line: { color: accentHex, width: 1 }
-        });
-
-        slide.addText(kpiVal.status.toUpperCase(), {
-          x: cardX + cardW - 1.4,
-          y: cardY + 0.65,
-          w: 1.2,
-          h: 0.35,
-          fontSize: 8,
-          fontFace: 'Helvetica',
-          bold: true,
-          align: 'center',
-          color: accentHex
-        });
-
-        // Target / SLA & Trend Note
-        const footerNote = `${t('kpiPlatform.targetLabel', 'Target')}: ${item.target}${kpiVal.trend ? ` | ${kpiVal.trend}` : ''}`;
-        slide.addText(footerNote, {
-          x: cardX + 0.2,
-          y: cardY + cardH - 0.4,
-          w: cardW - 0.4,
+        slide.addText(`${filters.product} • ${filters.component} • v${filters.releaseVersion}  [${categoryBadge}]`, {
+          x: 0.6,
+          y: 0.58,
+          w: 12.0,
           h: 0.3,
-          fontSize: 8,
+          fontSize: 9,
           fontFace: 'Helvetica',
-          color: '64748B'
+          color: '94A3B8'
         });
-      });
+
+        // 3 columns x 2 rows grid
+        const cols = slideItems.length <= 4 ? 2 : 3;
+        const cardW = cols === 2 ? 5.8 : 3.8;
+        const cardH = cols === 2 ? 2.5 : 2.5;
+        const gapX = 0.3;
+        const gapY = 0.35;
+        const originX = 0.6;
+        const originY = 1.35;
+
+        slideItems.forEach((item, idx) => {
+          const col = idx % cols;
+          const row = Math.floor(idx / cols);
+          const cardX = originX + col * (cardW + gapX);
+          const cardY = originY + row * (cardH + gapY);
+
+          const localizedName = t(item.nameKey, item.defaultName);
+          const kpiVal = item.getValue(metrics, jiraItems, testRailExecutions);
+          const theme = PPT_THEMES[kpiVal.statusColor] || PPT_THEMES.cyan;
+
+          // 1. Card Container (Rounded Card with status tint)
+          slide.addShape(pres.ShapeType.roundRect, {
+            x: cardX,
+            y: cardY,
+            w: cardW,
+            h: cardH,
+            rectRadius: 0.12,
+            fill: { color: theme.cardBg },
+            line: { color: theme.cardBorder, width: 1.5 }
+          });
+
+          // 2. Left Status Accent Bar (Strip)
+          slide.addShape(pres.ShapeType.roundRect, {
+            x: cardX,
+            y: cardY,
+            w: 0.14,
+            h: cardH,
+            rectRadius: 0.06,
+            fill: { color: theme.strip }
+          });
+
+          // 3. Card Title (Top Left)
+          slide.addText(localizedName, {
+            x: cardX + 0.25,
+            y: cardY + 0.18,
+            w: cardW - 1.6,
+            h: 0.45,
+            fontSize: 9.5,
+            fontFace: 'Helvetica',
+            bold: true,
+            color: '334155'
+          });
+
+          // 4. Status Badge (Top Right Pill)
+          const badgeW = 1.25;
+          const badgeH = 0.32;
+          const badgeX = cardX + cardW - badgeW - 0.2;
+          const badgeY = cardY + 0.18;
+
+          slide.addShape(pres.ShapeType.roundRect, {
+            x: badgeX,
+            y: badgeY,
+            w: badgeW,
+            h: badgeH,
+            rectRadius: 0.08,
+            fill: { color: theme.badgeBg },
+            line: { color: theme.badgeBorder, width: 1 }
+          });
+
+          slide.addText(kpiVal.status.toUpperCase(), {
+            x: badgeX,
+            y: badgeY,
+            w: badgeW,
+            h: badgeH,
+            fontSize: 7.5,
+            fontFace: 'Helvetica',
+            bold: true,
+            align: 'center',
+            color: theme.text
+          });
+
+          // 5. Main Hero Value (Large Status-Colored Text)
+          slide.addText(String(kpiVal.value), {
+            x: cardX + 0.25,
+            y: cardY + 0.72,
+            w: cardW - 0.5,
+            h: 0.75,
+            fontSize: 24,
+            fontFace: 'Helvetica',
+            bold: true,
+            color: theme.text
+          });
+
+          // 6. Target / SLA Section
+          slide.addText([
+            { text: `${t('kpiPlatform.targetLabel', 'Target')}: `, options: { color: '64748B', bold: false } },
+            { text: item.target, options: { color: '059669', bold: true } }
+          ], {
+            x: cardX + 0.25,
+            y: cardY + 1.55,
+            w: cardW - 0.5,
+            h: 0.35,
+            fontSize: 8.5,
+            fontFace: 'Helvetica'
+          });
+
+          // 7. Context / Trend Sub-line
+          if (kpiVal.trend) {
+            slide.addText(`• ${kpiVal.trend}`, {
+              x: cardX + 0.25,
+              y: cardY + 1.95,
+              w: cardW - 0.5,
+              h: 0.4,
+              fontSize: 8,
+              fontFace: 'Helvetica',
+              color: '475569'
+            });
+          }
+        });
+      }
     }
 
     // Save File
