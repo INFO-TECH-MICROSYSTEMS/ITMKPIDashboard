@@ -1382,22 +1382,27 @@ Gate Rule: If OpenGatingDefects > 0 → Hard Block → Max Grade = C/F`,
   /**
    * 46. Performance P95 Latency Benchmark Justification
    */
-  static getPerformanceP95Justification(latencyMs: number): KPIJustification {
-    const isOptimal = latencyMs <= 180;
+  static getPerformanceP95Justification(latencyOrScorecard: number | ReleaseQualityScorecard): KPIJustification {
+    const latencyMs = typeof latencyOrScorecard === 'number' 
+      ? latencyOrScorecard 
+      : latencyOrScorecard.performanceP95Ms;
+    const isOptimal = latencyMs <= 200;
 
     return {
       title: 'Performance P95 Latency Benchmark',
-      statusBadge: isOptimal ? 'Compliant' : 'Spike Latency',
-      statusColor: isOptimal ? 'emerald' : 'amber',
+      statusBadge: isOptimal ? 'Passed' : 'Latency Warning',
+      statusColor: isOptimal ? 'emerald' : 'rose',
       currentValue: `${latencyMs} ms`,
-      targetValue: '< 180 ms',
-      overviewAndSignificance: 'This KPI is the 95th percentile response duration observed under simulated multi-user concurrent traffic.\n\nIt provides information that measures API and page load latency thresholds under automated performance load test execution.\n\nIts significance is that it guarantees responsive user experience and prevents slow-request drop-offs.',
-      description: 'This KPI is the 95th percentile response duration observed under simulated multi-user concurrent traffic.\n\nIt provides information that measures API and page load latency thresholds under automated performance load test execution.\n\nIts significance is that it guarantees responsive user experience and prevents slow-request drop-offs.',
-      trackedInfo: 'Measures API and page load latency thresholds under automated performance load test execution.',
-      businessImportance: 'Guarantees responsive user experience and prevents slow-request drop-offs.',
-      formulaOrRule: `P95Latency = 95th Percentile Response Duration (ms) in Performance Suite executions`,
-      rationale: `P95 latency is ${latencyMs} ms, reflecting server response time under simulated multi-user concurrent workloads.`,
-      recommendedAction: 'Optimize database index scans on high-traffic query endpoints.'
+      targetValue: '< 200 ms',
+      overviewAndSignificance: 'This KPI is the 95th percentile response time (in milliseconds) for critical application endpoints and user transactions under load.\n\nIt provides information that tracks synthetic API request and UI transaction latencies, measuring the duration within which 95% of user requests resolve.\n\nIts significance is protecting user experience and preventing transaction abandonment. High latency directly correlates with customer bounce rates and lost checkout conversions.',
+      description: 'The 95th percentile response time (in milliseconds) for critical application endpoints and user transactions under load.',
+      trackedInfo: 'Tracks synthetic API request and UI transaction latencies, measuring the duration within which 95% of user requests resolve.',
+      businessImportance: 'Protects user experience and prevents transaction abandonment. High latency directly correlates with customer bounce rates and lost checkout conversions.',
+      formulaOrRule: `P95Latency = 95th Percentile HTTP Response Duration across TestRail Performance Suite runs`,
+      rationale: `P95 API response duration is ${latencyMs} ms. 95% of synthetic and load test requests complete within this latency envelope.`,
+      recommendedAction: isOptimal
+        ? 'Performance benchmarks are compliant with corporate SLA.'
+        : 'Investigate slow database query execution and caching layers.'
     };
   }
 
@@ -1562,6 +1567,115 @@ Runway Rule: If DaysToAllAutomated <= 60 Days → On Schedule (Healthy)`,
       recommendedAction: isOptimal
         ? 'Maintain current automation development sprint commitments and continue pre-merge automated API/UI test assertions.'
         : 'Allocate additional SDET engineers to high-frequency manual regression suites or leverage AI-assisted test authoring to accelerate daily conversion pace.'
+    };
+  }
+
+  /**
+   * 52. Regression Cycle Time Justification
+   */
+  static getRegressionCycleTimeJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const isOptimal = scorecard.regressionCycleTimeDays <= 2.5;
+    return {
+      title: 'Regression Cycle Time',
+      statusBadge: isOptimal ? 'Optimal' : 'Delayed',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${scorecard.regressionCycleTimeDays} Days`,
+      targetValue: '< 2.5 Days',
+      overviewAndSignificance: 'This KPI is the total wall-clock duration in days required to execute the complete end-to-end regression test suite before release.\n\nIt provides information that measures total cumulative execution seconds across all automated and manual regression test runs divided by standard working hours.\n\nIts significance is determining release cadence and agility. Shorter regression cycles allow engineering squads to ship fixes and features continuously without multi-day staging freezes.',
+      description: 'The total wall-clock duration in days required to execute the complete end-to-end regression test suite before release.',
+      trackedInfo: 'Measures total cumulative execution seconds across all automated and manual regression test runs divided by standard working hours.',
+      businessImportance: 'Determines release cadence and agility. Shorter regression cycles allow engineering squads to ship fixes and features continuously without multi-day staging freezes.',
+      formulaOrRule: `RegressionCycleDays = SUM(RegressionTestDurationsInSeconds) / (8 hours/day * 3600)`,
+      rationale: `Regression suite duration currently takes ${scorecard.regressionCycleTimeDays} days. Faster regressions allow squads to release continuously without holding back staging builds.`,
+      recommendedAction: 'Expand parallel worker threads in CI/CD pipeline runners to keep full regression cycle under 2.5 days.'
+    };
+  }
+
+  /**
+   * 53. Feature Lead Time Justification
+   */
+  static getFeatureLeadTimeJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const isOptimal = scorecard.featureLeadTimeDays <= 7.0;
+    return {
+      title: 'Feature Lead Time (Commit-to-Customer)',
+      statusBadge: isOptimal ? 'Optimal Flow' : 'Delayed',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${scorecard.featureLeadTimeDays} Days`,
+      targetValue: '< 7.0 Days',
+      overviewAndSignificance: 'This KPI is the average number of calendar days elapsed from a developer’s first commit on a branch until the feature successfully runs in customer-facing production.\n\nIt provides information that measures lifecycle progression timestamp across Git commit history, pull request reviews, automated CI checks, and deployment release tags.\n\nIts significance is serving as a Google DORA core speed metric. Minimizes stale branching, accelerates customer feedback loops, and enables rapid competitive product iteration.',
+      description: 'The average number of calendar days elapsed from a developer’s first commit on a branch until the feature successfully runs in customer-facing production.',
+      trackedInfo: 'Measures lifecycle progression timestamp across Git commit history, pull request reviews, automated CI checks, and deployment release tags.',
+      businessImportance: 'Google DORA core speed metric. Minimizes stale branching, accelerates customer feedback loops, and enables rapid competitive product iteration.',
+      formulaOrRule: `LeadTime = AVERAGE(StoryProductionDeploymentTimestamp - FirstCommitTimestamp)`,
+      rationale: `Features require on average ${scorecard.featureLeadTimeDays} days from initial commit to general availability. Shorter lead time allows agile business iterations and rapid competitive response.`,
+      recommendedAction: 'Keep PR branch lifetimes short (< 48 hrs) and minimize handoff delays between dev and QA verification.'
+    };
+  }
+
+  /**
+   * 55. Security Gate Vulnerabilities Justification
+   */
+  static getSecurityGateJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const isOptimal = scorecard.criticalVulnerabilitiesCount === 0;
+    return {
+      title: 'Security Gate Vulnerabilities & CVE Compliance',
+      statusBadge: isOptimal ? 'Passed' : 'Security Halt',
+      statusColor: isOptimal ? 'emerald' : 'rose',
+      currentValue: `${scorecard.criticalVulnerabilitiesCount} Critical CVEs`,
+      targetValue: '0 Permitted at Gate',
+      overviewAndSignificance: 'This KPI is the count of unresolved Critical or High Common Vulnerabilities and Exposures (CVEs) or SAST/DAST security violations present in the release.\n\nIt provides information that aggregates automated dependency vulnerability scans, container image audits, and static application security test findings.\n\nIts significance is strict CISO and compliance gating standard. Eliminates cyber risk exposure, protects user data, and complies with SOC2, ISO 27001, and HIPAA mandates.',
+      description: 'The count of unresolved Critical or High Common Vulnerabilities and Exposures (CVEs) or SAST/DAST security violations present in the release.',
+      trackedInfo: 'Aggregates automated dependency vulnerability scans, container image audits, and static application security test findings.',
+      businessImportance: 'Strict CISO and compliance gating standard. Eliminates cyber risk exposure, protects user data, and complies with SOC2, ISO 27001, and HIPAA mandates.',
+      formulaOrRule: `SecurityGate = COUNT(SAST/DAST Critical Security Findings + Open CVEs in Production Dependencies)`,
+      rationale: isOptimal
+        ? 'All automated security scans, dependency audits, and SAST/DAST test executions pass without critical findings.'
+        : `There are ${scorecard.criticalVulnerabilitiesCount} critical security issues detected. Releases cannot proceed until patched.`,
+      recommendedAction: isOptimal
+        ? 'Continue automated Dependabot and SAST pipeline gating.'
+        : 'Prioritize emergency security patching and redeploy to staging for re-scan.'
+    };
+  }
+
+  /**
+   * 56. Contractual SLA Uptime Justification
+   */
+  static getContractUptimeJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const isOptimal = scorecard.contractUptimePercentage >= 99.95;
+    return {
+      title: 'Contractual Production SLA Uptime',
+      statusBadge: isOptimal ? 'Compliant' : 'Breached',
+      statusColor: isOptimal ? 'emerald' : 'rose',
+      currentValue: `${scorecard.contractUptimePercentage}%`,
+      targetValue: '≥ 99.95%',
+      overviewAndSignificance: 'This KPI is the percentage of scheduled operational minutes during which production services, APIs, and customer interfaces remain accessible and fully functional.\n\nIt provides information that measures synthetic API health-check probes, global uptime monitors, and recorded incident downtime minutes.\n\nIts significance is protecting contractual customer SLAs and avoids contractually mandated customer refund credits or financial service breach penalties.',
+      description: 'The percentage of scheduled operational minutes during which production services, APIs, and customer interfaces remain accessible and fully functional.',
+      trackedInfo: 'Measures synthetic API health-check probes, global uptime monitors, and recorded incident downtime minutes.',
+      businessImportance: 'Protects contractual customer SLAs and avoids contractually mandated customer refund credits or financial service breach penalties.',
+      formulaOrRule: `ContractUptime = 100% - (ProductionUnplannedDowntimeMinutes / TotalOperatingMinutes) × 100`,
+      rationale: `Current composite availability is ${scorecard.contractUptimePercentage}%, successfully meeting high-availability enterprise customer service level commitments.`,
+      recommendedAction: 'Preserve automated health-check synthetic probes and multi-region failover configs.'
+    };
+  }
+
+  /**
+   * 57. Accessibility Compliance Justification
+   */
+  static getAccessibilityScoreJustification(scorecard: ReleaseQualityScorecard): KPIJustification {
+    const isOptimal = scorecard.accessibilityScore >= 92.0;
+    return {
+      title: 'WCAG 2.2 AA Accessibility Compliance',
+      statusBadge: isOptimal ? 'Passed' : 'Warning',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${scorecard.accessibilityScore}%`,
+      targetValue: '≥ 92.0%',
+      overviewAndSignificance: 'This KPI is the automated and audited compliance score against the Web Content Accessibility Guidelines (WCAG 2.2 Level AA) and Section 508 standards.\n\nIt provides information that tracks automated axe-core UI test suite results evaluating color contrast, ARIA landmarks, screen-reader markup, and keyboard focus traps.\n\nIts significance is legal compliance and universal design. Ensures accessible digital services for users with disabilities while shielding against ADA legal litigation.',
+      description: 'The automated and audited compliance score against the Web Content Accessibility Guidelines (WCAG 2.2 Level AA) and Section 508 standards.',
+      trackedInfo: 'Tracks automated axe-core UI test suite results evaluating color contrast, ARIA landmarks, screen-reader markup, and keyboard focus traps.',
+      businessImportance: 'Legal compliance and universal design. Ensures accessible digital services for users with disabilities while shielding against ADA legal litigation.',
+      formulaOrRule: `WCAG_Score = (PassedAccessibilityTests / TotalAccessibilityTests) × 100`,
+      rationale: `Automated axe-core / accessibility test suite pass rate is ${scorecard.accessibilityScore}%, meeting federal and enterprise accessibility compliance standards.`,
+      recommendedAction: 'Maintain automated accessibility linting in UI component pull requests.'
     };
   }
 }

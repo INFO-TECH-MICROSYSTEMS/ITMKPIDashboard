@@ -185,19 +185,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.regressionCycleTimeDays <= 2.5 ? t('kpiPlatform.executiveView.statusPassed', 'Optimal') : scorecard.regressionCycleTimeDays <= 3.5 ? t('kpiPlatform.executiveView.acceptable') : t('kpiPlatform.executiveView.breached')}
           statusColor={scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : scorecard.regressionCycleTimeDays <= 3.5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Regression Cycle Time',
-            statusBadge: scorecard.regressionCycleTimeDays <= 2.5 ? 'Optimal' : 'Delayed',
-            statusColor: scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : 'amber',
-            currentValue: `${scorecard.regressionCycleTimeDays} Days`,
-            targetValue: '< 2.5 Days',
-            description: 'The total wall-clock duration in days required to execute the complete end-to-end regression test suite before release.',
-            trackedInfo: 'Measures total cumulative execution seconds across all automated and manual regression test runs divided by standard working hours.',
-            businessImportance: 'Determines release cadence and agility. Shorter regression cycles allow engineering squads to ship fixes and features continuously without multi-day staging freezes.',
-            formulaOrRule: `RegressionCycleDays = SUM(RegressionTestDurationsInSeconds) / (8 hours/day * 3600)`,
-            rationale: `Regression suite duration currently takes ${scorecard.regressionCycleTimeDays} days. Faster regressions allow squads to release continuously without holding back staging builds.`,
-            recommendedAction: 'Expand parallel worker threads in CI/CD pipeline runners to keep full regression cycle under 2.5 days.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getRegressionCycleTimeJustification(scorecard))}
         />
         <MetricCard
           title={t('kpiPlatform.executiveView.cardLatency')}
@@ -206,21 +194,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.performanceP95Ms <= 200 ? 'P99: 380ms' : t('kpiPlatform.executiveView.latencyWarning')}
           statusColor={scorecard.performanceP95Ms <= 200 ? 'emerald' : scorecard.performanceP95Ms <= 350 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification({
-            title: 'Performance P95 Latency Benchmark',
-            statusBadge: scorecard.performanceP95Ms <= 200 ? 'Passed' : 'Latency Warning',
-            statusColor: scorecard.performanceP95Ms <= 200 ? 'emerald' : 'rose',
-            currentValue: `${scorecard.performanceP95Ms} ms`,
-            targetValue: '< 200 ms',
-            description: 'The 95th percentile response time (in milliseconds) for critical application endpoints and user transactions under load.',
-            trackedInfo: 'Tracks synthetic API request and UI transaction latencies, measuring the duration within which 95% of user requests resolve.',
-            businessImportance: 'Protects user experience and prevents transaction abandonment. High latency directly correlates with customer bounce rates and lost checkout conversions.',
-            formulaOrRule: `P95Latency = 95th Percentile HTTP Response Duration across TestRail Performance Suite runs`,
-            rationale: `P95 API response duration is ${scorecard.performanceP95Ms} ms. 95% of synthetic and load test requests complete within this latency envelope.`,
-            recommendedAction: scorecard.performanceP95Ms <= 200
-              ? 'Performance benchmarks are compliant with corporate SLA.'
-              : 'Investigate slow database query execution and caching layers.'
-          })}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getPerformanceP95Justification(scorecard))}
         />
       </div>
 
@@ -298,19 +272,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.featureLeadTimeDays <= 7.0 ? t('kpiPlatform.statusOptimal', 'Optimal') : t('kpiPlatform.statusDelayed', 'Bottlenecked')}
             statusColor={scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-teal-500" />}
-            onJustify={() => setSelectedJustification({
-              title: 'Feature Lead Time (Commit-to-Customer)',
-              statusBadge: scorecard.featureLeadTimeDays <= 7.0 ? 'Optimal Flow' : 'Delayed',
-              statusColor: scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber',
-              currentValue: `${scorecard.featureLeadTimeDays} Days`,
-              targetValue: '< 7.0 Days',
-              description: 'The average number of calendar days elapsed from a developer’s first commit on a branch until the feature successfully runs in customer-facing production.',
-              trackedInfo: 'Measures lifecycle progression timestamp across Git commit history, pull request reviews, automated CI checks, and deployment release tags.',
-              businessImportance: 'Google DORA core speed metric. Minimizes stale branching, accelerates customer feedback loops, and enables rapid competitive product iteration.',
-              formulaOrRule: `LeadTime = AVERAGE(StoryProductionDeploymentTimestamp - FirstCommitTimestamp)`,
-              rationale: `Features require on average ${scorecard.featureLeadTimeDays} days from initial commit to general availability. Shorter lead time allows agile business iterations and rapid competitive response.`,
-              recommendedAction: 'Keep PR branch lifetimes short (< 48 hrs) and minimize handoff delays between dev and QA verification.'
-            })}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getFeatureLeadTimeJustification(scorecard))}
           />
 
           {/* 6. Security Gate Vulnerabilities */}
@@ -323,23 +285,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.criticalVulnerabilitiesCount === 0 ? t('kpiPlatform.statusCompliant', 'Gate Clear') : t('kpiPlatform.statusGateViolation', 'CISO Escalation')}
             statusColor={scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-            onJustify={() => setSelectedJustification({
-              title: 'Security Gate Vulnerabilities & CVE Compliance',
-              statusBadge: scorecard.criticalVulnerabilitiesCount === 0 ? 'Passed' : 'Security Halt',
-              statusColor: scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose',
-              currentValue: `${scorecard.criticalVulnerabilitiesCount} Critical CVEs`,
-              targetValue: '0 Permitted at Gate',
-              description: 'The count of unresolved Critical or High Common Vulnerabilities and Exposures (CVEs) or SAST/DAST security violations present in the release.',
-              trackedInfo: 'Aggregates automated dependency vulnerability scans, container image audits, and static application security test findings.',
-              businessImportance: 'Strict CISO and compliance gating standard. Eliminates cyber risk exposure, protects user data, and complies with SOC2, ISO 27001, and HIPAA mandates.',
-              formulaOrRule: `SecurityGate = COUNT(SAST/DAST Critical Security Findings + Open CVEs in Production Dependencies)`,
-              rationale: scorecard.criticalVulnerabilitiesCount === 0
-                ? 'All automated security scans, dependency audits, and SAST/DAST test executions pass without critical findings.'
-                : `There are ${scorecard.criticalVulnerabilitiesCount} critical security issues detected. Releases cannot proceed until patched.`,
-              recommendedAction: scorecard.criticalVulnerabilitiesCount === 0
-                ? 'Continue automated Dependabot and SAST pipeline gating.'
-                : 'Prioritize emergency security patching and redeploy to staging for re-scan.'
-            })}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getSecurityGateJustification(scorecard))}
           />
 
           {/* 7. Contractual SLA Production Availability */}
@@ -352,19 +298,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.contractUptimePercentage >= 99.95 ? t('kpiPlatform.statusOptimal', 'Four Nines') : t('kpiPlatform.statusBreached', 'Penalty Risk')}
             statusColor={scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose'}
             icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-            onJustify={() => setSelectedJustification({
-              title: 'Contractual Production SLA Uptime',
-              statusBadge: scorecard.contractUptimePercentage >= 99.95 ? 'Compliant' : 'Breached',
-              statusColor: scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose',
-              currentValue: `${scorecard.contractUptimePercentage}%`,
-              targetValue: '≥ 99.95%',
-              description: 'The percentage of scheduled operational minutes during which production services, APIs, and customer interfaces remain accessible and fully functional.',
-              trackedInfo: 'Measures synthetic API health-check probes, global uptime monitors, and recorded incident downtime minutes.',
-              businessImportance: 'Protects contractual customer SLAs and avoids contractually mandated customer refund credits or financial service breach penalties.',
-              formulaOrRule: `ContractUptime = 100% - (ProductionUnplannedDowntimeMinutes / TotalOperatingMinutes) × 100`,
-              rationale: `Current composite availability is ${scorecard.contractUptimePercentage}%, successfully meeting high-availability enterprise customer service level commitments.`,
-              recommendedAction: 'Preserve automated health-check synthetic probes and multi-region failover configs.'
-            })}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getContractUptimeJustification(scorecard))}
           />
 
           {/* 8. Accessibility Compliance Score */}
@@ -377,19 +311,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.accessibilityScore >= 92.0 ? t('kpiPlatform.statusCompliant', 'Compliant') : t('kpiPlatform.statusWarning', 'Audit Notice')}
             statusColor={scorecard.accessibilityScore >= 92.0 ? 'emerald' : 'amber'}
             icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
-            onJustify={() => setSelectedJustification({
-              title: 'WCAG 2.2 AA Accessibility Compliance',
-              statusBadge: scorecard.accessibilityScore >= 92.0 ? 'Passed' : 'Warning',
-              statusColor: scorecard.accessibilityScore >= 92.0 ? 'emerald' : 'amber',
-              currentValue: `${scorecard.accessibilityScore}%`,
-              targetValue: '≥ 92.0%',
-              description: 'The automated and audited compliance score against the Web Content Accessibility Guidelines (WCAG 2.2 Level AA) and Section 508 standards.',
-              trackedInfo: 'Tracks automated axe-core UI test suite results evaluating color contrast, ARIA landmarks, screen-reader markup, and keyboard focus traps.',
-              businessImportance: 'Legal compliance and universal design. Ensures accessible digital services for users with disabilities while shielding against ADA legal litigation.',
-              formulaOrRule: `WCAG_Score = (PassedAccessibilityTests / TotalAccessibilityTests) × 100`,
-              rationale: `Automated axe-core / accessibility test suite pass rate is ${scorecard.accessibilityScore}%, meeting federal and enterprise accessibility compliance standards.`,
-              recommendedAction: 'Maintain automated accessibility linting in UI component pull requests.'
-            })}
+            onJustify={() => setSelectedJustification(KPIJustificationService.getAccessibilityScoreJustification(scorecard))}
           />
         </div>
       </div>

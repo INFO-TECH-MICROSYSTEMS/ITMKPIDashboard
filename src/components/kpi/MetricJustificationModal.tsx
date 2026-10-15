@@ -21,6 +21,13 @@ import {
 } from 'lucide-react';
 import type { KPIJustification } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
+import { 
+  getLocalizedOverview, 
+  getLocalizedRationale, 
+  getLocalizedAction,
+  formatLocalizedStatusBadge, 
+  formatLocalizedGradeString 
+} from '../../services/kpiJustificationLocalization';
 
 interface MetricJustificationModalProps {
   justification: KPIJustification | null;
@@ -73,64 +80,17 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
   };
 
   const formatStatusBadge = (badge: string) => {
-    if (!badge) return '';
-    // Handle Grade formatting e.g. "Gated / Blocked (Grade F)" or "Grade A"
-    const gradeMatch = badge.match(/Grade ([A-F])/);
-    const gradeWord = t('kpiPlatform.grade', 'Grade');
-    if (gradeMatch) {
-      const replaced = badge.replace(/Grade ([A-F])/, `${gradeWord} $1`);
-      // Translate the verdict prefix if present
-      if (replaced.includes('Gated / Blocked')) {
-        return replaced.replace('Gated / Blocked', t('kpiPlatform.statusGated', 'Gated / Blocked'));
-      }
-      if (replaced.includes('Conditional Warning')) {
-        return replaced.replace('Conditional Warning', t('kpiPlatform.statusWarning', 'Conditional Warning'));
-      }
-      if (replaced.includes('Release Approved')) {
-        return replaced.replace('Release Approved', t('kpiPlatform.statusOptimal', 'Release Approved'));
-      }
-      return replaced;
-    }
-    // Check known status badges in kpiPlatform
-    const statusMap: Record<string, string> = {
-      'Zero Penalty': t('kpiPlatform.governanceView.zeroPenalty', 'Zero Penalty'),
-      'Audit Verified': t('kpiPlatform.governanceView.auditVerified', 'Audit Verified'),
-      'Clear Gate': t('kpiPlatform.executiveView.statusPassed', 'Clear Gate'),
-      'Action Required': t('kpiPlatform.executiveView.actionRequired', 'Action Required'),
-      'Compliant': t('kpiPlatform.statusCompliant', 'Compliant'),
-      'Optimal': t('kpiPlatform.statusOptimal', 'Optimal'),
-      'Acceptable': t('kpiPlatform.statusAcceptable', 'Acceptable'),
-      'Controlled': t('kpiPlatform.statusControlled', 'Controlled'),
-      'Elevated': t('kpiPlatform.statusElevated', 'Elevated'),
-      'Breached': t('kpiPlatform.statusBreached', 'Breached'),
-      'SLA Met': t('kpiPlatform.statusMet', 'SLA Met'),
-      'Warning': t('kpiPlatform.statusWarning', 'Warning'),
-      'At Risk': t('kpiPlatform.statusAtRisk', 'At Risk'),
-      'On Schedule': t('kpiPlatform.automationView.onSchedule', 'On Schedule'),
-      'Pace Warning': t('kpiPlatform.automationView.paceWarning', 'Pace Warning'),
-      'On Target': t('kpiPlatform.statusOnTarget', 'On Target'),
-      'Behind Schedule': t('kpiPlatform.statusBehindSchedule', 'Behind Schedule'),
-      'High Trust': t('kpiPlatform.statusHighTrust', 'High Trust'),
-      'Balanced': t('kpiPlatform.statusBalanced', 'Balanced'),
-      'Rebalance Needed': t('kpiPlatform.statusRebalanceNeeded', 'Rebalance Needed'),
-      'Flow Unblocked': t('kpiPlatform.statusOptimal', 'Flow Unblocked'),
-      'Gate Passed': t('kpiPlatform.statusCompliant', 'Gate Passed'),
-      'Gate Violation': t('kpiPlatform.statusGateViolation', 'Gate Violation'),
-      'Quarantine Active': t('kpiPlatform.statusQuarantineActive', 'Quarantine Active'),
-      'High Performance': t('kpiPlatform.statusOptimal', 'High Performance'),
-      'Fast Pipeline': t('kpiPlatform.statusFastPipeline', 'Fast Pipeline'),
-      'Fast Discovery': t('kpiPlatform.statusFastDiscovery', 'Fast Discovery'),
-      'Audit Passed': t('kpiPlatform.statusAuditPassed', 'Audit Passed'),
-      'Minor Violations': t('kpiPlatform.statusMinorViolations', 'Minor Violations')
-    };
-
-    return statusMap[badge] || badge;
+    return formatLocalizedStatusBadge(badge, t);
   };
 
-  // Single externalized Metric Overview & Significance text
+  // Single externalized Metric Overview & Significance text with localization
   const rawOverview = justification.overviewAndSignificance || justification.description || '';
-  const overviewParagraphs = rawOverview.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-  const isOverviewLong = overviewParagraphs.length > 1 || rawOverview.length > 240;
+  const localizedOverview = getLocalizedOverview(justification.title, rawOverview);
+  const overviewParagraphs = localizedOverview.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+  const isOverviewLong = overviewParagraphs.length > 1 || localizedOverview.length > 240;
+
+  // Localized Rationale
+  const localizedRationale = getLocalizedRationale(justification, justification.rationale);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-xs animate-fadeIn">
@@ -172,13 +132,13 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <div>
               <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.currentTelemetry')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
-                {justification.currentValue}
+                {formatLocalizedGradeString(justification.currentValue, t)}
               </span>
             </div>
             <div>
               <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.governanceTarget')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.target}`}>
-                {justification.targetValue}
+                {formatLocalizedGradeString(justification.targetValue, t)}
               </span>
             </div>
             <div className="col-span-2 sm:col-span-1">
@@ -238,7 +198,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
               <span>{t('kpiPlatform.modal.whyAssigned')}</span>
             </h4>
             <div className={`p-4 rounded-2xl border leading-relaxed text-slate-800 dark:text-slate-200 text-xs sm:text-sm ${theme.calloutBg} ${theme.calloutBorder}`}>
-              {justification.rationale}
+              {localizedRationale}
             </div>
           </div>
 
@@ -326,7 +286,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
               <span>{t('kpiPlatform.modal.pathGreen')}</span>
             </h4>
             <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-              {justification.recommendedAction}
+              {getLocalizedAction(justification, justification.recommendedAction)}
             </p>
           </div>
         </div>
