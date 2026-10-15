@@ -236,7 +236,17 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                 <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
                   <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
-                  <span className="text-rose-600 dark:text-rose-400">{item.severity}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border shadow-2xs ${
+                    item.severity === 'P1-Blocker'
+                      ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                      : item.severity === 'P2-Critical'
+                      ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                      : item.severity === 'P3-Major'
+                      ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                      : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                  }`}>
+                    {item.severity}
+                  </span>
                 </div>
                 <div className="text-slate-600 dark:text-slate-300 truncate mt-0.5">{item.title}</div>
                 <div className="text-[10px] font-mono text-slate-400 mt-1">Component: {item.component} | Assignee: {item.assignee}</div>

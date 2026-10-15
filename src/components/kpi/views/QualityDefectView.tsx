@@ -291,6 +291,8 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             series1Color="#f43f5e" // Rose
             series2Color="#10b981" // Emerald
             height={240}
+            forecastBadge={mttrMttd.netDefectIntakeVelocity <= 0 ? '● Burndown Active' : '▲ Net Intake Growth'}
+            forecastStatus={mttrMttd.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
             onJustify={() => setSelectedJustification(KPIJustificationService.getDefectTrendChartJustification(mttrMttd.netDefectIntakeVelocity))}
           />
         </div>
@@ -298,9 +300,22 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         {/* Severity Distribution */}
         <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              {t('kpiPlatform.qualityView.severityTitle')}
-            </h4>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.qualityView.severityTitle')}
+              </h4>
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-2xs ${
+                severityCounts.blockerP1 === 0 && severityCounts.criticalP2 <= 5
+                  ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
+                  : severityCounts.blockerP1 === 0
+                  ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
+                  : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
+              }`}>
+                {severityCounts.blockerP1 === 0 
+                  ? (severityCounts.criticalP2 <= 5 ? t('kpiPlatform.statusOptimal', 'Controlled') : t('kpiPlatform.statusWarning', 'P2 Watch'))
+                  : `${severityCounts.blockerP1} ${t('kpiPlatform.qualityView.blockersActive', 'Blockers')}`}
+              </span>
+            </div>
             <button
               onClick={() => setSelectedJustification(KPIJustificationService.getDefectSeverityJustification(severityCounts))}
               title="Explain Defect Severity Breakdown"
@@ -371,12 +386,34 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
                   <tr key={bug.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                     <td className="p-2.5 font-mono font-bold text-cyan-600 dark:text-cyan-400">{bug.id}</td>
                     <td className="p-2.5 text-slate-900 dark:text-white truncate max-w-xs">{bug.title}</td>
-                    <td className="p-2.5 font-mono text-rose-600 dark:text-rose-400 font-bold">{bug.severity}</td>
+                    <td className="p-2.5 font-mono">
+                      <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${
+                        bug.severity === 'P1-Blocker'
+                          ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                          : bug.severity === 'P2-Critical'
+                          ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                          : bug.severity === 'P3-Major'
+                          ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                          : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                      }`}>
+                        {bug.severity}
+                      </span>
+                    </td>
                     <td className="p-2.5 text-slate-600 dark:text-slate-300">{bug.product}</td>
                     <td className="p-2.5 text-slate-600 dark:text-slate-300">{bug.component}</td>
                     <td className="p-2.5 text-slate-700 dark:text-slate-300 font-mono">{bug.qaOwner}</td>
                     <td className="p-2.5">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border shadow-2xs ${
+                        bug.status === 'Done'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                          : bug.status === 'Under QA'
+                          ? 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800'
+                          : bug.status === 'In Development'
+                          ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800'
+                          : bug.status === 'Reopened'
+                          ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                          : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800'
+                      }`}>
                         {bug.status}
                       </span>
                     </td>
