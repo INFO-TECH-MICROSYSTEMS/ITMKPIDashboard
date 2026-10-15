@@ -42,6 +42,10 @@ export class KPIDatabase extends Dexie {
       dataSourceConfigs: 'id, name, frequency',
       syncAuditLogs: 'id, timestamp, source, status'
     });
+
+    this.version(2).stores({
+      jiraWorkItems: 'id, product, component, sprint, releaseVersion, status, severity, discoveryMethod, isGatingDefect, isRegressionDefect, isCustomerDefect, createdAt',
+    });
   }
 }
 

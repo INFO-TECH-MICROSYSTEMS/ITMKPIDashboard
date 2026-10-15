@@ -56,8 +56,18 @@ class KPIDataRepository implements IKPIDataRepository {
     const firstItem = await kpiDb.jiraWorkItems.limit(1).first();
     const isLegacy = !firstItem || !['YouTube', 'GMail', 'LinkedIn', 'Shopify', 'Amazon'].includes(firstItem.product);
 
-    if (count < 10000 || isLegacy) {
+    // Check if defect discoveryMethod telemetry is populated in current DB
+    const sampleBug = await kpiDb.jiraWorkItems.filter(i => i.type === 'Bug').first();
+    const hasDiscoveryMethod = Boolean(sampleBug && sampleBug.discoveryMethod);
+
+    const DATASET_VERSION = '2026-10-15-v4';
+    const currentVersion = typeof window !== 'undefined' ? localStorage.getItem('itm_kpi_dataset_version') : null;
+
+    if (count < 10000 || isLegacy || !hasDiscoveryMethod || currentVersion !== DATASET_VERSION) {
       await this.resetToSampleDataset();
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('itm_kpi_dataset_version', DATASET_VERSION);
+      }
     } else {
       // Ensure connector configs exist
       const configCount = await kpiDb.dataSourceConfigs.count();
@@ -112,6 +122,10 @@ class KPIDataRepository implements IKPIDataRepository {
       };
       await kpiDb.syncAuditLogs.put(auditLog);
     });
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('itm_kpi_dataset_version', '2026-10-15-v4');
+    }
   }
 
   /**
