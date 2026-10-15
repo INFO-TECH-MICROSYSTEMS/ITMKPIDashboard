@@ -1219,6 +1219,9 @@ export class KPICalculatorService {
       }
     }
 
+    // Sort near misses by newest created date first
+    nearMissRecords.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     const totalNearMisses = nearMissRecords.length;
     const nearMissP1Blockers = nearMissRecords.filter(r => r.severity === 'P1-Blocker').length;
     const nearMissP2Critical = nearMissRecords.filter(r => r.severity === 'P2-Critical').length;
