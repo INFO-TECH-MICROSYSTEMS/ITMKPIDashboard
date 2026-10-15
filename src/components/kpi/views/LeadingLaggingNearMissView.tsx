@@ -15,9 +15,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  Compass, ArrowUpRight, ArrowDownRight, ShieldCheck, 
-  AlertTriangle, Crosshair, Search, DollarSign, CheckCircle2, 
-  HelpCircle, Sparkles, Layers, Activity
+  Compass, ArrowUpRight, ArrowDownRight, 
+  AlertTriangle, Crosshair, DollarSign, CheckCircle2, 
+  HelpCircle, Sparkles, Activity
 } from 'lucide-react';
 import type { 
   LeadingLaggingMetricsSummary, 
@@ -41,7 +41,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
   leadingLaggingMetrics,
   nearMissAnalytics,
   jiraItems,
-  testRailExecutions
+  testRailExecutions: _testRailExecutions
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
