@@ -88,9 +88,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           value={nearMissAnalytics.totalNearMisses}
           target={t('kpiPlatform.leadingLaggingView.targetNearMissRatio', '100% Intercepted Pre-Release')}
           trend={`${nearMissAnalytics.nearMissP1Blockers} ${t('kpiPlatform.leadingLaggingView.p1BlockersAverted', 'P1 Blockers Averted')}`}
-          trendPositive={true}
+          trendPositive={nearMissAnalytics.totalNearMisses > 0}
           statusBadge={nearMissAnalytics.escapePreventionRatio >= 90 ? t('kpiPlatform.leadingLaggingView.statusShieldActive', 'Escape Shield Active') : t('kpiPlatform.statusWarning', 'Warning')}
-          statusColor="emerald"
+          statusColor={nearMissAnalytics.totalNearMisses > 0 ? (nearMissAnalytics.escapePreventionRatio >= 90 ? 'emerald' : 'amber') : 'rose'}
           icon={<Crosshair className="w-5 h-5 text-rose-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
         />
@@ -101,9 +101,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           value={`$${nearMissAnalytics.totalAvoidedOutageCost.toLocaleString()}`}
           target={t('kpiPlatform.leadingLaggingView.targetZeroEscapes', '$0 Escapes')}
           trend={`~${nearMissAnalytics.totalAvoidedDowntimeHours} ${t('kpiPlatform.hrsUnit', 'hrs')} ${t('kpiPlatform.leadingLaggingView.downtimeSaved', 'downtime saved')}`}
-          trendPositive={true}
-          statusBadge={t('kpiPlatform.leadingLaggingView.statusValuePreserved', 'Value Preserved')}
-          statusColor="emerald"
+          trendPositive={nearMissAnalytics.totalAvoidedOutageCost > 0}
+          statusBadge={nearMissAnalytics.totalAvoidedOutageCost > 0 ? t('kpiPlatform.leadingLaggingView.statusValuePreserved', 'Value Preserved') : t('kpiPlatform.statusWarning', 'Warning')}
+          statusColor={nearMissAnalytics.totalAvoidedOutageCost > 0 ? 'emerald' : 'amber'}
           icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
         />
@@ -378,7 +378,13 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
             <span>{t('kpiPlatform.leadingLaggingView.backfillComplianceLabel', 'Suite Backfill Compliance')}:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+            <span className={`font-bold px-2.5 py-0.5 rounded-full text-xs border shadow-2xs ${
+              nearMissAnalytics.backfillCompliancePercent >= 90
+                ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
+                : nearMissAnalytics.backfillCompliancePercent >= 75
+                ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
+                : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
+            }`}>
               {nearMissAnalytics.backfillCompliancePercent}% {t('kpiPlatform.leadingLaggingView.catalogued', 'Catalogued in TestRail')}
             </span>
           </div>
@@ -434,9 +440,39 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                     <tr key={defect.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                       <td className="p-2.5 font-mono font-bold text-cyan-600 dark:text-cyan-400">{defect.id}</td>
                       <td className="p-2.5 text-slate-900 dark:text-white truncate max-w-xs">{defect.title}</td>
-                      <td className="p-2.5 font-mono text-rose-600 dark:text-rose-400 font-bold">{defect.severity}</td>
-                      <td className="p-2.5 font-mono text-[11px] text-amber-600 dark:text-amber-400">{defect.discoveryMethod}</td>
-                      <td className="p-2.5 font-mono text-emerald-600 dark:text-emerald-400 font-bold">${defect.preventedOutageCost.toLocaleString()}</td>
+                      <td className="p-2.5 font-mono">
+                        <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${
+                          defect.severity === 'P1-Blocker'
+                            ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                            : defect.severity === 'P2-Critical'
+                            ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                            : defect.severity === 'P3-Major'
+                            ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                            : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                        }`}>
+                          {defect.severity}
+                        </span>
+                      </td>
+                      <td className="p-2.5 font-mono">
+                        <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-2xs ${
+                          defect.discoveryMethod === 'Exploratory / Ad-hoc'
+                            ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                            : defect.discoveryMethod === 'Bug Bash / Dogfooding'
+                            ? 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 border-purple-200 dark:border-purple-800/40'
+                            : defect.discoveryMethod === 'Automated CI Pipeline'
+                            ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40'
+                            : defect.discoveryMethod === 'Production / Customer APAR'
+                            ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                            : 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                        }`}>
+                          {defect.discoveryMethod}
+                        </span>
+                      </td>
+                      <td className="p-2.5 font-mono">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/40 shadow-2xs">
+                          ${defect.preventedOutageCost.toLocaleString()}
+                        </span>
+                      </td>
                       <td className="p-2.5 font-mono">
                         {defect.hasFormalTestCaseBackfill ? (
                           <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-500/20">
