@@ -1677,6 +1677,8 @@ Runway Rule: If DaysToAllAutomated <= 60 Days → On Schedule (Healthy)`,
       rationale: `Automated axe-core / accessibility test suite pass rate is ${scorecard.accessibilityScore}%, meeting federal and enterprise accessibility compliance standards.`,
       recommendedAction: 'Maintain automated accessibility linting in UI component pull requests.'
     };
+  }
+
   /**
    * 58. Leading vs Lagging Health Indicators Justification
    */

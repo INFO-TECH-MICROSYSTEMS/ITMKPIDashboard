@@ -5,6 +5,9 @@ export type RationaleGenerator = (j: KPIJustification) => string;
 export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | string>> = {
   en: {},
   zh: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `当前先行质量健康评分为 ${j.currentValue}。先行门禁指标（代码提测测试覆盖率与自动化推进跑道）对后期生产环境缺陷逃逸率和变更失败率具有显著的前瞻预测效力。持续保持先行指标绿灯能有效杜绝昂贵的高成本投产故障返工。`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `当前非形式化测试共截获 ${j.currentValue}，通过敏捷探索和即兴排查成功化解了潜在的客户级重大瘫痪事故。必须确保所有未遂缺陷的重现场景 100% 录入 TestRail 自动化回归套件，实现从险情发现到制度化防御的完整闭环。`,
+
     "Release Quality Index & Executive Evaluation": (j) => {
       const isBlocked = j.statusBadge.includes('Gated') || j.statusBadge.includes('阻断');
       const isWarn = j.statusBadge.includes('Warning') || j.statusBadge.includes('警告');
@@ -48,6 +51,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Test Automation Burnout & Predictive Velocity Forecast": (j) => `当前自动化开发推进速率为 ${j.currentValue}。数学推导模型持续预测何时达成 100% 自动化，确保团队稳步消除手工测试瓶颈。`
   },
   es: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `La puntuación de salud de indicadores adelantados es de ${j.currentValue}. El rigor en las puertas de código de los PRs y la velocidad de automatización anticipan con alta precisión la estabilidad posterior en producción y la tasa de fallas DORA.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `Se han interceptado ${j.currentValue} mediante sesiones exploratorias no formales, evitando costosos cortes en producción. Es prioritario completar el registro del 100% de estos escenarios en TestRail para blindar las suites de regresión.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `La calificación ${j.currentValue} refleja el estado de preparación ejecutiva. Evalúa defectos bloqueadores, cobertura de pruebas automatizadas y estabilidad de entrega según las políticas de gobernanza corporativa.`,
     "Blocking / Gating Defects": (j) => `Actualmente se registran ${j.currentValue} defectos bloqueadores de lanzamiento sin resolver. La política de calidad exige 0 bloqueadores antes de pasar a producción.`,
     "Defect Leakage (Customer APARs)": (j) => `La tasa de fuga de defectos es de ${j.currentValue}. Mantener este valor bajo control (< 3.0%) protege la experiencia del cliente y evita penalizaciones contractuales.`,
@@ -60,6 +66,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Security Gate Vulnerabilities & CVE Compliance": (j) => `Se registran ${j.currentValue} vulnerabilidades de seguridad abiertas. La gobernanza de ciberseguridad requiere resolver vulnerabilidades críticas antes del pase a producción.`
   },
   fr: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `Le score des indicateurs avancés est de ${j.currentValue}. La conformité des portes de PR et la progression de l'automatisation prédisent directement la stabilité des livraisons et la limitation des incidents clients ultérieurs.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `Un total de ${j.currentValue} a été neutralisé grâce aux tests exploratoires, évitant des interruptions de service directes. L'ensemble des cas doit être rétro-documenté dans TestRail pour garantir une barrière de régression pérenne.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `La note ${j.currentValue} reflète l'indice de maturité logicielle, synthétisant les anomalies bloquantes, la couverture d'automatisation et la stabilité des versions selon la gouvernance d'entreprise.`,
     "Blocking / Gating Defects": (j) => `Actuellement, ${j.currentValue} anomalies bloquantes sont en cours. La politique d'entreprise exige zéro anomalie critique P1/P2 avant le déploiement en production.`,
     "Defect Leakage (Customer APARs)": (j) => `Le taux d'échappement client s'élève à ${j.currentValue}. Le maintenir sous le seuil de 3,0% protège la satisfaction client et évite les pénalités de SLA.`,
@@ -72,6 +81,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Security Gate Vulnerabilities & CVE Compliance": (j) => `${j.currentValue} vulnérabilités de sécurité sont identifiées. La gouvernance CISO impose la remédiation de toute faille critique avant livraison.`
   },
   de: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `Der Frühindikator-Score beträgt ${j.currentValue}. Frühzeitige Prüfdisziplin in PR-Gates korreliert direkt mit geringen Fehlerentweichungen und stabiler DORA-Verfügbarkeit nach dem Release.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `Durch explorative Tests wurden ${j.currentValue} rechtzeitig abgefangen, wodurch kostspielige Produktionsstillstände vermieden wurden. Die lückenlose Erfassung in TestRail stellt sicher, dass diese Fehler dauerhaft automatisiert geprüft werden.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `Die Bewertung ${j.currentValue} spiegelt die Release-Reife wider und fasst Blocker-Tickets, Automatisierungsabdeckung und Systemstabilität gemäß Unternehmensrichtlinien zusammen.`,
     "Blocking / Gating Defects": (j) => `Derzeit sind ${j.currentValue} release-blockierende Fehler offen. Die Qualitätsrichtlinie erfordert 0 Blocker vor der Freigabe für die Produktion.`,
     "Defect Leakage (Customer APARs)": (j) => `Die Fehlerentweichungsrate beträgt ${j.currentValue}. Ein kontrollierter Wert (< 3,0%) sichert Kundenzufriedenheit und verhindert SLA-Pönalen.`,
@@ -84,6 +96,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Security Gate Vulnerabilities & CVE Compliance": (j) => `Es wurden ${j.currentValue} Sicherheitslücken festgestellt. Richtlinien verlangen die Schließung kritischer CVEs vor dem Produktions-Rollout.`
   },
   ja: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `先行品質ヘルススコアは ${j.currentValue} です。PR品質ゲートの遵守と自動化推進速度は、その後の本番不具合流出率および変更失敗率の抑制に極めて強い相関を示します。`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `探索的テストおよび非形式的検証により ${j.currentValue} が未然に阻止され、重大な本番障害損失を回避しました。検出されたシナリオを TestRail に100%登録し、恒久的な回帰防止体制を確立することが重要です。`,
+
     "Release Quality Index & Executive Evaluation": (j) => `評価 ${j.currentValue} は、ブロッカー不具合、テスト自動化率、リグレッション速度を統合したリリース準備状況を示しています。`,
     "Blocking / Gating Defects": (j) => `現在 ${j.currentValue} 件のリリース阻害不具合が未解決です。企業品質基準により、本番導入前にブロッカーゼロの達成が義務付けられています。`,
     "Defect Leakage (Customer APARs)": (j) => `顧客への不具合流出率は ${j.currentValue} です。3.0%未満の適正水準を維持することで、顧客信頼とSLA遵守を確実に保護します。`,
@@ -96,6 +111,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Security Gate Vulnerabilities & CVE Compliance": (j) => `未解決のセキュリティ脆弱性が ${j.currentValue} 件検出されました。CISOガバナンスに従い、リリース前に修正が必要です。`
   },
   pt: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `A pontuação dos indicadores antecipados é de ${j.currentValue}. O rigor nas validações de PRs e o avanço da automação correlacionam-se diretamente com a redução da fuga de defeitos para clientes e a estabilidade DORA.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `Foram interceptados ${j.currentValue} por testes exploratórios, prevenindo interrupções graves em produção. É essencial catalogar 100% desses casos no TestRail para garantir proteção contínua de regressão.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `A classificação ${j.currentValue} reflete o índice de prontidão executiva, sintetizando defeitos bloqueadores, cobertura de testes e estabilidade conforme as diretrizes corporativas.`,
     "Blocking / Gating Defects": (j) => `Existem atualmente ${j.currentValue} defeitos bloqueadores não resolvidos. A política corporativa exige zero bloqueadores antes da entrada em produção.`,
     "Defect Leakage (Customer APARs)": (j) => `A taxa de escape de defeitos para clientes é de ${j.currentValue}. Manter este valor sob controle (< 3.0%) protege a satisfação do cliente e evita penalidades contratuais.`,
@@ -104,6 +122,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Contractual Production SLA Uptime": (j) => `A disponibilidade operacional é de ${j.currentValue}, atendendo integralmente aos acordos de nível de serviço com os clientes.`
   },
   ru: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `Опережающий индекс надежности составляет ${j.currentValue}. Строгий контроль PR-ворот и темп автоматизации напрямую гарантируют минимальный уровень клиентских инцидентов и стабильность изменений в проде.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `Неформальным тестированием было перехвачено ${j.currentValue}, что предотвратило критические сбои в производственной среде. Обязательным требованием является 100% внесение этих сценариев в каталог TestRail.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `Оценка ${j.currentValue} отражает общую готовность релиза, агрегируя блокирующие дефекты, охват автоматизацией и стабильность системы.`,
     "Blocking / Gating Defects": (j) => `В настоящее время зарегистрировано ${j.currentValue} нерешенных блокирующих дефектов. Регламент требует полного устранения блокеров до развертывания в прод.`,
     "Defect Leakage (Customer APARs)": (j) => `Уровень утечки дефектов клиентам составляет ${j.currentValue}. Поддержание показателя ниже 3.0% защищает репутацию сервиса и исключает штрафы по SLA.`,
@@ -112,6 +133,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Contractual Production SLA Uptime": (j) => `Доступность сервиса в производственной среде составляет ${j.currentValue}, полностью отвечая контрактным обязательствам SLA.`
   },
   hi: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `अग्रणी स्वास्थ्य स्कोर ${j.currentValue} है। PR परीक्षण गेट्स और ऑटोमेशन की गति सीधे तौर पर रिलीज़ के बाद उत्पादन स्थिरता और कम ग्राहक दोष रिसाव से संबंधित है।`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `अन्वेषणात्मक परीक्षण के माध्यम से ${j.currentValue} को रोका गया है, जिससे गंभीर उत्पादन आउटेज को टाला जा सका। इन सभी मामलों को स्थायी टेस्टरेल रिग्रेशन सूट में पंजीकृत करना अनिवार्य है।`,
+
     "Release Quality Index & Executive Evaluation": (j) => `ग्रेड ${j.currentValue} रिलीज की समग्र गुणवत्ता और तत्परता को दर्शाता है, जिसमें ब्लॉकर दोष और स्वचालन कवरेज शामिल हैं।`,
     "Blocking / Gating Defects": (j) => `वर्तमान में ${j.currentValue} अनसुलझे ब्लॉकर दोष मौजूद हैं। उत्पादन में रिलीज करने से पहले कॉर्पोरेट नीति शून्य ब्लॉकर की मांग करती है।`,
     "Defect Leakage (Customer APARs)": (j) => `ग्राहक दोष रिसाव दर ${j.currentValue} है। इसे 3.0% से कम रखना ग्राहकों के विश्वास और अनुबंध अनुपालन को बनाए रखता है।`,
@@ -120,6 +144,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Contractual Production SLA Uptime": (j) => `उत्पादन सेवा उपलब्धता ${j.currentValue} है, जो ग्राहकों के साथ अनुबंधित SLA प्रतिबद्धताओं को पूरा करती है।`
   },
   bn: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `অগ্রণী স্বাস্থ্য স্কোর হলো ${j.currentValue}। PR টেস্ট গেট এবং অটোমেশনের গতি রিলিজের পরবর্তী উৎপাদন স্থায়িত্ব ও কম গ্রাহক ত্রুটির সাথে সরাসরি সম্পর্কিত।`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `অনুসন্ধানমূলক পরীক্ষার মাধ্যমে ${j.currentValue} রোধ করা হয়েছে, যা মারাত্মক সিস্টেম বিপর্যয় আটকেছে। এই ত্রুটিগুলি স্থায়ীভাবে TestRail সুইটে অন্তর্ভুক্ত করা আবশ্যক।`,
+
     "Release Quality Index & Executive Evaluation": (j) => `গ্রেড ${j.currentValue} রিলিজের সার্বিক স্বাস্থ্য ও প্রস্তুতি নির্দেশ করে, যা ব্লকার ত্রুটি ও অটোমেশন কভারেজ মূল্যায়ন করে।`,
     "Blocking / Gating Defects": (j) => `বর্তমানে ${j.currentValue} টি অমীমাংসিত ব্লকার ত্রুটি রয়েছে। উৎপাদনে যাওয়ার পূর্বে কর্পোরেট নীতি অনুসারে শূন্য ব্লকার থাকা বাধ্যতামূলক।`,
     "Defect Leakage (Customer APARs)": (j) => `গ্রাহক ত্রুটি লিক হওয়ার হার ${j.currentValue}। এটি ৩.০% এর নিচে রাখা গ্রাহক সন্তুষ্টি ও চুক্তির শর্ত রক্ষা করে।`,
@@ -128,6 +155,9 @@ export const KPI_RATIONALES: Record<string, Record<string, RationaleGenerator | 
     "Contractual Production SLA Uptime": (j) => `উৎপাদন সেবার প্রাপ্যতা ${j.currentValue}, যা ক্লায়েন্টদের সাথে চুক্তিবদ্ধ SLA পুরোপুরি পূরণ করে।`
   },
   ar: {
+    "Leading & Lagging Quality Indicator Correlation": (j) => `مؤشر الصحة الاستباقي يبلغ ${j.currentValue}. إن الالتزام بفحص الأكواد وسرعة الأتمتة يرتبطان بشكل مباشر باستقرار النظام بعد الإطلاق وتقليل تسرب العيوب.`,
+    "Near Miss Analysis & Non-Formal Testing Telemetry": (j) => `تم اعتراض ${j.currentValue} عبر الاختبارات الاستكشافية، مما جنب النظام فترات توقف مكلفة في الإنتاج. من الضروري توثيق هذه السيناريوهات بنسبة 100% في TestRail.`,
+
     "Release Quality Index & Executive Evaluation": (j) => `تعكس الدرجة ${j.currentValue} مستوى جاهزية الإصدار، حيث تجمع بين العيوب المعطلة ومعدل الأتمتة واستقرار النظام وفق معايير الحوكمة.`,
     "Blocking / Gating Defects": (j) => `يوجد حاليًا ${j.currentValue} عيوب حرجة غير معالجة. تتطلب سياسة الإطلاق عدم وجود أي عيوب معطلة قبل النشر في الإنتاج.`,
     "Defect Leakage (Customer APARs)": (j) => `معدل تسرب العيوب للعملاء يبلغ ${j.currentValue}. الحفاظ على المعدل تحت 3.0% يحمي سمعة الخدمة ويمنع غرامات مستوى الخدمة.`,
