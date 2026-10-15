@@ -16,7 +16,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, Activity, AlertTriangle, Cpu, 
-  TrendingUp, Gauge, RefreshCw, Settings, Sparkles 
+  TrendingUp, Gauge, Compass, RefreshCw, Settings, Sparkles 
 } from 'lucide-react';
 import { useKPIData } from '../hooks/useKPIData';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
@@ -30,6 +30,7 @@ import { RiskGatingView } from '../components/kpi/views/RiskGatingView';
 import { AutomationView } from '../components/kpi/views/AutomationView';
 import { ProductivityView } from '../components/kpi/views/ProductivityView';
 import { GovernanceSlaView } from '../components/kpi/views/GovernanceSlaView';
+import { LeadingLaggingNearMissView } from '../components/kpi/views/LeadingLaggingNearMissView';
 
 const iconMap: Record<string, React.ReactNode> = {
   ShieldCheck: <ShieldCheck className="w-4 h-4" />,
@@ -37,7 +38,8 @@ const iconMap: Record<string, React.ReactNode> = {
   AlertTriangle: <AlertTriangle className="w-4 h-4" />,
   Cpu: <Cpu className="w-4 h-4" />,
   TrendingUp: <TrendingUp className="w-4 h-4" />,
-  Gauge: <Gauge className="w-4 h-4" />
+  Gauge: <Gauge className="w-4 h-4" />,
+  Compass: <Compass className="w-4 h-4" />
 };
 
 export const KPIPlatformPage: React.FC = () => {
@@ -233,6 +235,15 @@ export const KPIPlatformPage: React.FC = () => {
               <GovernanceSlaView
                 scorecard={metrics.executiveScorecard}
                 jiraItems={jiraItems}
+              />
+            )}
+
+            {activeCategory === 'leadingLagging' && (
+              <LeadingLaggingNearMissView
+                leadingLaggingMetrics={metrics.leadingLaggingMetrics}
+                nearMissAnalytics={metrics.nearMissAnalytics}
+                jiraItems={jiraItems}
+                testRailExecutions={testRailExecutions}
               />
             )}
           </>
