@@ -58,13 +58,53 @@ export function getLocalizedRationale(justification: KPIJustification, fallback:
  */
 export function getLocalizedAction(justification: KPIJustification, fallback: string): string {
   const lang = (i18n.language || 'en').split('-')[0];
-  if (lang === 'zh') {
-    const isClean = justification.statusColor === 'emerald';
-    if (isClean) {
-      return '继续保持当前研发与自动化测试推进节奏，确保各项质量门禁与安全扫描持续通过。';
-    } else {
-      return '组织专项敏捷攻坚并优先处理未解决阻塞缺陷，推进相关自动化测试与热修复验证以达到放行标准。';
+  const isClean = justification.statusColor === 'emerald';
+
+  const actionCatalog: Record<string, { clean: string; warning: string }> = {
+    zh: {
+      clean: '继续保持当前研发与自动化测试推进节奏，确保各项质量门禁与安全扫描持续通过。',
+      warning: '组织专项敏捷攻坚并优先处理未解决阻塞缺陷，推进相关自动化测试与热修复验证以达到放行标准。'
+    },
+    es: {
+      clean: 'Mantener la cadencia actual de desarrollo y pruebas automatizadas, asegurando que todos los controles de calidad se cumplan continuamente.',
+      warning: 'Priorizar la resolución de defectos bloqueadores y ejecutar pruebas de verificación para cumplir con los estándares de lanzamiento.'
+    },
+    fr: {
+      clean: 'Maintenir la cadence actuelle de développement et de tests automatisés, en veillant au respect continu des critères de qualité.',
+      warning: 'Prioriser la résolution des anomalies bloquantes et exécuter des tests de validation pour atteindre les critères d\'approbation.'
+    },
+    de: {
+      clean: 'Die aktuelle Entwicklungs- und Testkadenz beibehalten, um eine kontinuierliche Einhaltung der Quality Gates zu gewährleisten.',
+      warning: 'Priorisieren Sie die Behebung von Blocker-Fehlern und führen Sie Verifikationstests durch, um die Release-Kriterien zu erfüllen.'
+    },
+    ja: {
+      clean: '現在の開発と自動テストの推進ペースを維持し、すべての品質ゲートとセキュリティ監査を継続して通過させてください。',
+      warning: 'ブロッカー不具合の修正を最優先で進め、リリース承認基準を満たすために自動検証テストを完了させてください。'
+    },
+    pt: {
+      clean: 'Manter o ritmo atual de desenvolvimento e automação, garantindo a conformidade contínua com os padrões de qualidade.',
+      warning: 'Priorizar a resolução de defeitos bloqueadores e executar testes de verificação para atender aos requisitos de liberação.'
+    },
+    ru: {
+      clean: 'Поддерживать текущий темп разработки и автоматизации, обеспечивая непрерывное прохождение всех проверок качества.',
+      warning: 'Сосредоточиться на устранении блокирующих дефектов и выполнить проверку для соответствия критериям релиза.'
+    },
+    hi: {
+      clean: 'विकास और स्वचालित परीक्षण की वर्तमान गति बनाए रखें, यह सुनिश्चित करते हुए कि गुणवत्ता मानक लगातार पूरे हों।',
+      warning: 'ब्लॉकर दोषों के समाधान को प्राथमिकता दें और रिलीज अनुमोदन मानकों को पूरा करने के लिए सत्यापन परीक्षण चलाएं।'
+    },
+    bn: {
+      clean: 'উন্নয়ন ও স্বয়ংক্রিয় পরীক্ষার বর্তমান গতি বজায় রাখুন এবং সমস্ত গুণগত মান নিশ্চিত করুন।',
+      warning: 'ব্লকার ত্রুটিগুলো অগ্রাধিকার দিয়ে সমাধান করুন এবং রিলিজ অনুমোদনের জন্য যাচাইকরণ পরীক্ষা সম্পন্ন করুন।'
+    },
+    ar: {
+      clean: 'الحفاظ على وتيرة التطوير والاختبارات المؤتمتة الحالية مع ضمان استيفاء كافة معايير الجودة بشكل مستمر.',
+      warning: 'إعطاء الأولوية لمعالجة العيوب الحرجة وإجراء اختبارات التحقق اللازمة لتلبية معايير الإطلاق المعتمدة.'
     }
+  };
+
+  if (actionCatalog[lang]) {
+    return isClean ? actionCatalog[lang].clean : actionCatalog[lang].warning;
   }
   return fallback;
 }
