@@ -220,6 +220,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             projectionLineColor="#06b6d4" // Automated forecast trajectory (Cyan dashed)
             series3ProjectionLineColor="#fbbf24" // Manual tests burnout trajectory (Amber dashed)
             forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecast.estimatedAllAutomatedDate}`}
+            forecastStatus={testAutomationForecast.isVelocityHealthy ? 'emerald' : 'amber'}
             onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
             height={185}
           />

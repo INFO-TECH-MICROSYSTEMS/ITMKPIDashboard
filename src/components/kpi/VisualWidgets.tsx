@@ -141,6 +141,7 @@ export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
   projectionLineColor?: string;
   series3ProjectionLineColor?: string;
   forecastBadge?: string;
+  forecastStatus?: 'emerald' | 'amber' | 'rose' | 'cyan';
 }
 
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
@@ -156,6 +157,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   projectionLineColor = '#06b6d4', // Cyan dashed (Completed Forecast)
   series3ProjectionLineColor = '#fbbf24', // Amber dashed (Remaining Burnout Forecast)
   forecastBadge,
+  forecastStatus = 'cyan',
   onJustify
 }) => {
   const { t, i18n } = useTranslation();
@@ -263,6 +265,14 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 
   const labelIndexSet = new Set(labelIndices);
 
+  const forecastThemeClasses = {
+    emerald: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+    amber: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+    rose: 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800',
+    cyan: 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800'
+  };
+  const activeForecastTheme = forecastThemeClasses[forecastStatus] || forecastThemeClasses.cyan;
+
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono">
       <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
@@ -275,14 +285,14 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
               <button
                 type="button"
                 onClick={onJustify}
-                className="px-2 py-0.5 text-xs font-mono font-medium rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer"
+                className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs ${activeForecastTheme}`}
                 title="Click to view explanation, formulas, and audit clarification"
               >
                 <span>{forecastBadge}</span>
                 <HelpCircle className="w-3 h-3 opacity-70" />
               </button>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-mono font-medium rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
+              <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs ${activeForecastTheme}`}>
                 {forecastBadge}
               </span>
             )
@@ -580,7 +590,15 @@ export const StackedProgressBar: React.FC<StackedProgressBarProps> = ({
               </button>
             )}
           </div>
-          <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">{passedPct}% {t('kpiPlatform.executiveView.passed', 'Pass Rate')}</span>
+          <span className={`font-mono font-bold text-xs px-2.5 py-0.5 rounded-full border shadow-2xs ${
+            Number(passedPct) >= 90
+              ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
+              : Number(passedPct) >= 75
+              ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
+              : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
+          }`}>
+            {passedPct}% {t('kpiPlatform.executiveView.passed', 'Pass Rate')}
+          </span>
         </div>
       )}
 
