@@ -91,24 +91,24 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
         />
         {/* Enriched Governance Metric 1: Contractual SLA Penalties */}
         <MetricCard
-          title="Contract SLA Penalties"
+          title={t('kpiPlatform.governanceView.contractPenaltiesCard', 'Contract SLA Penalties')}
           value="$0"
-          target="Target: $0 Zero Breach"
-          trend="100% Contract Compliant"
+          target={t('kpiPlatform.governanceView.targetZeroBreach', 'Target: $0 Zero Breach')}
+          trend={t('kpiPlatform.governanceView.contractCompliant', '100% Contract Compliant')}
           trendPositive={true}
-          statusBadge="Zero Penalty"
+          statusBadge={t('kpiPlatform.governanceView.zeroPenalty', 'Zero Penalty')}
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getContractSlaPenaltiesJustification())}
         />
         {/* Enriched Governance Metric 2: Audit Traceability Index */}
         <MetricCard
-          title="Audit Trail Traceability"
+          title={t('kpiPlatform.governanceView.auditTraceabilityCard', 'Audit Trail Traceability')}
           value="99.4%"
-          target="Target: 100%"
-          trend="SOC2 / ISO 27001 Ready"
+          target={t('kpiPlatform.governanceView.targetAudit', 'Target: 100%')}
+          trend={t('kpiPlatform.governanceView.soc2Ready', 'SOC2 / ISO 27001 Ready')}
           trendPositive={true}
-          statusBadge="Audit Verified"
+          statusBadge={t('kpiPlatform.governanceView.auditVerified', 'Audit Verified')}
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-teal-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAuditTraceabilityJustification())}

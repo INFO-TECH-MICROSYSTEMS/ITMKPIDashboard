@@ -39,6 +39,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
   grade,
   onJustify
 }) => {
+  const { t } = useTranslation();
   const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -95,7 +96,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
               }`}
               title="Click for grade justification and breakdown"
             >
-              <span>Grade {grade}</span>
+              <span>{t('kpiPlatform.grade', 'Grade')} {grade}</span>
               <HelpCircle className="w-3 h-3 opacity-70" />
             </button>
           )}
@@ -157,8 +158,27 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   forecastBadge,
   onJustify
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (!data || data.length === 0) return null;
+
+  // Localized date formatter for X-axis labels
+  const formatPointDate = (dateStr?: string, fallbackLabel?: string) => {
+    if (!dateStr) return fallbackLabel ?? '';
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        return d.toLocaleDateString(i18n.language || 'en', { month: 'short', day: 'numeric' });
+      }
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString(i18n.language || 'en', { month: 'short', day: 'numeric' });
+      }
+    } catch {
+      // fallback
+    }
+    return fallbackLabel ?? '';
+  };
 
   const maxVal = Math.max(
     ...data.map(d => Math.max(d.value1, d.value2 ?? 0, d.value3 ?? 0)),
@@ -508,7 +528,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                     textAnchor="middle"
                     className={`text-[11px] font-mono ${isPointProjected ? 'fill-cyan-500 dark:fill-cyan-400 font-bold' : 'fill-slate-400'}`}
                   >
-                    {d.label}
+                    {formatPointDate(d.date, d.label)}
                   </text>
                 )}
               </g>

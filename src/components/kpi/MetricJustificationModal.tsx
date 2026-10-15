@@ -67,6 +67,66 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
   const currentIcon = statusIcons[justification.statusColor] || statusIcons.cyan;
 
+  // Localized title & status helpers
+  const formatJustificationTitle = (title: string) => {
+    return t(`kpiPlatform.modalTitles.${title}`, title);
+  };
+
+  const formatStatusBadge = (badge: string) => {
+    if (!badge) return '';
+    // Handle Grade formatting e.g. "Gated / Blocked (Grade F)" or "Grade A"
+    const gradeMatch = badge.match(/Grade ([A-F])/);
+    const gradeWord = t('kpiPlatform.grade', 'Grade');
+    if (gradeMatch) {
+      const replaced = badge.replace(/Grade ([A-F])/, `${gradeWord} $1`);
+      // Translate the verdict prefix if present
+      if (replaced.includes('Gated / Blocked')) {
+        return replaced.replace('Gated / Blocked', t('kpiPlatform.statusGated', 'Gated / Blocked'));
+      }
+      if (replaced.includes('Conditional Warning')) {
+        return replaced.replace('Conditional Warning', t('kpiPlatform.statusWarning', 'Conditional Warning'));
+      }
+      if (replaced.includes('Release Approved')) {
+        return replaced.replace('Release Approved', t('kpiPlatform.statusOptimal', 'Release Approved'));
+      }
+      return replaced;
+    }
+    // Check known status badges in kpiPlatform
+    const statusMap: Record<string, string> = {
+      'Zero Penalty': t('kpiPlatform.governanceView.zeroPenalty', 'Zero Penalty'),
+      'Audit Verified': t('kpiPlatform.governanceView.auditVerified', 'Audit Verified'),
+      'Clear Gate': t('kpiPlatform.executiveView.statusPassed', 'Clear Gate'),
+      'Action Required': t('kpiPlatform.executiveView.actionRequired', 'Action Required'),
+      'Compliant': t('kpiPlatform.statusCompliant', 'Compliant'),
+      'Optimal': t('kpiPlatform.statusOptimal', 'Optimal'),
+      'Acceptable': t('kpiPlatform.statusAcceptable', 'Acceptable'),
+      'Controlled': t('kpiPlatform.statusControlled', 'Controlled'),
+      'Elevated': t('kpiPlatform.statusElevated', 'Elevated'),
+      'Breached': t('kpiPlatform.statusBreached', 'Breached'),
+      'SLA Met': t('kpiPlatform.statusMet', 'SLA Met'),
+      'Warning': t('kpiPlatform.statusWarning', 'Warning'),
+      'At Risk': t('kpiPlatform.statusAtRisk', 'At Risk'),
+      'On Schedule': t('kpiPlatform.automationView.onSchedule', 'On Schedule'),
+      'Pace Warning': t('kpiPlatform.automationView.paceWarning', 'Pace Warning'),
+      'On Target': t('kpiPlatform.statusOnTarget', 'On Target'),
+      'Behind Schedule': t('kpiPlatform.statusBehindSchedule', 'Behind Schedule'),
+      'High Trust': t('kpiPlatform.statusHighTrust', 'High Trust'),
+      'Balanced': t('kpiPlatform.statusBalanced', 'Balanced'),
+      'Rebalance Needed': t('kpiPlatform.statusRebalanceNeeded', 'Rebalance Needed'),
+      'Flow Unblocked': t('kpiPlatform.statusOptimal', 'Flow Unblocked'),
+      'Gate Passed': t('kpiPlatform.statusCompliant', 'Gate Passed'),
+      'Gate Violation': t('kpiPlatform.statusGateViolation', 'Gate Violation'),
+      'Quarantine Active': t('kpiPlatform.statusQuarantineActive', 'Quarantine Active'),
+      'High Performance': t('kpiPlatform.statusOptimal', 'High Performance'),
+      'Fast Pipeline': t('kpiPlatform.statusFastPipeline', 'Fast Pipeline'),
+      'Fast Discovery': t('kpiPlatform.statusFastDiscovery', 'Fast Discovery'),
+      'Audit Passed': t('kpiPlatform.statusAuditPassed', 'Audit Passed'),
+      'Minor Violations': t('kpiPlatform.statusMinorViolations', 'Minor Violations')
+    };
+
+    return statusMap[badge] || badge;
+  };
+
   // Single externalized Metric Overview & Significance text
   const rawOverview = justification.overviewAndSignificance || justification.description || '';
   const overviewParagraphs = rawOverview.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
@@ -88,11 +148,11 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                   {t('kpiPlatform.modal.decisionAudit')}
                 </span>
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${theme.badge}`}>
-                  {justification.statusBadge}
+                  {formatStatusBadge(justification.statusBadge)}
                 </span>
               </div>
               <h3 className="text-xl font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
-                {justification.title}
+                {formatJustificationTitle(justification.title)}
               </h3>
             </div>
           </div>
@@ -124,7 +184,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
             <div className="col-span-2 sm:col-span-1">
               <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.statusVerdict')}</span>
               <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
-                {justification.statusBadge}
+                {formatStatusBadge(justification.statusBadge)}
               </span>
             </div>
           </div>
@@ -135,7 +195,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
                   <Info className="w-4 h-4 shrink-0" />
-                  <span>Metric Overview & Significance</span>
+                  <span>{t('kpiPlatform.modal.metricOverview', 'Metric Overview & Significance')}</span>
                 </div>
                 {isOverviewLong && (
                   <button
@@ -143,7 +203,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                     onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
                     className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors cursor-pointer"
                   >
-                    <span>{isOverviewExpanded ? 'less...' : 'more...'}</span>
+                    <span>{isOverviewExpanded ? t('kpiPlatform.modal.less', 'less...') : t('kpiPlatform.modal.more', 'more...')}</span>
                     {isOverviewExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
                 )}
@@ -164,7 +224,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                       onClick={() => setIsOverviewExpanded(true)}
                       className="text-cyan-600 dark:text-cyan-400 font-bold hover:underline font-mono ml-1 inline-flex items-center gap-0.5 cursor-pointer"
                     >
-                      more...
+                      {t('kpiPlatform.modal.more', 'more...')}
                     </button>
                   </p>
                 )}
@@ -212,7 +272,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
                     >
                       <div className="space-y-1">
                         <span className="font-bold text-slate-900 dark:text-white block font-['Outfit']">
-                          {f.factor}
+                          {t(`kpiPlatform.modalFactors.${f.factor}`, f.factor)}
                         </span>
                         <p className="text-slate-600 dark:text-slate-400 leading-snug">{f.details}</p>
                       </div>
