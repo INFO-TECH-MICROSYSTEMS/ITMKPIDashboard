@@ -98,36 +98,36 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
         />
         {/* Enriched Automation Metric 1: CI/CD Compute Cost */}
         <MetricCard
-          title="CI/CD Runner Compute Cost"
+          title={t('kpiPlatform.automationView.computeCostCard', 'CI/CD Runner Compute Cost')}
           value={`$${automationHealth.cicdComputeCostDollars.toLocaleString()}`}
-          target="Target: < $250 / Sprint"
-          trend="Cloud FinOps Optimal"
+          target={t('kpiPlatform.automationView.targetComputeCost', '< $250 / Sprint')}
+          trend={t('kpiPlatform.automationView.cloudFinOps', 'Cloud FinOps Optimal')}
           trendPositive={automationHealth.cicdComputeCostDollars < 250}
-          statusBadge={automationHealth.cicdComputeCostDollars < 250 ? 'Efficient' : 'High Compute'}
+          statusBadge={automationHealth.cicdComputeCostDollars < 250 ? t('kpiPlatform.statusOptimal', 'Efficient') : t('kpiPlatform.statusElevated', 'High Compute')}
           statusColor={automationHealth.cicdComputeCostDollars < 250 ? 'emerald' : 'amber'}
           icon={<Cpu className="w-5 h-5 text-blue-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getCicdComputeCostJustification(automationHealth.cicdComputeCostDollars))}
         />
         {/* Enriched Automation Metric 2: MTBF */}
         <MetricCard
-          title="Mean Time Between Flakes (MTBF)"
-          value={`${automationHealth.mtbfHours} hrs`}
-          target="Target: > 24.0 hrs"
-          trend="Deterministic Signals"
+          title={t('kpiPlatform.automationView.mtbfCard', 'Mean Time Between Flakes (MTBF)')}
+          value={`${automationHealth.mtbfHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
+          target={t('kpiPlatform.automationView.targetMtbf', '> 24.0 hrs')}
+          trend={t('kpiPlatform.automationView.deterministicSignals', 'Deterministic Signals')}
           trendPositive={automationHealth.mtbfHours >= 24.0}
-          statusBadge={automationHealth.mtbfHours >= 24.0 ? 'Trustworthy' : 'Flaky Alert'}
+          statusBadge={automationHealth.mtbfHours >= 24.0 ? t('kpiPlatform.statusHighTrust', 'Trustworthy') : t('kpiPlatform.statusWarning', 'Flaky Alert')}
           statusColor={automationHealth.mtbfHours >= 24.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMtbfJustification(automationHealth.mtbfHours))}
         />
         {/* Enriched Automation Metric 3: Automation Defect Catch Ratio */}
         <MetricCard
-          title="Automation Defect Catch Ratio"
+          title={t('kpiPlatform.automationView.defectCatchRatioCard', 'Automation Defect Catch Ratio')}
           value={`${automationHealth.automationCatchRatio}%`}
-          target="Target: > 70.0%"
-          trend="Shift-Left Effective"
+          target={t('kpiPlatform.automationView.targetDefectCatch', '> 70.0%')}
+          trend={t('kpiPlatform.automationView.shiftLeftHero', 'Shift-Left Effective')}
           trendPositive={automationHealth.automationCatchRatio >= 70.0}
-          statusBadge={automationHealth.automationCatchRatio >= 70.0 ? 'Shift-Left Hero' : 'Manual Lag'}
+          statusBadge={automationHealth.automationCatchRatio >= 70.0 ? t('kpiPlatform.statusOptimal', 'Shift-Left Hero') : t('kpiPlatform.statusLagging', 'Manual Lag')}
           statusColor={automationHealth.automationCatchRatio >= 70.0 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationCatchRatioJustification(automationHealth.automationCatchRatio))}
@@ -175,7 +175,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                 {t('kpiPlatform.automationView.dailyVelocity', 'Daily Automation Velocity')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
-                {testAutomationForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/day</span>
+                {testAutomationForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/{t('kpiPlatform.daysUnit', 'day')}</span>
               </div>
             </div>
 
@@ -184,7 +184,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                 {t('kpiPlatform.automationView.manualRemaining', 'Manual Tests Remaining')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
-                {testAutomationForecast.manualTestsRemaining.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests</span>
+                {testAutomationForecast.manualTestsRemaining.toLocaleString()} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.testsCount', 'tests')}</span>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                 {t('kpiPlatform.automationView.projectedRunway', 'Projected Automation Runway')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
-                {testAutomationForecast.daysToAllAutomated} <span className="text-xs font-normal text-slate-500">days</span>
+                {testAutomationForecast.daysToAllAutomated} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.daysUnit', 'days')}</span>
               </div>
             </div>
 
@@ -219,7 +219,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             series3Color="#f59e0b" // Manual Tests (Amber solid)
             projectionLineColor="#06b6d4" // Automated forecast trajectory (Cyan dashed)
             series3ProjectionLineColor="#fbbf24" // Manual tests burnout trajectory (Amber dashed)
-            forecastBadge={`Target 100% Automated: ${testAutomationForecast.estimatedAllAutomatedDate}`}
+            forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecast.estimatedAllAutomatedDate}`}
             onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
             height={185}
           />

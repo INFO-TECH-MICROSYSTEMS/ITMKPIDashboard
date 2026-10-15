@@ -228,10 +228,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
       <div className="space-y-3">
         <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
           <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white uppercase tracking-wider">
-            Executive & Senior Leadership Governance (DORA, Financial & Delivery)
+            {t('kpiPlatform.executiveView.governanceHeader', 'Executive & Senior Leadership Governance (DORA, Financial & Delivery)')}
           </h4>
           <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
-            C-Suite / VP Telemetry
+            {t('kpiPlatform.executiveView.telemetryBadge', 'C-Suite / VP Telemetry')}
           </span>
         </div>
 
@@ -240,10 +240,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardCopq', 'Cost of Poor Quality (CoPQ)')}
             value={`$${(scorecard.costOfPoorQuality ?? 18450).toLocaleString()}`}
-            target={t('kpiPlatform.executiveView.targetCopq', 'Target: < $25,000')}
+            target={t('kpiPlatform.executiveView.targetCopq', '< $25,000')}
             trend={`+$${(scorecard.costSavingsAutomated ?? 32500).toLocaleString()} ${t('kpiPlatform.executiveView.copqSavings', 'saved via SDET')}`}
             trendPositive={true}
-            statusBadge={(scorecard.costOfPoorQuality ?? 18450) < 25000 ? 'Controlled' : 'High Rework'}
+            statusBadge={(scorecard.costOfPoorQuality ?? 18450) < 25000 ? t('kpiPlatform.statusControlled', 'Controlled') : t('kpiPlatform.statusElevated', 'High Rework')}
             statusColor={(scorecard.costOfPoorQuality ?? 18450) < 25000 ? 'emerald' : 'amber'}
             icon={<TrendingDown className="w-5 h-5 text-emerald-500" />}
             onJustify={() => setSelectedJustification(KPIJustificationService.getCostOfPoorQualityJustification(scorecard))}
@@ -253,10 +253,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardCfr', 'Change Failure Rate (DORA)')}
             value={`${scorecard.changeFailureRate ?? 3.4}%`}
-            target={t('kpiPlatform.executiveView.targetCfr', 'Target: < 5.0% (Elite)')}
+            target={t('kpiPlatform.executiveView.targetCfr', '< 5.0% (Elite)')}
             trend="-1.2% rollback rate"
             trendPositive={(scorecard.changeFailureRate ?? 3.4) <= 5.0}
-            statusBadge={(scorecard.changeFailureRate ?? 3.4) <= 5.0 ? t('kpiPlatform.executiveView.eliteDora', 'DORA Elite') : 'High Risk'}
+            statusBadge={(scorecard.changeFailureRate ?? 3.4) <= 5.0 ? t('kpiPlatform.executiveView.eliteDora', 'DORA Elite') : t('kpiPlatform.statusAtRisk', 'High Risk')}
             statusColor={(scorecard.changeFailureRate ?? 3.4) <= 5.0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-cyan-500" />}
             onJustify={() => setSelectedJustification(KPIJustificationService.getChangeFailureRateJustification(scorecard.changeFailureRate ?? 3.4))}
@@ -265,11 +265,11 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* 3. DORA Mean Time to Restore (MTTR) */}
           <MetricCard
             title={t('kpiPlatform.executiveView.cardMttr', 'Mean Time to Restore (MTTR)')}
-            value={`${scorecard.meanTimeToRestoreHours ?? 2.8} hrs`}
-            target={t('kpiPlatform.executiveView.targetMttr', 'Target: < 4.0 Hours')}
+            value={`${scorecard.meanTimeToRestoreHours ?? 2.8} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
+            target={t('kpiPlatform.executiveView.targetMttr', '< 4.0 Hours')}
             trend="1.4h faster P1 resolve"
             trendPositive={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0}
-            statusBadge={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? 'DORA Elite' : 'Delayed'}
+            statusBadge={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? t('kpiPlatform.executiveView.eliteDora', 'DORA Elite') : t('kpiPlatform.statusDelayed', 'Delayed')}
             statusColor={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-purple-500" />}
             onJustify={() => setSelectedJustification(KPIJustificationService.getMttrJustification(scorecard.meanTimeToRestoreHours ?? 2.8))}
@@ -279,10 +279,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardSpi', 'Sprint Predictability Index')}
             value={`${scorecard.sprintPredictabilityIndex ?? 91.2}%`}
-            target={t('kpiPlatform.executiveView.targetSpi', 'Target: 85% - 100%')}
+            target={t('kpiPlatform.executiveView.targetSpi', '85% - 100%')}
             trend="+4.5% vs Sprint Avg"
             trendPositive={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85}
-            statusBadge={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85 ? 'On Roadmap' : 'Variance'}
+            statusBadge={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85 ? t('kpiPlatform.statusOnTarget', 'On Roadmap') : t('kpiPlatform.statusWarning', 'Variance')}
             statusColor={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85 ? 'emerald' : 'amber'}
             icon={<CheckCircle2 className="w-5 h-5 text-blue-500" />}
             onJustify={() => setSelectedJustification(KPIJustificationService.getSprintPredictabilityJustification(scorecard.sprintPredictabilityIndex ?? 91.2))}
@@ -291,11 +291,11 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* 5. Feature Lead Time Commit-to-GA */}
           <MetricCard
             title={t('kpiPlatform.executiveView.cardLeadTime', 'Feature Lead Time (Commit-to-GA)')}
-            value={`${scorecard.featureLeadTimeDays} Days`}
-            target={t('kpiPlatform.executiveView.targetLeadTime', 'Target: < 7.0 Days')}
+            value={`${scorecard.featureLeadTimeDays} ${t('kpiPlatform.daysUnit', 'Days')}`}
+            target={t('kpiPlatform.executiveView.targetLeadTime', '< 7.0 Days')}
             trend="Rapid Flow"
             trendPositive={scorecard.featureLeadTimeDays <= 7.0}
-            statusBadge={scorecard.featureLeadTimeDays <= 7.0 ? 'Optimal' : 'Bottlenecked'}
+            statusBadge={scorecard.featureLeadTimeDays <= 7.0 ? t('kpiPlatform.statusOptimal', 'Optimal') : t('kpiPlatform.statusDelayed', 'Bottlenecked')}
             statusColor={scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-teal-500" />}
             onJustify={() => setSelectedJustification({
@@ -317,10 +317,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardSecurity', 'Security Gate Vulnerabilities')}
             value={`${scorecard.criticalVulnerabilitiesCount} CVEs`}
-            target={t('kpiPlatform.executiveView.targetSecurity', 'Target: 0 Open CVEs')}
+            target={t('kpiPlatform.executiveView.targetSecurity', '0 Open CVEs')}
             trend="Zero Criticals"
             trendPositive={scorecard.criticalVulnerabilitiesCount === 0}
-            statusBadge={scorecard.criticalVulnerabilitiesCount === 0 ? 'Gate Clear' : 'CISO Escalation'}
+            statusBadge={scorecard.criticalVulnerabilitiesCount === 0 ? t('kpiPlatform.statusCompliant', 'Gate Clear') : t('kpiPlatform.statusGateViolation', 'CISO Escalation')}
             statusColor={scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
             onJustify={() => setSelectedJustification({
@@ -346,10 +346,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardUptime', 'Contractual SLA Uptime')}
             value={`${scorecard.contractUptimePercentage}%`}
-            target={t('kpiPlatform.executiveView.targetUptime', 'Target: ≥ 99.95%')}
+            target={t('kpiPlatform.executiveView.targetUptime', '≥ 99.95%')}
             trend="Four Nines Tier"
             trendPositive={scorecard.contractUptimePercentage >= 99.95}
-            statusBadge={scorecard.contractUptimePercentage >= 99.95 ? 'Four Nines' : 'Penalty Risk'}
+            statusBadge={scorecard.contractUptimePercentage >= 99.95 ? t('kpiPlatform.statusOptimal', 'Four Nines') : t('kpiPlatform.statusBreached', 'Penalty Risk')}
             statusColor={scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose'}
             icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
             onJustify={() => setSelectedJustification({
@@ -371,10 +371,10 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <MetricCard
             title={t('kpiPlatform.executiveView.cardAccessibility', 'WCAG 2.2 AA Compliance')}
             value={`${scorecard.accessibilityScore}%`}
-            target="Target: ≥ 92.0%"
+            target={t('kpiPlatform.executiveView.targetAccessibility', '≥ 92.0%')}
             trend="+1.5% audit score"
             trendPositive={scorecard.accessibilityScore >= 92.0}
-            statusBadge={scorecard.accessibilityScore >= 92.0 ? 'Compliant' : 'Audit Notice'}
+            statusBadge={scorecard.accessibilityScore >= 92.0 ? t('kpiPlatform.statusCompliant', 'Compliant') : t('kpiPlatform.statusWarning', 'Audit Notice')}
             statusColor={scorecard.accessibilityScore >= 92.0 ? 'emerald' : 'amber'}
             icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
             onJustify={() => setSelectedJustification({
@@ -401,7 +401,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
         </h4>
         <StackedProgressBar
           distribution={testDistribution}
-          title="Consolidated QA Execution Health (Automated + Manual)"
+          title={t('kpiPlatform.executiveView.stackedTitle', 'Consolidated QA Execution Health (Automated + Manual)')}
           onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistribution, 'All'))}
         />
       </div>
@@ -426,7 +426,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
-                <span>Explain Forecast</span>
+                <span>{t('kpiPlatform.executiveView.explainForecast', 'Explain Forecast')}</span>
               </button>
               <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
                 testBurnoutForecast.isVelocityHealthy 
@@ -447,7 +447,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 {t('kpiPlatform.executiveView.dailyVelocity')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
-                {testBurnoutForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/day</span>
+                {testBurnoutForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/{t('kpiPlatform.daysUnit', 'day')}</span>
               </div>
             </div>
 
@@ -456,7 +456,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 {t('kpiPlatform.executiveView.untestedRemaining')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
-                {testBurnoutForecast.remainingUntested.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests</span>
+                {testBurnoutForecast.remainingUntested.toLocaleString()} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.testsCount', 'tests')}</span>
               </div>
             </div>
 
@@ -465,7 +465,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 {t('kpiPlatform.executiveView.projectedRunway')}
               </div>
               <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
-                {testBurnoutForecast.daysToCompletion} <span className="text-xs font-normal text-slate-500">days</span>
+                {testBurnoutForecast.daysToCompletion} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.daysUnit', 'days')}</span>
               </div>
             </div>
 
@@ -491,7 +491,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             series3Color="#f59e0b" // Remaining Tests (Amber solid)
             projectionLineColor="#06b6d4" // Completed forecast trajectory (Cyan dashed)
             series3ProjectionLineColor="#fbbf24" // Remaining tests burnout trajectory (Amber dashed)
-            forecastBadge={`Target Complete: ${testBurnoutForecast.estimatedCompletionDate}`}
+            forecastBadge={`${t('kpiPlatform.executiveView.targetCompletePrefix', 'Target Complete')}: ${testBurnoutForecast.estimatedCompletionDate}`}
             onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast))}
             height={175}
           />

@@ -93,9 +93,9 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           onJustify={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
         />
         <MetricCard
-          title="High Execution Time Tests (>300s)"
+          title={t('kpiPlatform.riskView.highExecutionTestsCard', 'High Execution Time Tests (>300s)')}
           value={highExecutionTests.length}
-          target="0 Bottlenecks"
+          target={t('kpiPlatform.riskView.targetHighExecution', '0 Bottlenecks')}
           trendPositive={highExecutionTests.length === 0}
           statusBadge={highExecutionTests.length === 0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : highExecutionTests.length <= 5 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
           statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
@@ -113,7 +113,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 {t('kpiPlatform.riskView.matrixTitle')}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Evaluated across test execution failure rates, open gating defects, and unit test omissions.
+                {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
               </p>
             </div>
             <button
@@ -125,7 +125,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
             </button>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
-            Ranked by Vulnerability
+            {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
           </span>
         </div>
 
@@ -139,9 +139,9 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 <th className="p-3">{t('kpiPlatform.riskView.tableTotalDefects')}</th>
                 <th className="p-3">{t('kpiPlatform.riskView.tableTestCoverage')}</th>
                 <th className="p-3">{t('kpiPlatform.riskView.tableMissingUnit')}</th>
-                <th className="p-3">Complexity (CC)</th>
-                <th className="p-3">Code Churn</th>
-                <th className="p-3">License & Security</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableComplexity', 'Complexity (CC)')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableCodeChurn', 'Code Churn')}</th>
+                <th className="p-3">{t('kpiPlatform.riskView.tableLicenseSecurity', 'License & Security')}</th>
                 <th className="p-3 rounded-r-lg">{t('kpiPlatform.riskView.tableRiskTier')}</th>
               </tr>
             </thead>
@@ -158,7 +158,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                   </td>
                   <td className="p-3 font-mono">
                     {comp.gatingCount > 0 ? (
-                      <span className="font-bold text-rose-600 dark:text-rose-400">{comp.gatingCount} Gating</span>
+                      <span className="font-bold text-rose-600 dark:text-rose-400">{comp.gatingCount} {t('kpiPlatform.riskView.gatingTag', 'Gating')}</span>
                     ) : (
                       <span className="text-slate-400">0</span>
                     )}
@@ -199,7 +199,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                   </td>
                   <td className="p-3">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${riskBadgeStyles[comp.riskLevel]}`}>
-                      {comp.riskLevel} Risk
+                      {comp.riskLevel} {t('kpiPlatform.riskView.riskSuffix', 'Risk')}
                     </span>
                   </td>
                 </tr>

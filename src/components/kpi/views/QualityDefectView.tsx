@@ -103,36 +103,36 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         />
         {/* Enriched Quality Metrics: Defect Density per KLOC */}
         <MetricCard
-          title="Defect Density per KLOC"
+          title={t('kpiPlatform.qualityView.defectDensityCard', 'Defect Density per KLOC')}
           value={`${mttrMttd.defectDensityKloc} / KLOC`}
-          target="Target: < 1.00 / KLOC"
-          trend="Healthy Architecture"
+          target={t('kpiPlatform.qualityView.targetDefectDensity', '< 1.00 / KLOC')}
+          trend={t('kpiPlatform.qualityView.healthyArchitecture', 'Healthy Architecture')}
           trendPositive={mttrMttd.defectDensityKloc < 1.0}
-          statusBadge={mttrMttd.defectDensityKloc < 1.0 ? 'Optimal' : 'Elevated'}
+          statusBadge={mttrMttd.defectDensityKloc < 1.0 ? t('kpiPlatform.statusOptimal', 'Optimal') : t('kpiPlatform.statusElevated', 'Elevated')}
           statusColor={mttrMttd.defectDensityKloc < 1.0 ? 'emerald' : 'rose'}
           icon={<Bug className="w-5 h-5 text-teal-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getDefectDensityJustification(mttrMttd.defectDensityKloc))}
         />
         {/* Enriched Quality Metrics: First-Time Fix Rate */}
         <MetricCard
-          title="First-Time Fix Rate (FTFR)"
+          title={t('kpiPlatform.qualityView.ftfrCard', 'First-Time Fix Rate (FTFR)')}
           value={`${mttrMttd.firstTimeFixRate}%`}
-          target="Target: > 90.0%"
-          trend="High Fix Rigor"
+          target={t('kpiPlatform.qualityView.targetFtfr', '> 90.0%')}
+          trend={t('kpiPlatform.qualityView.highFixRigor', 'High Fix Rigor')}
           trendPositive={mttrMttd.firstTimeFixRate >= 90.0}
-          statusBadge={mttrMttd.firstTimeFixRate >= 90.0 ? 'Rigorous' : 'Churn Risk'}
+          statusBadge={mttrMttd.firstTimeFixRate >= 90.0 ? t('kpiPlatform.statusOptimal', 'Rigorous') : t('kpiPlatform.statusWarning', 'Churn Risk')}
           statusColor={mttrMttd.firstTimeFixRate >= 90.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-indigo-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getFirstTimeFixRateJustification(mttrMttd.firstTimeFixRate))}
         />
         {/* Enriched Quality Metrics: Net Defect Intake Velocity */}
         <MetricCard
-          title="Net Defect Intake Velocity"
-          value={`${mttrMttd.netDefectIntakeVelocity > 0 ? `+${mttrMttd.netDefectIntakeVelocity}` : `${mttrMttd.netDefectIntakeVelocity}`} Bugs`}
-          target="Target: ≤ 0 (Burning Down)"
-          trend="Backlog Burnout"
+          title={t('kpiPlatform.qualityView.netIntakeCard', 'Net Defect Intake Velocity')}
+          value={`${mttrMttd.netDefectIntakeVelocity > 0 ? `+${mttrMttd.netDefectIntakeVelocity}` : `${mttrMttd.netDefectIntakeVelocity}`} ${t('kpiPlatform.qualityView.bugsUnit', 'Bugs')}`}
+          target={t('kpiPlatform.qualityView.targetNetIntake', '≤ 0 (Burning Down)')}
+          trend={t('kpiPlatform.qualityView.backlogBurnout', 'Backlog Burnout')}
           trendPositive={mttrMttd.netDefectIntakeVelocity <= 5}
-          statusBadge={mttrMttd.netDefectIntakeVelocity <= 0 ? 'Burndown' : 'Intake Growth'}
+          statusBadge={mttrMttd.netDefectIntakeVelocity <= 0 ? t('kpiPlatform.statusControlled', 'Burndown') : t('kpiPlatform.statusElevated', 'Intake Growth')}
           statusColor={mttrMttd.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
           icon={<Flame className="w-5 h-5 text-orange-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNetDefectVelocityJustification(mttrMttd.netDefectIntakeVelocity))}

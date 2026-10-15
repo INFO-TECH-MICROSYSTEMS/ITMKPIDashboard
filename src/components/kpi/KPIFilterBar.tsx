@@ -139,7 +139,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
           <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
             <Calendar className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
             <span>{t('kpiPlatform.releaseWindow', 'Release Window')}</span>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 font-bold">Auto</span>
+            <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 font-bold">{t('kpiPlatform.auto', 'Auto')}</span>
           </label>
           <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs font-mono font-medium">
             <span className="truncate">{releaseWindow?.formattedRange || t('kpiPlatform.activeCycle', 'Active Cycle')}</span>

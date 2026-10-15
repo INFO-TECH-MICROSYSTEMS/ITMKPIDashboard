@@ -157,6 +157,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   forecastBadge,
   onJustify
 }) => {
+  const { t } = useTranslation();
   if (!data || data.length === 0) return null;
 
   const maxVal = Math.max(
@@ -297,7 +298,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
           {hasProjection && (
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
-              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Projected Forecast</span>
+              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
             </div>
           )}
         </div>
@@ -454,7 +455,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                 dx={getX(firstProjectedIndex) > width - paddingX - 70 ? -4 : 4}
                 className="text-[11px] fill-cyan-600 dark:fill-cyan-400 font-mono font-bold select-none"
               >
-                Today ┆ Forecast →
+                {t('kpiPlatform.visualWidgets.todayDemarcation', 'Today ┆ Forecast →')}
               </text>
             </g>
           )}

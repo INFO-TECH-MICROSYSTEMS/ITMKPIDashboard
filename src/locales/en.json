@@ -390,7 +390,14 @@
       "cardSecurity": "Security Gate Vulnerabilities",
       "targetSecurity": "Target: 0 Open CVEs",
       "cardUptime": "Contractual SLA Uptime",
-      "targetUptime": "Target: ≥ 99.95%"
+      "targetUptime": "Target: ≥ 99.95%",
+      "cardAccessibility": "WCAG 2.2 AA Compliance",
+      "targetAccessibility": "Target: ≥ 92.0%",
+      "governanceHeader": "Executive & Senior Leadership Governance (DORA, Financial & Delivery)",
+      "telemetryBadge": "C-Suite / VP Telemetry",
+      "stackedTitle": "Consolidated QA Execution Health (Automated + Manual)",
+      "explainForecast": "Explain Forecast",
+      "targetCompletePrefix": "Target Complete"
     },
     "qualityView": {
       "title": "Quality & Defect Diagnostics",
@@ -432,7 +439,17 @@
       "tableProduct": "Product",
       "tableComponent": "Component",
       "tableQaOwner": "QA Owner",
-      "tableStatus": "Status"
+      "tableStatus": "Status",
+      "defectDensityCard": "Defect Density per KLOC",
+      "targetDefectDensity": "< 1.00 / KLOC",
+      "healthyArchitecture": "Healthy Architecture",
+      "ftfrCard": "First-Time Fix Rate (FTFR)",
+      "targetFtfr": "> 90.0%",
+      "highFixRigor": "High Fix Rigor",
+      "netIntakeCard": "Net Defect Intake Velocity",
+      "targetNetIntake": "≤ 0 (Burning Down)",
+      "backlogBurnout": "Backlog Burnout",
+      "bugsUnit": "Bugs"
     },
     "riskView": {
       "title": "Risk Assessment & Quality Gates",
@@ -462,7 +479,16 @@
       "highDepthItems": "High Dependency Depth Items",
       "couplingRisk": "Coupling Risk",
       "depthLevel": "Depth Level",
-      "crossTeamTesting": "Requires cross-team regression testing before merge."
+      "crossTeamTesting": "Requires cross-team regression testing before merge.",
+      "highExecutionTestsCard": "High Execution Time Tests (>300s)",
+      "targetHighExecution": "0 Bottlenecks",
+      "matrixSubtitle": "Evaluated across test execution failure rates, open gating defects, and unit test omissions.",
+      "rankedByVulnerability": "Ranked by Vulnerability",
+      "tableComplexity": "Complexity (CC)",
+      "tableCodeChurn": "Code Churn",
+      "tableLicenseSecurity": "License & Security",
+      "gatingTag": "Gating",
+      "riskSuffix": "Risk"
     },
     "automationView": {
       "title": "Automation ROI & Pipeline Health",
@@ -489,6 +515,15 @@
       "tableSuiteType": "Suite Type",
       "tableRerunCount": "Rerun Count",
       "tableDuration": "Duration",
+      "computeCostCard": "CI/CD Runner Compute Cost",
+      "targetComputeCost": "< $250 / Sprint",
+      "cloudFinOps": "Cloud FinOps Optimal",
+      "mtbfCard": "Mean Time Between Flakes (MTBF)",
+      "targetMtbf": "> 24.0 hrs",
+      "deterministicSignals": "Deterministic Signals",
+      "defectCatchRatioCard": "Automation Defect Catch Ratio",
+      "targetDefectCatch": "> 70.0%",
+      "shiftLeftHero": "Shift-Left Hero",
       "burnoutTitle": "Test Automation Burnout & Predictive Velocity Forecast",
       "burnoutSubtitle": "Total tests, automated tests, and remaining manual tests over time with forecast projection",
       "dailyVelocity": "Daily Automation Velocity",
@@ -500,7 +535,8 @@
       "manualTestsSeries": "Manual Tests",
       "explainForecast": "Explain Forecast",
       "onSchedule": "On Schedule",
-      "paceWarning": "Pace Warning"
+      "paceWarning": "Pace Warning",
+      "targetAllAutomatedPrefix": "Target 100% Automated"
     },
     "productivityView": {
       "title": "Planning, Velocity & Throughput",
@@ -524,7 +560,16 @@
       "tableRate": "Completion Rate",
       "tableDelayed": "Delayed / Blocked",
       "tableAvgHours": "Avg Hours / Test",
-      "tableWorkload": "Workload Status"
+      "tableWorkload": "Workload Status",
+      "flowEfficiencyCard": "Flow Efficiency (Active vs Idle)",
+      "targetFlowEfficiency": "> 65.0%",
+      "minimalIdle": "Minimal Idle Staging",
+      "spilloverRateCard": "Sprint Spillover Rate",
+      "targetSpillover": "< 10.0%",
+      "committedDelivered": "Scope Committed Delivered",
+      "devToQaRatioCard": "Dev-to-QA Ratio",
+      "targetDevToQa": "Benchmark: 1:3 to 1:5",
+      "balancedSquads": "Balanced Squads"
     },
     "governanceView": {
       "title": "SLAs, Accessibility & Benchmarks",
@@ -595,6 +640,13 @@
     "statusElevatedApars": "Elevated APARs",
     "statusFlakyRerun": "Flaky / Rerun",
     "overCommitted": "Over-Committed",
+    "releaseWindow": "Release Window",
+    "auto": "Auto",
+    "activeCycle": "Active Cycle",
+    "visualWidgets": {
+      "projectedForecast": "Projected Forecast",
+      "todayDemarcation": "Today ┆ Forecast →"
+    },
     "slaItems": {
       "defectTriageName": "Defect Triage SLA (P1 < 4h, P2 < 24h)",
       "defectTriageDesc": "Rapid initial triage and assessment for blocking and critical defects.",
