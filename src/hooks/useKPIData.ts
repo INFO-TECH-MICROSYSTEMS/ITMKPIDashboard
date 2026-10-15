@@ -216,6 +216,16 @@ export function useKPIData() {
     [jiraItems]
   );
 
+  const leadingLaggingMetrics = useMemo(() =>
+    KPICalculatorService.calculateLeadingLaggingMetrics(jiraItems, testRailExecutions, githubPRs),
+    [jiraItems, testRailExecutions, githubPRs]
+  );
+
+  const nearMissAnalytics = useMemo(() =>
+    KPICalculatorService.calculateNearMissAnalytics(jiraItems, testRailExecutions),
+    [jiraItems, testRailExecutions]
+  );
+
   return {
     filters,
     releaseWindow,
@@ -248,7 +258,9 @@ export function useKPIData() {
       productivityMetrics,
       squadSummary,
       automationHealth,
-      mttrMttd
+      mttrMttd,
+      leadingLaggingMetrics,
+      nearMissAnalytics
     }
   };
 }

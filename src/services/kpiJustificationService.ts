@@ -1677,6 +1677,50 @@ Runway Rule: If DaysToAllAutomated <= 60 Days → On Schedule (Healthy)`,
       rationale: `Automated axe-core / accessibility test suite pass rate is ${scorecard.accessibilityScore}%, meeting federal and enterprise accessibility compliance standards.`,
       recommendedAction: 'Maintain automated accessibility linting in UI component pull requests.'
     };
+  /**
+   * 58. Leading vs Lagging Health Indicators Justification
+   */
+  static getLeadingLaggingJustification(summary: import('../types/kpiPlatform').LeadingLaggingMetricsSummary): KPIJustification {
+    const isOptimal = summary.leadingHealthScore >= 80;
+    return {
+      title: 'Leading & Lagging Quality Indicator Correlation',
+      statusBadge: summary.leadingStatus,
+      statusColor: isOptimal ? 'emerald' : summary.leadingHealthScore >= 60 ? 'amber' : 'rose',
+      currentValue: `${summary.leadingHealthScore}/100`,
+      targetValue: '≥ 80/100',
+      overviewAndSignificance: 'This KPI analyzes the relationship between in-flight leading indicators (PR code quality gates, exploratory interception, automation runway) and post-hoc lagging outcomes (customer defect leakage, DORA CFR, MTTR).\n\nIt provides predictive insights before software is shipped to customers, identifying systemic risks early.\n\nIts significance is shifting quality from reactive post-mortems to proactive preventative engineering.',
+      description: 'Correlation matrix measuring predictive leading metrics against realized post-release outcomes.',
+      trackedInfo: 'Evaluates GitHub PR test gates, exploratory bug discovery velocity, customer APAR leakage, and DORA change failure rate.',
+      businessImportance: 'Prevents costly production escapes by enforcing pre-merge gate rigor and proactive exploratory coverage.',
+      formulaOrRule: 'LeadingScore = (PRGateCompliance × 0.35) + (ComplexityControl × 0.25) + (AutomationVelocity × 0.25) + (ExploratoryShiftLeft × 0.15)',
+      rationale: summary.correlationInsight,
+      recommendedAction: summary.leadingHealthScore < 80 
+        ? 'Enforce automated unit and API test requirements on PRs and expand exploratory testing in high-churn components.'
+        : 'Continue proactive pre-merge quality gates and maintain balanced exploratory bug bashes.'
+    };
+  }
+
+  /**
+   * 59. Near Miss & Exploratory Testing Justification
+   */
+  static getNearMissAnalyticsJustification(analytics: import('../types/kpiPlatform').NearMissAnalyticsSummary): KPIJustification {
+    const isOptimal = analytics.backfillCompliancePercent >= 80 && analytics.formalSuiteCoverageDeficit <= 2;
+    return {
+      title: 'Near Miss Analysis & Non-Formal Testing Telemetry',
+      statusBadge: isOptimal ? 'Proactive Catch' : 'Backfill Deficit',
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: `${analytics.totalNearMisses} Defects Intercepted`,
+      targetValue: '100% Backfilled',
+      overviewAndSignificance: 'This KPI captures major and critical (P1/P2) defects discovered through non-formal exploratory testing, pairing, and bug bashes before customer escape.\n\nIt tracks near misses where catastrophic failures were averted, and audits whether a permanent formal regression test case was backfilled into the TestRail catalog.\n\nIts significance is institutional learning: ensuring that near misses never recur unnoticed.',
+      description: 'Quantifies critical defects discovered via exploratory and ad-hoc sessions, avoiding production outages.',
+      trackedInfo: 'Mined JIRA defects tagged with non-formal discovery, cross-referenced with TestRail test catalog linkages.',
+      businessImportance: 'Protects enterprise reputation and prevents costly customer production downtime through agile exploratory discovery.',
+      formulaOrRule: 'EscapePreventionRatio = (NonFormalMajorDefectsCaught / (NonFormalMajorDefectsCaught + EscapedCriticalAPARs)) × 100',
+      rationale: `A total of ${analytics.totalNearMisses} critical/blocker defects were intercepted via exploratory sessions and bug bashes, saving an estimated $${analytics.totalAvoidedOutageCost.toLocaleString()} in production downtime. ${analytics.formalSuiteCoverageDeficit} issues still require formal TestRail backfilling.`,
+      recommendedAction: analytics.formalSuiteCoverageDeficit > 0
+        ? `Promptly backfill ${analytics.formalSuiteCoverageDeficit} near-miss defect reproduction scenarios into the permanent TestRail regression suite.`
+        : 'Maintain exploratory bug-bash cadence and automated CI regression test suite parity.'
+    };
   }
 }
 

@@ -117,16 +117,24 @@ export function generateSampleDataset() {
         qaQueueEntryDate = new Date(now - daysInQA * 86400000).toISOString();
       }
 
-      const isBug = itemType === 'Bug' || itemType === 'CustomerAPAR';
-      const isGating = isBug && (severity === 'P1-Blocker' || (severity === 'P2-Critical' && rng.boolean(0.4)));
-      const isRegression = isBug && rng.boolean(0.32);
-      const isCustomer = itemType === 'CustomerAPAR' || (isBug && rng.boolean(0.18));
-      const isReopened = status === 'Reopened' || (status === 'Done' && rng.boolean(0.08));
-
-      let resolvedAt: string | undefined = undefined;
-      if (status === 'Done') {
-        const daysAgoResolved = Math.max(0, daysAgoCreated - rng.range(1, 8));
-        resolvedAt = new Date(now - daysAgoResolved * 86400000).toISOString();
+      // Assign defect discovery method (formal vs automated vs exploratory vs dogfooding vs customer escape)
+      let discoveryMethod: import('../types/kpiPlatform').DefectDiscoveryMethod | undefined = undefined;
+      if (isBug) {
+        if (isCustomer) {
+          discoveryMethod = 'Production / Customer APAR';
+        } else {
+          // Internal discoveries: 45% Formal scripted, 30% Automated CI, 15% Exploratory / Ad-hoc, 10% Bug Bash
+          const roll = rng.next();
+          if (roll < 0.45) {
+            discoveryMethod = 'Formal Scripted Test';
+          } else if (roll < 0.75) {
+            discoveryMethod = 'Automated CI Pipeline';
+          } else if (roll < 0.90) {
+            discoveryMethod = 'Exploratory / Ad-hoc';
+          } else {
+            discoveryMethod = 'Bug Bash / Dogfooding';
+          }
+        }
       }
 
       jiraItems.push({
@@ -146,6 +154,7 @@ export function generateSampleDataset() {
         isGatingDefect: isGating,
         isRegressionDefect: isRegression,
         isCustomerDefect: isCustomer,
+        discoveryMethod,
         isReopened,
         reopenCount: isReopened ? rng.range(1, 3) : 0,
         hasTestPlan: rng.boolean(0.88),

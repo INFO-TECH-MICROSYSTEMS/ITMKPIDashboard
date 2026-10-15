@@ -152,6 +152,13 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
     badge: 'Compliance & Performance',
     description: 'SLA adherence, WCAG 2.2 AA accessibility audit compliance, and P95/P99 latency benchmarks under load.',
     iconName: 'Gauge'
+  },
+  {
+    id: 'leadingLagging',
+    name: 'Leading, Lagging & Near Misses',
+    badge: 'Predictive & Exploratory',
+    description: 'Leading indicators, Lagging outcomes, Near-miss defect containment, and Exploratory non-formal discovery ratio.',
+    iconName: 'Compass'
   }
 ];
 

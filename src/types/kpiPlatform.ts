@@ -53,6 +53,13 @@ export type WorkItemType = 'Epic' | 'Story' | 'Task' | 'Bug' | 'CustomerAPAR';
 export type WorkItemStatus = 'Backlog' | 'In Development' | 'Under QA' | 'In Review' | 'Done' | 'Blocked' | 'Reopened';
 export type WorkItemSeverity = 'P1-Blocker' | 'P2-Critical' | 'P3-Major' | 'P4-Minor';
 
+export type DefectDiscoveryMethod = 
+  | 'Formal Scripted Test' 
+  | 'Automated CI Pipeline' 
+  | 'Exploratory / Ad-hoc' 
+  | 'Bug Bash / Dogfooding' 
+  | 'Production / Customer APAR';
+
 export interface JiraWorkItem {
   id: string; // e.g., "ITM-1024"
   title: string;
@@ -70,6 +77,7 @@ export interface JiraWorkItem {
   isGatingDefect: boolean; // Release-blocking bug
   isRegressionDefect: boolean;
   isCustomerDefect: boolean; // APAR / customer-reported
+  discoveryMethod?: DefectDiscoveryMethod; // Origin of defect discovery
   isReopened: boolean;
   reopenCount: number;
   hasTestPlan: boolean;
@@ -313,6 +321,76 @@ export interface AutomationHealthSummary {
   cicdComputeCostDollars: number; // CI runner compute cost in USD
   mtbfHours: number; // Mean Time Between Flakes
   automationCatchRatio: number; // % defects caught by CI automation vs manual
+}
+
+// ==========================================
+// 6.1 LEADING & LAGGING INDICATORS & NEAR MISSES
+// ==========================================
+
+export interface LeadingIndicatorMetric {
+  id: string;
+  name: string;
+  category: 'Code Quality Gates' | 'Velocity Runway' | 'Test Gap Warning' | 'Risk Churn';
+  value: number;
+  formattedValue: string;
+  target: string;
+  status: 'Optimal' | 'Warning' | 'Breached';
+  predictiveInsight: string;
+}
+
+export interface LaggingIndicatorMetric {
+  id: string;
+  name: string;
+  category: 'Escaped Quality' | 'Operational Stability' | 'Financial Impact';
+  value: number;
+  formattedValue: string;
+  target: string;
+  status: 'Optimal' | 'Warning' | 'Breached';
+  historicalOutcome: string;
+}
+
+export interface LeadingLaggingMetricsSummary {
+  leadingHealthScore: number; // 0-100 composite leading index
+  laggingHealthScore: number; // 0-100 composite lagging index
+  leadingStatus: 'Predictive Green' | 'Watchlist' | 'High Risk';
+  laggingStatus: 'Stable Delivery' | 'Elevated Escapes' | 'Compromised';
+  leadingIndicators: LeadingIndicatorMetric[];
+  laggingIndicators: LaggingIndicatorMetric[];
+  correlationInsight: string;
+}
+
+export interface NearMissDefectRecord {
+  id: string;
+  title: string;
+  severity: WorkItemSeverity;
+  product: string;
+  component: string;
+  discoveryMethod: DefectDiscoveryMethod;
+  qaOwner: string;
+  createdAt: string;
+  status: WorkItemStatus;
+  hasFormalTestCaseBackfill: boolean;
+  linkedFormalTestCaseId?: string;
+  preventedOutageCost: number; // Est. avoided cost ($)
+}
+
+export interface NearMissAnalyticsSummary {
+  totalNearMisses: number; // Major defects (P1/P2) caught via non-formal testing
+  nearMissP1Blockers: number;
+  nearMissP2Critical: number;
+  formalSuiteCoverageDeficit: number; // Near misses without formal backfilled test cases
+  escapePreventionRatio: number; // % of critical defects intercepted before production
+  totalAvoidedDowntimeHours: number; // Estimated hours of production outage averted
+  totalAvoidedOutageCost: number; // Estimated dollar impact averted ($)
+  discoveryMethodDistribution: {
+    formalScripted: number;
+    automatedCi: number;
+    exploratoryAdHoc: number;
+    bugBashDogfood: number;
+    productionEscaped: number;
+  };
+  backfillCompliancePercent: number; // % of near misses that got converted into formal regression tests
+  recentNearMisses: NearMissDefectRecord[];
 }
 
 // ==========================================
