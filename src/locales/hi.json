@@ -840,7 +840,23 @@
       "status_HighRisk": "उच्च जोखिम",
       "status_StableDelivery": "स्थिर वितरण",
       "status_ElevatedEscapes": "बढ़े हुए एस्केप",
-      "status_Compromised": "समझौता हुआ"
+      "status_Compromised": "समझौता हुआ",
+      "explainMetric": "मीट्रिक ऑडिट औचित्य और सूत्र देखने के लिए क्लिक करें",
+      "metric_pr_test_gate": "PR कोड गुणवत्ता गेट अनुपालन",
+      "metric_high_dep_complexity": "उच्च निर्भरता युग्मन अनुपात",
+      "metric_automation_velocity": "इन-फ्लाइट स्वचालित परीक्षण कवरेज",
+      "metric_exploratory_intercept": "अन्वेषणात्मक और तदर्थ शिफ्ट-लेफ्ट अनुपात",
+      "metric_defect_leakage": "ग्राहक दोष रिसाव दर (APARs)",
+      "metric_dora_cfr": "DORA परिवर्तन विफलता दर (CFR)",
+      "metric_mttr_lagging": "समाधान का औसत समय (MTTR)",
+      "metric_copq_rework": "खराब गुणवत्ता की लागत (दोष निवारण)",
+      "category_CodeQualityGates": "कोड गुणवत्ता गेट्स",
+      "category_VelocityRunway": "वेग रनवे",
+      "category_TestGapWarning": "परीक्षण अंतर चेतावनी",
+      "category_RiskChurn": "जोखिम मंथन",
+      "category_EscapedQuality": "बची हुई गुणवत्ता",
+      "category_OperationalStability": "परिचालन स्थिरता",
+      "category_FinancialImpact": "वित्तीय प्रभाव"
     }
   },
   "serviceCategories": {

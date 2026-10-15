@@ -840,7 +840,23 @@
       "status_HighRisk": "উচ্চ ঝুঁকি",
       "status_StableDelivery": "স্থিতিশীল ডেলিভারি",
       "status_ElevatedEscapes": "বর্ধিত এস্কেপ",
-      "status_Compromised": "ঝুঁকিপূর্ণ"
+      "status_Compromised": "ঝুঁকিপূর্ণ",
+      "explainMetric": "মেট্রিক অডিট যৌক্তিকতা ও সূত্র দেখতে ক্লিক করুন",
+      "metric_pr_test_gate": "PR কোড কোয়ালিটি গেট সম্মতি",
+      "metric_high_dep_complexity": "উচ্চ নির্ভরতা কাপলিং অনুপাত",
+      "metric_automation_velocity": "চলমান স্বয়ংক্রিয় পরীক্ষা কভারেজ",
+      "metric_exploratory_intercept": "অনুসন্ধানমূলক শিফট-লেফট অনুপাত",
+      "metric_defect_leakage": "গ্রাহক ত্রুটি লিক হওয়ার হার (APARs)",
+      "metric_dora_cfr": "DORA পরিবর্তন ব্যর্থতার হার (CFR)",
+      "metric_mttr_lagging": "সমাধানের গড় সময় (MTTR)",
+      "metric_copq_rework": "খারাপ মানের ব্যয় (ত্রুটি পুনঃকাজ)",
+      "category_CodeQualityGates": "কোড কোয়ালিটি গেটস",
+      "category_VelocityRunway": "গতিবেগ রানওয়ে",
+      "category_TestGapWarning": "পরীক্ষার ফাঁক সতর্কতা",
+      "category_RiskChurn": "ঝুঁকি মন্থন",
+      "category_EscapedQuality": "পালিয়ে যাওয়া গুণমান",
+      "category_OperationalStability": "কার্যক্ষম স্থায়িত্ব",
+      "category_FinancialImpact": "আর্থিক প্রভাব"
     }
   },
   "serviceCategories": {

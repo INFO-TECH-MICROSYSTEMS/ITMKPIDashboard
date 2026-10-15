@@ -1724,5 +1724,115 @@ Runway Rule: If DaysToAllAutomated <= 60 Days → On Schedule (Healthy)`,
         : 'Maintain exploratory bug-bash cadence and automated CI regression test suite parity.'
     };
   }
+  /**
+   * 60. PR Code Quality Gate Compliance Justification
+   */
+  static getPrQualityGateJustification(metric: import('../types/kpiPlatform').LeadingIndicatorMetric): KPIJustification {
+    const isOptimal = metric.status === 'Optimal';
+    return {
+      title: 'PR Code Quality Gate Compliance',
+      statusBadge: metric.status,
+      statusColor: isOptimal ? 'emerald' : metric.status === 'Warning' ? 'amber' : 'rose',
+      currentValue: metric.formattedValue,
+      targetValue: metric.target,
+      overviewAndSignificance: 'This leading KPI measures the percentage of code pull requests verified by automated unit and API integration tests prior to merging into master.\n\nIt provides predictive foresight on potential defect injection before code reaches integration branches.\n\nIts significance is maintaining code quality at the pull request boundary, preventing brittle deployments.',
+      description: 'Percentage of merged code changes accompanied by automated unit and API test coverage.',
+      trackedInfo: 'GitHub pull request metadata, inspecting CI workflow validations and automated test assertions.',
+      businessImportance: 'Prevents defective code merges, reducing post-release defect remediation costs.',
+      formulaOrRule: 'PRGateCompliance = (PRsWithUnitAndApiTests / TotalMergedPRs) × 100',
+      rationale: `${metric.formattedValue} of pull requests satisfied pre-merge automated test gating requirements. ${metric.predictiveInsight}`,
+      recommendedAction: isOptimal 
+        ? 'Maintain strict CI branch protection rules requiring passing tests.' 
+        : 'Block PR merges lacking automated unit or API test coverage.'
+    };
+  }
+
+  /**
+   * 61. High Dependency Coupling Ratio Justification
+   */
+  static getHighDependencyRatioJustification(metric: import('../types/kpiPlatform').LeadingIndicatorMetric): KPIJustification {
+    const isOptimal = metric.status === 'Optimal';
+    return {
+      title: 'High Dependency Coupling Ratio',
+      statusBadge: metric.status,
+      statusColor: isOptimal ? 'emerald' : metric.status === 'Warning' ? 'amber' : 'rose',
+      currentValue: metric.formattedValue,
+      targetValue: metric.target,
+      overviewAndSignificance: 'This leading KPI tracks the proportion of user stories and backlog items with recursive dependencies spanning 4 or more tiers.\n\nIt provides early warning of architectural blast radius where modifying a single component risks cascading regressions across downstream systems.\n\nIts significance is guiding architectural refactoring before multi-team release deadlocks occur.',
+      description: 'Ratio of stories with dependency depth >= 4 relative to total scoped stories.',
+      trackedInfo: 'Evaluates JIRA issue link dependency trees and cross-service architectural coupling.',
+      businessImportance: 'Reduces cross-squad release delays and regression blast radius.',
+      formulaOrRule: 'HighDependencyRatio = (StoriesWithDepthGTE4 / TotalStories) × 100',
+      rationale: `${metric.formattedValue} of active items feature high recursive coupling. ${metric.predictiveInsight}`,
+      recommendedAction: isOptimal 
+        ? 'Keep architectural service boundaries modular and decoupled.' 
+        : 'Conduct architectural decoupling reviews and isolate shared service dependencies.'
+    };
+  }
+
+  /**
+   * 62. In-Flight Automated Test Coverage Runway Justification
+   */
+  static getInFlightAutomationVelocityJustification(metric: import('../types/kpiPlatform').LeadingIndicatorMetric): KPIJustification {
+    const isOptimal = metric.status === 'Optimal';
+    return {
+      title: 'In-Flight Automated Test Coverage',
+      statusBadge: metric.status,
+      statusColor: isOptimal ? 'emerald' : metric.status === 'Warning' ? 'amber' : 'rose',
+      currentValue: metric.formattedValue,
+      targetValue: metric.target,
+      overviewAndSignificance: 'This leading KPI measures the proportion of scoped regression tests automated versus manual executions.\n\nIt provides predictive intelligence on whether test execution can keep pace with delivery without causing multi-day regression freezes.\n\nIts significance is accelerating feature release cadence and eliminating manual verification bottlenecks.',
+      description: 'Current percentage of automated tests in the active suite.',
+      trackedInfo: 'TestRail execution modes (Automated vs. Manual) across active test suites.',
+      businessImportance: 'Enables continuous delivery and cuts manual testing overhead.',
+      formulaOrRule: 'AutomationCoverage = (AutomatedTests / TotalTests) × 100',
+      rationale: `${metric.formattedValue} of current test scope is automated. ${metric.predictiveInsight}`,
+      recommendedAction: isOptimal 
+        ? 'Continue automating repetitive manual regression scenarios.' 
+        : 'Prioritize SDET automation for core user journeys to avoid manual test execution bottlenecks.'
+    };
+  }
+
+  /**
+   * 63. Exploratory & Ad-Hoc Shift-Left Ratio Justification
+   */
+  static getExploratoryRatioJustification(metric: import('../types/kpiPlatform').LeadingIndicatorMetric): KPIJustification {
+    const isOptimal = metric.status === 'Optimal';
+    return {
+      title: 'Exploratory & Ad-Hoc Shift-Left Ratio',
+      statusBadge: metric.status,
+      statusColor: isOptimal ? 'emerald' : 'amber',
+      currentValue: metric.formattedValue,
+      targetValue: metric.target,
+      overviewAndSignificance: 'This leading KPI measures the proportion of pre-release defects caught through exploratory testing, bug bashes, and ad-hoc probing versus formal scripted runs.\n\nIt provides insight into whether test teams are creatively exploring unscripted edge cases or solely running mechanical test scripts.\n\nIts significance is catching unexpected defect combinations before customers encounter them in production.',
+      description: 'Percentage of internally caught defects originating from exploratory and bug-bash sessions.',
+      trackedInfo: 'JIRA defect origin tags cross-referenced with pre-release discovery timestamps.',
+      businessImportance: 'Uncovers complex workflow edge cases missed by scripted test suites.',
+      formulaOrRule: 'ExploratoryCatchRatio = (ExploratoryBugs / PreReleaseDefects) × 100',
+      rationale: `Exploratory sessions contributed ${metric.formattedValue} of pre-release defect catches. ${metric.predictiveInsight}`,
+      recommendedAction: 'Schedule weekly bug bashes and pair-testing sessions prior to sprint code freeze.'
+    };
+  }
+
+  /**
+   * 64. Defect Discovery Origin Breakdown Justification
+   */
+  static getDiscoveryOriginsJustification(analytics: import('../types/kpiPlatform').NearMissAnalyticsSummary): KPIJustification {
+    const isHealthy = analytics.escapePreventionRatio >= 90;
+    return {
+      title: 'Defect Discovery Origin Breakdown',
+      statusBadge: isHealthy ? 'Shift-Left Healthy' : 'High Escape Risk',
+      statusColor: isHealthy ? 'emerald' : 'amber',
+      currentValue: `${analytics.escapePreventionRatio}% Caught Pre-Release`,
+      targetValue: '≥ 95% Pre-Release Interception',
+      overviewAndSignificance: 'This KPI analyzes defect discovery channels—formal TestRail scripts, automated CI/CD pipelines, exploratory ad-hoc probing, bug bashes, and customer APAR escapes.\n\nIt provides visibility into which testing channels are most effective at uncovering bugs across the lifecycle.\n\nIts significance is optimizing QA resource allocation and eliminating testing blind spots.',
+      description: 'Distribution of defect discovery across formal, automated, exploratory, and escaped channels.',
+      trackedInfo: 'Aggregated defect counts across all discovery method classifications.',
+      businessImportance: 'Maximizes ROI on test engineering by revealing where defects actually originate and get caught.',
+      formulaOrRule: 'DiscoveryDistribution = ChannelDefects / TotalDefects × 100',
+      rationale: `Out of all logged defects, formal scripts caught ${analytics.discoveryMethodDistribution.formalScripted}, CI automation caught ${analytics.discoveryMethodDistribution.automatedCi}, exploratory/ad-hoc caught ${analytics.discoveryMethodDistribution.exploratoryAdHoc + analytics.discoveryMethodDistribution.bugBashDogfood}, and ${analytics.discoveryMethodDistribution.productionEscaped} escaped to customers.`,
+      recommendedAction: 'Focus exploratory sessions on areas where escaped defects were found to plug test gaps.'
+    };
+  }
 }
 

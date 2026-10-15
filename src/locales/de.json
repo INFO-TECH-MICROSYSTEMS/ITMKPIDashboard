@@ -840,7 +840,23 @@
       "status_HighRisk": "Hohes Risiko",
       "status_StableDelivery": "Stabile Auslieferung",
       "status_ElevatedEscapes": "Erhöhte Fehlerentweichung",
-      "status_Compromised": "Beeinträchtigt"
+      "status_Compromised": "Beeinträchtigt",
+      "explainMetric": "Klicken Sie hier, um Audit-Begründung und Formel anzuzeigen",
+      "metric_pr_test_gate": "PR-Codequalitätsgate-Einhaltung",
+      "metric_high_dep_complexity": "Verhältnis starker Abhängigkeitskopplung",
+      "metric_automation_velocity": "Laufende automatisierte Testabdeckung",
+      "metric_exploratory_intercept": "Explorative Shift-Left-Abfangquote",
+      "metric_defect_leakage": "Kundenfehlerentweichungsrate (APARs)",
+      "metric_dora_cfr": "DORA-Änderungsfehlerrate (CFR)",
+      "metric_mttr_lagging": "Mittlere Behebungszeit (MTTR)",
+      "metric_copq_rework": "Kosten mangelhafter Qualität (Nacharbeiten)",
+      "category_CodeQualityGates": "Code-Qualitätsgates",
+      "category_VelocityRunway": "Lieferkorridor",
+      "category_TestGapWarning": "Warnung vor Testlücken",
+      "category_RiskChurn": "Code-Volatilität",
+      "category_EscapedQuality": "Entweichungsqualität",
+      "category_OperationalStability": "Betriebsstabilität",
+      "category_FinancialImpact": "Finanzielle Auswirkung"
     }
   },
   "serviceCategories": {

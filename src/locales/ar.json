@@ -840,7 +840,23 @@
       "status_HighRisk": "مخاطر مرتفعة",
       "status_StableDelivery": "تسليم مستقر",
       "status_ElevatedEscapes": "تسرب مرتفع",
-      "status_Compromised": "معرض للخطر"
+      "status_Compromised": "معرض للخطر",
+      "explainMetric": "انقر لعرض مبررات التدقيق والمعادلة الحسابية",
+      "metric_pr_test_gate": "امتثال بوابات جودة فحص الأكواد (PRs)",
+      "metric_high_dep_complexity": "نسبة الترابط والاعتمادية المعقدة",
+      "metric_automation_velocity": "تغطية الاختبارات المؤتمتة قيد التنفيذ",
+      "metric_exploratory_intercept": "معدل الرصد الاستكشافي والعفوي المبكر",
+      "metric_defect_leakage": "معدل تسرب العيوب للعملاء (APARs)",
+      "metric_dora_cfr": "معدل فشل التغييرات البرمجية (DORA CFR)",
+      "metric_mttr_lagging": "متوسط وقت معالجة العيوب (MTTR)",
+      "metric_copq_rework": "تكلفة الجودة الرديئة (إعادة العمل)",
+      "category_CodeQualityGates": "بوابات جودة الكود",
+      "category_VelocityRunway": "مسار سرعة التسليم",
+      "category_TestGapWarning": "تحذير فجوات الاختبار",
+      "category_RiskChurn": "تقلبات المخاطر البرمجية",
+      "category_EscapedQuality": "العيوب المتسربة",
+      "category_OperationalStability": "الاستقرار التشغيلي",
+      "category_FinancialImpact": "الأثر المالي"
     }
   },
   "serviceCategories": {

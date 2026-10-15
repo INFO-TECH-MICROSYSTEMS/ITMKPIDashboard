@@ -840,7 +840,23 @@
       "status_HighRisk": "High Risk",
       "status_StableDelivery": "Stable Delivery",
       "status_ElevatedEscapes": "Elevated Escapes",
-      "status_Compromised": "Compromised"
+      "status_Compromised": "Compromised",
+      "explainMetric": "Click to view metric audit justification & formula",
+      "metric_pr_test_gate": "PR Code Quality Gate Compliance",
+      "metric_high_dep_complexity": "High Dependency Coupling Ratio",
+      "metric_automation_velocity": "In-Flight Automated Test Coverage",
+      "metric_exploratory_intercept": "Exploratory & Ad-Hoc Shift-Left Ratio",
+      "metric_defect_leakage": "Customer Defect Leakage Rate (APARs)",
+      "metric_dora_cfr": "DORA Change Failure Rate (CFR)",
+      "metric_mttr_lagging": "Mean Time to Resolve (MTTR)",
+      "metric_copq_rework": "Cost of Poor Quality (Escaped Defect Rework)",
+      "category_CodeQualityGates": "Code Quality Gates",
+      "category_VelocityRunway": "Velocity Runway",
+      "category_TestGapWarning": "Test Gap Warning",
+      "category_RiskChurn": "Risk Churn",
+      "category_EscapedQuality": "Escaped Quality",
+      "category_OperationalStability": "Operational Stability",
+      "category_FinancialImpact": "Financial Impact"
     }
   },
   "serviceCategories": {

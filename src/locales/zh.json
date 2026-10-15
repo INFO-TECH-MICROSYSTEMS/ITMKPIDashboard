@@ -840,7 +840,23 @@
       "status_HighRisk": "高危预警",
       "status_StableDelivery": "稳定交付",
       "status_ElevatedEscapes": "逃逸率偏高",
-      "status_Compromised": "质量受损"
+      "status_Compromised": "质量受损",
+      "explainMetric": "点击查看指标审计依据与推导公式",
+      "metric_pr_test_gate": "PR 代码质量门禁合规率",
+      "metric_high_dep_complexity": "高依赖调用耦合率",
+      "metric_automation_velocity": "在途自动化测试覆盖率",
+      "metric_exploratory_intercept": "探索性与即兴测试左移拦截率",
+      "metric_defect_leakage": "客户缺陷逃逸率 (APARs)",
+      "metric_dora_cfr": "DORA 变更失败率 (CFR)",
+      "metric_mttr_lagging": "平均缺陷修复时长 (MTTR)",
+      "metric_copq_rework": "不良质量成本 (缺陷返工损失)",
+      "category_CodeQualityGates": "代码质量门禁",
+      "category_VelocityRunway": "交付跑道速率",
+      "category_TestGapWarning": "测试盲区预警",
+      "category_RiskChurn": "风险代码波动",
+      "category_EscapedQuality": "逃逸质量",
+      "category_OperationalStability": "运行稳定性",
+      "category_FinancialImpact": "财务成本影响"
     }
   },
   "serviceCategories": {

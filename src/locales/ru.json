@@ -840,7 +840,23 @@
       "status_HighRisk": "Высокий риск",
       "status_StableDelivery": "Стабильная поставка",
       "status_ElevatedEscapes": "Повышенные утечки",
-      "status_Compromised": "Под угрозой"
+      "status_Compromised": "Под угрозой",
+      "explainMetric": "Нажмите для просмотра формулы и аудита метрики",
+      "metric_pr_test_gate": "Соблюдение критериев качества кода в PR",
+      "metric_high_dep_complexity": "Коэффициент сильной связанности зависимостей",
+      "metric_automation_velocity": "Текущий охват автоматизацией тестирования",
+      "metric_exploratory_intercept": "Коэффициент исследовательского перехвата",
+      "metric_defect_leakage": "Уровень утечки дефектов клиентам (APARs)",
+      "metric_dora_cfr": "Частота сбоев изменений DORA (CFR)",
+      "metric_mttr_lagging": "Среднее время исправления дефектов (MTTR)",
+      "metric_copq_rework": "Стоимость низкого качества (затраты на переделки)",
+      "category_CodeQualityGates": "Ворота качества кода",
+      "category_VelocityRunway": "Скоростной коридор",
+      "category_TestGapWarning": "Предупреждение о слепых зонах",
+      "category_RiskChurn": "Риск изменений кода",
+      "category_EscapedQuality": "Утечки качества",
+      "category_OperationalStability": "Операционная стабильность",
+      "category_FinancialImpact": "Финансовый эффект"
     }
   },
   "serviceCategories": {

@@ -840,7 +840,23 @@
       "status_HighRisk": "Alto Riesgo",
       "status_StableDelivery": "Entrega Estable",
       "status_ElevatedEscapes": "Fugas Elevadas",
-      "status_Compromised": "Comprometido"
+      "status_Compromised": "Comprometido",
+      "explainMetric": "Haga clic para ver la justificación y fórmula de auditoría",
+      "metric_pr_test_gate": "Cumplimiento de Puertas de Calidad en PRs",
+      "metric_high_dep_complexity": "Ratio de Alto Acoplamiento de Dependencias",
+      "metric_automation_velocity": "Cobertura de Pruebas Automatizadas en Curso",
+      "metric_exploratory_intercept": "Ratio Shift-Left Exploratorio y Ad-Hoc",
+      "metric_defect_leakage": "Tasa de Fuga de Defectos a Clientes (APARs)",
+      "metric_dora_cfr": "Tasa de Fallos en Cambios DORA (CFR)",
+      "metric_mttr_lagging": "Tiempo Medio de Resolución (MTTR)",
+      "metric_copq_rework": "Costo de Mala Calidad (Retrabajo por Defectos)",
+      "category_CodeQualityGates": "Puertas de Calidad de Código",
+      "category_VelocityRunway": "Pista de Velocidad",
+      "category_TestGapWarning": "Alerta de Brechas de Prueba",
+      "category_RiskChurn": "Riesgo por Inestabilidad",
+      "category_EscapedQuality": "Calidad Escapada",
+      "category_OperationalStability": "Estabilidad Operativa",
+      "category_FinancialImpact": "Impacto Financiero"
     }
   },
   "serviceCategories": {

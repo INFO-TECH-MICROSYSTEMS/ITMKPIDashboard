@@ -840,7 +840,23 @@
       "status_HighRisk": "高リスク",
       "status_StableDelivery": "安定デリバリー",
       "status_ElevatedEscapes": "流出増加",
-      "status_Compromised": "品質悪化"
+      "status_Compromised": "品質悪化",
+      "explainMetric": "クリックしてメトリクスの監査根拠と計算式を表示",
+      "metric_pr_test_gate": "PRコード品質ゲート遵守率",
+      "metric_high_dep_complexity": "高依存度結合比率",
+      "metric_automation_velocity": "インフライト自動化テスト網羅率",
+      "metric_exploratory_intercept": "探索的・アドホック早期阻止率",
+      "metric_defect_leakage": "顧客への欠陥流出率 (APARs)",
+      "metric_dora_cfr": "DORA 変更失敗率 (CFR)",
+      "metric_mttr_lagging": "平均修復時間 (MTTR)",
+      "metric_copq_rework": "不良品質コスト (手戻り修正損失)",
+      "category_CodeQualityGates": "コード品質ゲート",
+      "category_VelocityRunway": "デリバリー滑走路",
+      "category_TestGapWarning": "テスト網羅ギャップ警告",
+      "category_RiskChurn": "リスク変更変動",
+      "category_EscapedQuality": "流出品質",
+      "category_OperationalStability": "稼働安定性",
+      "category_FinancialImpact": "財務的影響"
     }
   },
   "serviceCategories": {

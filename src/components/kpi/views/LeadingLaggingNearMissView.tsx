@@ -158,31 +158,60 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           </div>
 
           <div className="space-y-3">
-            {leadingLaggingMetrics.leadingIndicators.map(indicator => (
-              <div 
-                key={indicator.id}
-                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-[10px] font-mono uppercase font-semibold text-slate-400 dark:text-slate-500">
-                      {indicator.category}
-                    </div>
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">
-                      {indicator.name}
-                    </div>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${statusColorMap[indicator.status]}`}>
-                    {indicator.formattedValue}
-                  </span>
-                </div>
+            {leadingLaggingMetrics.leadingIndicators.map(indicator => {
+              const handleJustify = () => {
+                if (indicator.id === 'pr-test-gate') {
+                  setSelectedJustification(KPIJustificationService.getPrQualityGateJustification(indicator));
+                } else if (indicator.id === 'high-dep-complexity') {
+                  setSelectedJustification(KPIJustificationService.getHighDependencyRatioJustification(indicator));
+                } else if (indicator.id === 'automation-velocity') {
+                  setSelectedJustification(KPIJustificationService.getInFlightAutomationVelocityJustification(indicator));
+                } else if (indicator.id === 'exploratory-intercept') {
+                  setSelectedJustification(KPIJustificationService.getExploratoryRatioJustification(indicator));
+                }
+              };
 
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                  <span>{t('kpiPlatform.leadingLaggingView.targetLabel', 'Target')}: <strong className="text-slate-700 dark:text-slate-300">{indicator.target}</strong></span>
-                  <span className="text-[10px] italic">{indicator.predictiveInsight}</span>
+              return (
+                <div 
+                  key={indicator.id}
+                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 space-y-2 hover:border-cyan-300 dark:hover:border-cyan-700/60 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-[10px] font-mono uppercase font-semibold text-slate-400 dark:text-slate-500">
+                        {t(`kpiPlatform.leadingLaggingView.category_${indicator.category.replace(/\s+/g, '')}`, indicator.category)}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">
+                          {t(`kpiPlatform.leadingLaggingView.metric_${indicator.id.replace(/-/g, '_')}`, indicator.name)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleJustify}
+                          className="p-0.5 rounded text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+                          title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                        >
+                          <HelpCircle className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleJustify}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
+                      title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                    >
+                      {indicator.formattedValue}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span>{t('kpiPlatform.leadingLaggingView.targetLabel', 'Target')}: <strong className="text-slate-700 dark:text-slate-300">{indicator.target}</strong></span>
+                    <span className="text-[10px] italic">{indicator.predictiveInsight}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -208,31 +237,63 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           </div>
 
           <div className="space-y-3">
-            {leadingLaggingMetrics.laggingIndicators.map(indicator => (
-              <div 
-                key={indicator.id}
-                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-[10px] font-mono uppercase font-semibold text-slate-400 dark:text-slate-500">
-                      {indicator.category}
-                    </div>
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">
-                      {indicator.name}
-                    </div>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${statusColorMap[indicator.status]}`}>
-                    {indicator.formattedValue}
-                  </span>
-                </div>
+            {leadingLaggingMetrics.laggingIndicators.map(indicator => {
+              const handleJustify = () => {
+                if (indicator.id === 'defect-leakage') {
+                  setSelectedJustification(KPIJustificationService.getDefectLeakageJustification(indicator.value, jiraItems));
+                } else if (indicator.id === 'dora-cfr') {
+                  setSelectedJustification(KPIJustificationService.getChangeFailureRateJustification(indicator.value));
+                } else if (indicator.id === 'mttr-lagging') {
+                  setSelectedJustification(KPIJustificationService.getMttrJustification(indicator.value));
+                } else if (indicator.id === 'copq-rework') {
+                  setSelectedJustification(KPIJustificationService.getCostOfPoorQualityJustification({
+                    costOfPoorQuality: indicator.value,
+                    costSavingsAutomated: 32500
+                  } as any));
+                }
+              };
 
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                  <span>{t('kpiPlatform.leadingLaggingView.targetLabel', 'Target')}: <strong className="text-slate-700 dark:text-slate-300">{indicator.target}</strong></span>
-                  <span className="text-[10px] italic">{indicator.historicalOutcome}</span>
+              return (
+                <div 
+                  key={indicator.id}
+                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 space-y-2 hover:border-purple-300 dark:hover:border-purple-700/60 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-[10px] font-mono uppercase font-semibold text-slate-400 dark:text-slate-500">
+                        {t(`kpiPlatform.leadingLaggingView.category_${indicator.category.replace(/\s+/g, '')}`, indicator.category)}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">
+                          {t(`kpiPlatform.leadingLaggingView.metric_${indicator.id.replace(/-/g, '_')}`, indicator.name)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleJustify}
+                          className="p-0.5 rounded text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+                          title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                        >
+                          <HelpCircle className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleJustify}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
+                      title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                    >
+                      {indicator.formattedValue}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span>{t('kpiPlatform.leadingLaggingView.targetLabel', 'Target')}: <strong className="text-slate-700 dark:text-slate-300">{indicator.target}</strong></span>
+                    <span className="text-[10px] italic">{indicator.historicalOutcome}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -242,9 +303,19 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
         {/* Method Distribution Chart / Cards */}
         <div className="lg:col-span-5 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              {t('kpiPlatform.leadingLaggingView.discoveryOriginsTitle', 'Defect Discovery Origin Breakdown')}
-            </h4>
+            <div className="flex items-center gap-1.5">
+              <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.leadingLaggingView.discoveryOriginsTitle', 'Defect Discovery Origin Breakdown')}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getDiscoveryOriginsJustification(nearMissAnalytics))}
+                className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            </div>
             <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
               {t('kpiPlatform.leadingLaggingView.formalVsNonFormal', 'Formal vs. Non-Formal')}
             </span>
