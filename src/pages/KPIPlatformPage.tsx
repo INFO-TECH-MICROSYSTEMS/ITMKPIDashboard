@@ -16,12 +16,14 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, Activity, AlertTriangle, Cpu, 
-  TrendingUp, Gauge, Compass, RefreshCw, Settings, Sparkles 
+  TrendingUp, Gauge, Compass, RefreshCw, Settings, Sparkles,
+  FileText, Presentation 
 } from 'lucide-react';
 import { useKPIData } from '../hooks/useKPIData';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
 import { KPIFilterBar } from '../components/kpi/KPIFilterBar';
 import { ConnectorConfigModal } from '../components/kpi/ConnectorConfigModal';
+import { KPIExportModal } from '../components/kpi/export/KPIExportModal';
 
 // Category Views
 import { ExecutiveScorecardView } from '../components/kpi/views/ExecutiveScorecardView';
@@ -46,6 +48,8 @@ export const KPIPlatformPage: React.FC = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<string>('executive');
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
+  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'pptx'>('pdf');
 
   const {
     filters,
@@ -64,13 +68,18 @@ export const KPIPlatformPage: React.FC = () => {
     metrics
   } = useKPIData();
 
+  const handleOpenExport = (format: 'pdf' | 'pptx') => {
+    setExportFormat(format);
+    setIsExportOpen(true);
+  };
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 animate-in fade-in duration-300">
       
       {/* Page Header & Actions */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-cyan-500/20">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
               {t('kpiPlatform.engineBadge')}
             </span>
@@ -78,7 +87,18 @@ export const KPIPlatformPage: React.FC = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {t('kpiPlatform.liveTelemetry')}
             </span>
+
+            {/* In-App Scope Context Indicator (Product, Component, Release Target) */}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+              <span className="text-slate-400 font-normal">{t('kpiPlatform.exportScopeBadge', 'Scope')}:</span>
+              <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">{filters.product}</strong>
+              <span className="text-slate-400">•</span>
+              <span className="text-slate-700 dark:text-slate-300 font-medium">{filters.component}</span>
+              <span className="text-slate-400">•</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">v{filters.releaseVersion}</span>
+            </span>
           </div>
+
           <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] tracking-tight">
             {t('kpiPlatform.title')}
           </h1>
@@ -94,6 +114,30 @@ export const KPIPlatformPage: React.FC = () => {
             <span>{t('kpiPlatform.snapshot')}: {lastRefreshedAt.toLocaleTimeString()}</span>
             <span className="text-[10px] text-cyan-600 dark:text-cyan-400">{t('kpiPlatform.indexedDb')}</span>
           </div>
+
+          {/* Export PDF Button */}
+          <button
+            type="button"
+            onClick={() => handleOpenExport('pdf')}
+            disabled={isLoading || isSyncing}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-semibold text-xs border border-rose-200 dark:border-rose-800/60 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+            title="Export selected KPIs to branded PDF document"
+          >
+            <FileText className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+            <span>{t('kpiPlatform.exportPdf', 'Export PDF')}</span>
+          </button>
+
+          {/* Export Presentation (PPTX) Button */}
+          <button
+            type="button"
+            onClick={() => handleOpenExport('pptx')}
+            disabled={isLoading || isSyncing}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-semibold text-xs border border-amber-200 dark:border-amber-800/60 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+            title="Export selected KPIs to PowerPoint presentation"
+          >
+            <Presentation className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>{t('kpiPlatform.exportPpt', 'Export PPT')}</span>
+          </button>
 
           {/* Sync Now Button (Atomic Wipe & Replace) */}
           <button
@@ -259,6 +303,18 @@ export const KPIPlatformPage: React.FC = () => {
         onTriggerSync={triggerSyncNow}
         onResetSampleData={resetToSampleData}
         isSyncing={isSyncing}
+      />
+
+      {/* KPI Export Modal (PDF / PPTX) */}
+      <KPIExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        filters={filters}
+        releaseWindow={releaseWindow}
+        metrics={metrics}
+        jiraItems={jiraItems}
+        testRailExecutions={testRailExecutions}
+        initialFormat={exportFormat}
       />
     </div>
   );

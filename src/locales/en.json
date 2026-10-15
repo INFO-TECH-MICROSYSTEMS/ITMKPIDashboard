@@ -313,6 +313,21 @@
     "timeRangeWindow": "Time Range Window",
     "releaseWindow": "Release Window",
     "queryingDb": "Querying IndexedDB & Computing KPI aggregates...",
+    "exportPdf": "Export PDF",
+    "exportPpt": "Export PPT",
+    "exportScopeBadge": "Active Scope",
+    "exportModal": {
+      "title": "Export Quality Engineering KPIs",
+      "subtitle": "Configure export document parameters, format, and select specific metrics",
+      "appliedScope": "Export Scope",
+      "formatLabel": "Format",
+      "selectAll": "Select All",
+      "clearAll": "Clear All",
+      "selectedCount": "{{current}} of {{total}} Selected",
+      "generating": "Generating Document...",
+      "btnPdf": "Export to PDF Document",
+      "btnPptx": "Export Presentation (.pptx)"
+    },
     "categories": {
       "executive": "Executive & Senior Management Scorecard",
       "executiveBadge": "C-Level / Director",
