@@ -259,7 +259,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {isCompareMode && (
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-700 dark:text-cyan-400">
               <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
-              <span>{scopeALabel} (Scope 1)</span>
+              <span>{scopeALabel}</span>
               <span className="text-slate-400 font-normal">({totalAgingItems} items)</span>
             </div>
           )}
@@ -383,7 +383,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-              <span>{scopeBLabel} (Scope 2)</span>
+              <span>{scopeBLabel}</span>
               <span className="text-slate-400 font-normal">({totalAgingItemsB} items)</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -540,7 +540,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             {[
@@ -570,7 +570,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               {[
                 { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-500', text: 'text-rose-500' },

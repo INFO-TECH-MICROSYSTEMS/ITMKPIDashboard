@@ -222,7 +222,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')} {isCompareMode ? `— ${scopeALabel} (Scope 1)` : ''}
+                {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')} {isCompareMode ? `— ${scopeALabel}` : ''}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
@@ -312,7 +312,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2) Automation Runway</span>
+                <span>{scopeBLabel} Automation Runway</span>
               </div>
               <AreaTrendChart
                 data={testAutomationForecastB.historyAndForecast}
@@ -497,7 +497,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             </div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-mono text-slate-400">
-                Scope 2 Pipeline Reruns: <strong className="text-purple-700 dark:text-purple-300">{automationHealthB?.totalReruns ?? 0}</strong>
+                Pipeline Reruns: <strong className="text-purple-700 dark:text-purple-300">{automationHealthB?.totalReruns ?? 0}</strong>
               </span>
             </div>
           </div>

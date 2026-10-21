@@ -101,7 +101,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
             {t('kpiPlatform.activeDataset', 'Active Dataset')}: <strong className="text-cyan-600 dark:text-cyan-400">{totalFilteredTests.toLocaleString()}</strong> {t('kpiPlatform.testsCount', 'tests')} | <strong className="text-purple-600 dark:text-purple-400">{totalFilteredJira.toLocaleString()}</strong> {t('kpiPlatform.workItemsCount', 'items')}
             {isCompareMode && (
               <span className="ml-2 pl-2 border-l border-slate-300 dark:border-slate-700 text-purple-600 dark:text-purple-400">
-                Scope B: <strong>{totalFilteredTestsB.toLocaleString()}</strong> tests | <strong>{totalFilteredJiraB.toLocaleString()}</strong> items
+                Comparative: <strong>{totalFilteredTestsB.toLocaleString()}</strong> tests | <strong>{totalFilteredJiraB.toLocaleString()}</strong> items
               </span>
             )}
           </span>
@@ -141,18 +141,18 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
           <div className="flex items-center justify-between text-xs font-mono font-bold text-cyan-700 dark:text-cyan-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-cyan-500" />
-              Primary Scope (Scope A)
+              Primary Scope
             </span>
             <div className="flex items-center gap-2">
               {onSwapScopes && (
                 <button
                   type="button"
                   onClick={onSwapScopes}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-50 dark:hover:bg-cyan-950 hover:text-cyan-600 transition-colors cursor-pointer"
-                  title="Swap Scope A and Scope B"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-cyan-950 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-300 dark:hover:border-cyan-700 transition-colors shadow-2xs cursor-pointer"
+                  title="Swap Primary and Comparative Scopes"
                 >
-                  <ArrowLeftRight className="w-3 h-3" />
-                  <span>Swap A ⇄ B</span>
+                  <ArrowLeftRight className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                  <span>Swap Primary ⇄ Comparative</span>
                 </button>
               )}
             </div>
@@ -237,7 +237,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
           <div className="flex items-center justify-between text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-purple-500" />
-              Comparative Target (Scope B)
+              Comparative Target
             </span>
 
             <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
                   onClick={onResetFiltersB}
                   className="text-[11px] text-slate-500 hover:text-purple-600 transition-colors cursor-pointer"
                 >
-                  Reset Scope B
+                  Reset Comparative
                 </button>
               )}
               {onToggleCompareMode && (

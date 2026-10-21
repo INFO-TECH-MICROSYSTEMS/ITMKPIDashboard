@@ -295,11 +295,11 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
               <h4 className="text-base font-bold font-['Outfit'] text-purple-900 dark:text-purple-200">
-                {t('kpiPlatform.governanceView.slaMatrixTitle')} — {scopeBLabel} (Scope 2)
+                {t('kpiPlatform.governanceView.slaMatrixTitle')} — {scopeBLabel}
               </h4>
             </div>
             <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
-              Scope 2 SLA Audit
+              SLA Audit
             </span>
           </div>
 
@@ -410,12 +410,12 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             </button>
           </div>
 
-          {/* Scope 1 A11y */}
+          {/* Primary A11y */}
           <div className="space-y-2 text-xs">
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -438,12 +438,12 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             </div>
           </div>
 
-          {/* Scope 2 A11y Stacked Below */}
+          {/* Comparative A11y Stacked Below */}
           {isCompareMode && scorecardB && (
             <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">Screen Reader ARIA Compatibility</span>
@@ -478,12 +478,12 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             </button>
           </div>
 
-          {/* Scope 1 Perf */}
+          {/* Primary Perf */}
           <div className="space-y-2 text-xs">
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -506,12 +506,12 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             </div>
           </div>
 
-          {/* Scope 2 Perf Stacked Below */}
+          {/* Comparative Perf Stacked Below */}
           {isCompareMode && scorecardB && (
             <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">P95 Response Time</span>

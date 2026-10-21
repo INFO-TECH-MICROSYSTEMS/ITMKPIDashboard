@@ -167,7 +167,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <div className="flex items-center gap-2">
             <div>
               <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.riskView.matrixTitle')} {isCompareMode ? `— ${scopeALabel} (Scope 1)` : ''}
+                {t('kpiPlatform.riskView.matrixTitle')} {isCompareMode ? `— ${scopeALabel}` : ''}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
@@ -274,7 +274,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
               <div>
                 <h4 className="text-base font-bold font-['Outfit'] text-purple-900 dark:text-purple-200">
-                  {t('kpiPlatform.riskView.matrixTitle')} — {scopeBLabel} (Scope 2)
+                  {t('kpiPlatform.riskView.matrixTitle')} — {scopeBLabel}
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
@@ -282,7 +282,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               </div>
             </div>
             <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
-              Scope 2 Vulnerability Ranking
+              Vulnerability Ranking
             </span>
           </div>
 
@@ -458,7 +458,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 <XCircle className="w-4 h-4 text-rose-500" />
                 <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItemsB.length}) — {scopeBLabel}</span>
               </span>
-              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Scope 2 Stalled</span>
+              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Stalled</span>
             </div>
 
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -484,7 +484,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 <Layers className="w-4 h-4 text-purple-500" />
                 <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItemsB.length}) — {scopeBLabel}</span>
               </span>
-              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Scope 2 Coupling</span>
+              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Coupling</span>
             </div>
 
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">

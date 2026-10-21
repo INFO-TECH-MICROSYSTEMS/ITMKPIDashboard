@@ -206,7 +206,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400">
-                  {scopeALabel} (Scope 1)
+                  {scopeALabel}
                 </span>
               </div>
               <button 
@@ -255,7 +255,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400">
-                  {scopeBLabel} (Scope 2)
+                  {scopeBLabel}
                 </span>
               </div>
               {scorecardB && (
@@ -591,7 +591,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase">
-                {scopeALabel} (Scope 1) Execution Health
+                {scopeALabel} Execution Health
               </span>
               <span className="text-xs font-mono text-slate-500">
                 {testDistribution.total.toLocaleString()} tests
@@ -608,7 +608,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 uppercase">
-                {scopeBLabel} (Scope 2) Execution Health
+                {scopeBLabel} Execution Health
               </span>
               <span className="text-xs font-mono text-slate-500">
                 {(testDistributionB?.total ?? 0).toLocaleString()} tests
@@ -726,7 +726,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               Comparative Burnout Trajectory Forecasts
             </h4>
             <span className="text-xs font-mono text-purple-600 dark:text-purple-400">
-              Scope 1 vs Scope 2
+              Comparative Trajectories
             </span>
           </div>
 
@@ -734,7 +734,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                {scopeALabel} (Scope 1) Runway
+                {scopeALabel} Runway
               </span>
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${testBurnoutForecast.isVelocityHealthy ? 'bg-emerald-50 text-emerald-600 border-emerald-300' : 'bg-amber-50 text-amber-600 border-amber-300'}`}>
                 {testBurnoutForecast.daysToCompletion}d runway • {testBurnoutForecast.estimatedCompletionDate}
@@ -755,7 +755,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400">
-                {scopeBLabel} (Scope 2) Runway
+                {scopeBLabel} Runway
               </span>
               {testBurnoutForecastB ? (
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${testBurnoutForecastB.isVelocityHealthy ? 'bg-emerald-50 text-emerald-600 border-emerald-300' : 'bg-amber-50 text-amber-600 border-amber-300'}`}>

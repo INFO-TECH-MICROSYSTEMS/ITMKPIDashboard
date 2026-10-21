@@ -204,12 +204,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             </span>
           </div>
 
-          {/* Scope 1 Leading Indicators */}
+          {/* Primary Leading Indicators */}
           <div className="space-y-3">
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             {leadingLaggingMetrics.leadingIndicators.map(indicator => {
@@ -268,12 +268,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             })}
           </div>
 
-          {/* Scope 2 Leading Indicators Stacked Below */}
+          {/* Comparative Leading Indicators Stacked Below */}
           {isCompareMode && leadingLaggingMetricsB && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               {leadingLaggingMetricsB.leadingIndicators.map(indicator => (
                 <div 
@@ -324,12 +324,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             </span>
           </div>
 
-          {/* Scope 1 Lagging Indicators */}
+          {/* Primary Lagging Indicators */}
           <div className="space-y-3">
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             {leadingLaggingMetrics.laggingIndicators.map(indicator => {
@@ -392,12 +392,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             })}
           </div>
 
-          {/* Scope 2 Lagging Indicators Stacked Below */}
+          {/* Comparative Lagging Indicators Stacked Below */}
           {isCompareMode && leadingLaggingMetricsB && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               {leadingLaggingMetricsB.laggingIndicators.map(indicator => (
                 <div 
@@ -455,7 +455,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             {isCompareMode && (
               <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} (Scope 1)</span>
+                <span>{scopeALabel}</span>
               </span>
             )}
             {[
@@ -512,12 +512,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             })}
           </div>
 
-          {/* Scope 2 Method Distribution Stacked Below */}
+          {/* Comparative Method Distribution Stacked Below */}
           {isCompareMode && nearMissAnalyticsB && (
             <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2)</span>
+                <span>{scopeBLabel}</span>
               </span>
               {[
                 { label: 'Formal Scripted TestRail', count: nearMissAnalyticsB.discoveryMethodDistribution.formalScripted, color: 'bg-cyan-500' },
@@ -666,12 +666,12 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
             </table>
           </div>
 
-          {/* Scope 2 Near Miss Table Stacked Below */}
+          {/* Comparative Near Miss Table Stacked Below */}
           {isCompareMode && nearMissAnalyticsB && nearMissAnalyticsB.recentNearMisses.length > 0 && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} (Scope 2) Near Miss Intercepts</span>
+                <span>{scopeBLabel} Near Miss Intercepts</span>
               </span>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">

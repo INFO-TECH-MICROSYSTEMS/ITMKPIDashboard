@@ -739,7 +739,7 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
             {/* Line 1: Scope Information */}
             <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider mb-0.5">
               <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-              <span className="truncate">{scopeALabel} (Scope 1)</span>
+              <span className="truncate">{scopeALabel}</span>
             </div>
             {/* Line 2: Metric Title and Justification Trigger */}
             <div className="flex items-center gap-1.5 min-w-0">
@@ -791,7 +791,7 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
             {/* Line 1: Scope Information */}
             <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-0.5">
               <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-              <span className="truncate">{scopeBLabel} (Scope 2)</span>
+              <span className="truncate">{scopeBLabel}</span>
             </div>
             {/* Line 2: Metric Title and Justification Trigger */}
             <div className="flex items-center gap-1.5 min-w-0">
