@@ -304,8 +304,11 @@ export const KPIPlatformPage: React.FC = () => {
       <KPIExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
-        metrics={metrics}
         filters={filters}
+        releaseWindow={releaseWindow}
+        metrics={metrics}
+        jiraItems={jiraItems}
+        testRailExecutions={testRailExecutions}
         initialFormat={exportFormat}
       />
 
