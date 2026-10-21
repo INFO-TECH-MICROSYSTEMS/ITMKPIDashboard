@@ -10,6 +10,7 @@
  * KPI View: Risk Assessment & Release Gating
  * Pre-release risk radar, high dependency depth items, missing unit/API tests,
  * and component failure ranking.
+ * Supports side-by-side metric comparison across scopes.
  */
 
 import React, { useState } from 'react';
@@ -27,28 +28,45 @@ import type {
 import { MetricCard } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
+import type { ViewComparisonProps } from '../contracts/ViewComparisonContract';
 
-interface RiskGatingViewProps {
+interface RiskGatingViewProps extends ViewComparisonProps {
   componentRisks: ComponentRiskMetric[];
   jiraItems: JiraWorkItem[];
   testRailExecutions: TestRailExecution[];
+  jiraItemsB?: JiraWorkItem[];
+  testRailExecutionsB?: TestRailExecution[];
 }
 
 export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
   componentRisks,
   jiraItems,
-  testRailExecutions
+  testRailExecutions,
+  jiraItemsB = [],
+  testRailExecutionsB = [],
+  isCompareMode = false,
+  scopeALabel = 'Scope A',
+  scopeBLabel = 'Scope B',
+  metricsB
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
-  // PPT Requirement Calculations:
-  const itemsWithNoTests = jiraItems.filter(i => !i.hasTestPlan && (i.type === 'Story' || i.type === 'Epic'));
-  const itemsWithNoUnitTests = jiraItems.filter(i => !i.hasUnitTests);
-  const itemsWithNoApiTests = jiraItems.filter(i => !i.hasApiTests);
-  const highDependencyItems = jiraItems.filter(i => i.dependencyDepth >= 4);
-  const blockedItems = jiraItems.filter(i => i.status === 'Blocked');
-  const highExecutionTests = testRailExecutions.filter(t => t.durationSeconds > 300);
+  // Scope A Calculations:
+  const itemsWithNoTestsA = jiraItems.filter(i => !i.hasTestPlan && (i.type === 'Story' || i.type === 'Epic'));
+  const itemsWithNoUnitTestsA = jiraItems.filter(i => !i.hasUnitTests);
+  const itemsWithNoApiTestsA = jiraItems.filter(i => !i.hasApiTests);
+  const highDependencyItemsA = jiraItems.filter(i => i.dependencyDepth >= 4);
+  const blockedItemsA = jiraItems.filter(i => i.status === 'Blocked');
+  const highExecutionTestsA = testRailExecutions.filter(t => t.durationSeconds > 300);
+
+  // Scope B Calculations (when in compare mode):
+  const itemsWithNoUnitTestsB = jiraItemsB.filter(i => !i.hasUnitTests);
+  const itemsWithNoApiTestsB = jiraItemsB.filter(i => !i.hasApiTests);
+  const highDependencyItemsB = jiraItemsB.filter(i => i.dependencyDepth >= 4);
+  const highExecutionTestsB = testRailExecutionsB.filter(t => t.durationSeconds > 300);
+
+  const componentRisksB = metricsB?.componentRisks;
 
   const riskBadgeStyles = {
     Critical: 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30',
@@ -59,48 +77,87 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Top Risk KPI Cards */}
+      {/* Top Risk KPI Cards with Side-by-Side Scope Values */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Items With No Unit Tests */}
         <MetricCard
           title={t('kpiPlatform.riskView.noUnitTests', 'Items With No Unit Tests')}
-          value={itemsWithNoUnitTests.length}
+          value={itemsWithNoUnitTestsA.length}
           target={t('kpiPlatform.riskView.zeroPermitted', '0 Permitted')}
-          trend={`${itemsWithNoTests.length} ${t('kpiPlatform.riskView.missingTestPlan', 'missing test plan')}`}
-          trendPositive={itemsWithNoTests.length === 0}
-          statusBadge={itemsWithNoUnitTests.length > 0 ? t('kpiPlatform.statusGateViolation', 'Gate Violation') : t('kpiPlatform.statusCompliant', 'Compliant')}
-          statusColor={itemsWithNoUnitTests.length > 0 ? 'rose' : 'emerald'}
+          trend={`${itemsWithNoTestsA.length} ${t('kpiPlatform.riskView.missingTestPlan', 'missing test plan')}`}
+          trendPositive={itemsWithNoTestsA.length === 0}
+          statusBadge={itemsWithNoUnitTestsA.length > 0 ? t('kpiPlatform.statusGateViolation', 'Gate Violation') : t('kpiPlatform.statusCompliant', 'Compliant')}
+          statusColor={itemsWithNoUnitTestsA.length > 0 ? 'rose' : 'emerald'}
           icon={<ShieldAlert className="w-5 h-5 text-rose-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMissingUnitTestsJustification(jiraItems))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={itemsWithNoUnitTestsB.length}
+          compareStatusBadge={itemsWithNoUnitTestsB.length > 0 ? 'Gate Violation' : 'Compliant'}
+          compareStatusColor={itemsWithNoUnitTestsB.length > 0 ? 'rose' : 'emerald'}
+          delta={isCompareMode ? `${itemsWithNoUnitTestsA.length - itemsWithNoUnitTestsB.length > 0 ? '+' : ''}${itemsWithNoUnitTestsA.length - itemsWithNoUnitTestsB.length}` : undefined}
+          deltaPositive={itemsWithNoUnitTestsA.length <= itemsWithNoUnitTestsB.length}
         />
+
+        {/* 2. Items With No API Tests */}
         <MetricCard
           title={t('kpiPlatform.riskView.noApiTests', 'Items With No API Tests')}
-          value={itemsWithNoApiTests.length}
+          value={itemsWithNoApiTestsA.length}
           target={t('kpiPlatform.riskView.exceptionsTarget', '< 5 Exceptions')}
-          trendPositive={itemsWithNoApiTests.length < 5}
-          statusBadge={itemsWithNoApiTests.length === 0 ? t('kpiPlatform.statusCompliant', 'Compliant') : itemsWithNoApiTests.length < 5 ? t('kpiPlatform.statusAcceptable', 'Acceptable') : t('kpiPlatform.statusContractRisk', 'Contract Risk')}
-          statusColor={itemsWithNoApiTests.length === 0 ? 'emerald' : itemsWithNoApiTests.length < 5 ? 'amber' : 'rose'}
+          trendPositive={itemsWithNoApiTestsA.length < 5}
+          statusBadge={itemsWithNoApiTestsA.length === 0 ? t('kpiPlatform.statusCompliant', 'Compliant') : itemsWithNoApiTestsA.length < 5 ? t('kpiPlatform.statusAcceptable', 'Acceptable') : t('kpiPlatform.statusContractRisk', 'Contract Risk')}
+          statusColor={itemsWithNoApiTestsA.length === 0 ? 'emerald' : itemsWithNoApiTestsA.length < 5 ? 'amber' : 'rose'}
           icon={<GitPullRequest className="w-5 h-5 text-amber-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getMissingApiTestsJustification(itemsWithNoApiTests))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getMissingApiTestsJustification(itemsWithNoApiTestsA))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={itemsWithNoApiTestsB.length}
+          compareStatusBadge={itemsWithNoApiTestsB.length === 0 ? 'Compliant' : itemsWithNoApiTestsB.length < 5 ? 'Acceptable' : 'Risk'}
+          compareStatusColor={itemsWithNoApiTestsB.length === 0 ? 'emerald' : itemsWithNoApiTestsB.length < 5 ? 'amber' : 'rose'}
+          delta={isCompareMode ? `${itemsWithNoApiTestsA.length - itemsWithNoApiTestsB.length > 0 ? '+' : ''}${itemsWithNoApiTestsA.length - itemsWithNoApiTestsB.length}` : undefined}
+          deltaPositive={itemsWithNoApiTestsA.length <= itemsWithNoApiTestsB.length}
         />
+
+        {/* 3. High Dependency Depth */}
         <MetricCard
           title={t('kpiPlatform.riskView.highDependency', 'High Dependency Depth (Depth ≥ 4)')}
-          value={highDependencyItems.length}
+          value={highDependencyItemsA.length}
           target={t('kpiPlatform.riskView.highRiskTarget', '< 3 High Risk')}
-          trendPositive={highDependencyItems.length <= 3}
-          statusBadge={highDependencyItems.length === 0 ? t('kpiPlatform.statusLowCoupling', 'Low Coupling') : highDependencyItems.length <= 3 ? t('kpiPlatform.statusManageable', 'Manageable') : t('kpiPlatform.statusBlastRadiusAlert', 'Blast Radius Alert')}
-          statusColor={highDependencyItems.length === 0 ? 'emerald' : highDependencyItems.length <= 3 ? 'amber' : 'rose'}
+          trendPositive={highDependencyItemsA.length <= 3}
+          statusBadge={highDependencyItemsA.length === 0 ? t('kpiPlatform.statusLowCoupling', 'Low Coupling') : highDependencyItemsA.length <= 3 ? t('kpiPlatform.statusManageable', 'Manageable') : t('kpiPlatform.statusBlastRadiusAlert', 'Blast Radius Alert')}
+          statusColor={highDependencyItemsA.length === 0 ? 'emerald' : highDependencyItemsA.length <= 3 ? 'amber' : 'rose'}
           icon={<Layers className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItemsA))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={highDependencyItemsB.length}
+          compareStatusBadge={highDependencyItemsB.length === 0 ? 'Low Coupling' : highDependencyItemsB.length <= 3 ? 'Manageable' : 'Blast Alert'}
+          compareStatusColor={highDependencyItemsB.length === 0 ? 'emerald' : highDependencyItemsB.length <= 3 ? 'amber' : 'rose'}
+          delta={isCompareMode ? `${highDependencyItemsA.length - highDependencyItemsB.length > 0 ? '+' : ''}${highDependencyItemsA.length - highDependencyItemsB.length}` : undefined}
+          deltaPositive={highDependencyItemsA.length <= highDependencyItemsB.length}
         />
+
+        {/* 4. High Execution Time Tests */}
         <MetricCard
           title={t('kpiPlatform.riskView.highExecutionTestsCard', 'High Execution Time Tests (>300s)')}
-          value={highExecutionTests.length}
+          value={highExecutionTestsA.length}
           target={t('kpiPlatform.riskView.targetHighExecution', '0 Bottlenecks')}
-          trendPositive={highExecutionTests.length === 0}
-          statusBadge={highExecutionTests.length === 0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : highExecutionTests.length <= 5 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
-          statusColor={highExecutionTests.length === 0 ? 'emerald' : highExecutionTests.length <= 5 ? 'amber' : 'rose'}
+          trendPositive={highExecutionTestsA.length === 0}
+          statusBadge={highExecutionTestsA.length === 0 ? t('kpiPlatform.statusFastPipeline', 'Fast Pipeline') : highExecutionTestsA.length <= 5 ? t('kpiPlatform.statusModerateLatency', 'Moderate Latency') : t('kpiPlatform.statusPipelineBottleneck', 'Pipeline Bottleneck')}
+          statusColor={highExecutionTestsA.length === 0 ? 'emerald' : highExecutionTestsA.length <= 5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-cyan-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getHighExecutionTestsJustification(highExecutionTests))}
+          onJustify={() => setSelectedJustification(KPIJustificationService.getHighExecutionTestsJustification(highExecutionTestsA))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={highExecutionTestsB.length}
+          compareStatusBadge={highExecutionTestsB.length === 0 ? 'Fast Pipeline' : 'Bottleneck'}
+          compareStatusColor={highExecutionTestsB.length === 0 ? 'emerald' : 'amber'}
+          delta={isCompareMode ? `${highExecutionTestsA.length - highExecutionTestsB.length > 0 ? '+' : ''}${highExecutionTestsA.length - highExecutionTestsB.length}` : undefined}
+          deltaPositive={highExecutionTestsA.length <= highExecutionTestsB.length}
         />
       </div>
 
@@ -113,7 +170,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                 {t('kpiPlatform.riskView.matrixTitle')}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
+                {isCompareMode ? `Component risk vulnerabilities in ${scopeALabel}` : t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
               </p>
             </div>
             <button
@@ -125,7 +182,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
             </button>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
-            {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
+            {scopeALabel}: {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
           </span>
         </div>
 
@@ -177,7 +234,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                       <span className="text-[11px] text-slate-700 dark:text-slate-300">{comp.testCoveragePercent}%</span>
                     </div>
                   </td>
-                    <td className="p-3 font-mono text-amber-600 dark:text-amber-400">
+                  <td className="p-3 font-mono text-amber-600 dark:text-amber-400">
                     {comp.missingUnitTestsCount}
                   </td>
                   <td className="p-3 font-mono text-xs">
@@ -209,6 +266,53 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
         </div>
       </div>
 
+      {/* Scope B Component Risk Matrix (when in compare mode) */}
+      {isCompareMode && componentRisksB && (
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h4 className="text-base font-bold font-['Outfit'] text-purple-700 dark:text-purple-300">
+              {scopeBLabel} Component Vulnerability Matrix
+            </h4>
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 font-bold border border-purple-200">
+              {scopeBLabel} Risk Tiering
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-purple-50/50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
+                <tr>
+                  <th className="p-3 rounded-l-lg">{t('kpiPlatform.riskView.tableModule')}</th>
+                  <th className="p-3">{t('kpiPlatform.riskView.tableFailureRate')}</th>
+                  <th className="p-3">{t('kpiPlatform.riskView.tableGatingDefects')}</th>
+                  <th className="p-3">{t('kpiPlatform.riskView.tableTotalDefects')}</th>
+                  <th className="p-3">{t('kpiPlatform.riskView.tableTestCoverage')}</th>
+                  <th className="p-3">{t('kpiPlatform.riskView.tableMissingUnit')}</th>
+                  <th className="p-3 rounded-r-lg">{t('kpiPlatform.riskView.tableRiskTier')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-purple-100 dark:divide-slate-800 font-medium">
+                {componentRisksB.map((comp) => (
+                  <tr key={comp.component} className="hover:bg-purple-50/30 dark:hover:bg-slate-800/40">
+                    <td className="p-3 text-slate-900 dark:text-white font-semibold">{comp.component}</td>
+                    <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">{comp.failureRate}%</td>
+                    <td className="p-3 font-mono">{comp.gatingCount > 0 ? <span className="font-bold text-rose-600">{comp.gatingCount} Gating</span> : <span className="text-slate-400">0</span>}</td>
+                    <td className="p-3 font-mono text-slate-700 dark:text-slate-300">{comp.defectCount}</td>
+                    <td className="p-3 font-mono">{comp.testCoveragePercent}%</td>
+                    <td className="p-3 font-mono text-amber-600 dark:text-amber-400">{comp.missingUnitTestsCount}</td>
+                    <td className="p-3">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${riskBadgeStyles[comp.riskLevel]}`}>
+                        {comp.riskLevel} Risk
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* High Dependency Depth & Blocked Items Warning Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Blocked Items */}
@@ -216,13 +320,13 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
               <XCircle className="w-4 h-4 text-rose-500" />
-              <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItems.length})</span>
+              <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItemsA.length})</span>
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
               <button
                 type="button"
-                onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItems))}
+                onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItemsA))}
                 className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Click for Blocked Development Items clarification and policy audit"
               >
@@ -232,7 +336,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-            {blockedItems.slice(0, 4).map(item => (
+            {blockedItemsA.slice(0, 4).map(item => (
               <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                 <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
                   <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
@@ -260,13 +364,13 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
               <Layers className="w-4 h-4 text-purple-500" />
-              <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItems.length})</span>
+              <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItemsA.length})</span>
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
               <button
                 type="button"
-                onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
+                onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItemsA))}
                 className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Click for High Dependency Depth clarification and coupling audit"
               >
@@ -276,7 +380,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-            {highDependencyItems.slice(0, 4).map(item => (
+            {highDependencyItemsA.slice(0, 4).map(item => (
               <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                 <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
                   <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
