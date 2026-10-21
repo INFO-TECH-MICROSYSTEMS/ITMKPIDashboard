@@ -139,6 +139,16 @@ Contributions from the open-source community are warmly welcomed! Please read ou
 
 ---
 
+## ⚠️ Disclaimer & Limitation of Liability
+
+> [!WARNING]
+> ### Use at Your Own Risk
+> This project is licensed under the **Apache License 2.0**. By using, reproducing, or distributing this code or any part of it, you acknowledge and agree that it is provided on an **"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND**, either express or implied.
+> 
+> The authors and contributors **DENY ALL LIABILITY** for any damages, including direct, indirect, special, incidental, or consequential damages, arising out of the use or inability to use this software. For full details, please refer to the [LICENSE](LICENSE) file.
+
+---
+
 ## 📄 License
 
 This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
