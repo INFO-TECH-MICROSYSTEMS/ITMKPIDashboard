@@ -735,22 +735,25 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
       {/* Scope 1: Complete Full Metric Card */}
       <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
         <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-            <span className="text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider truncate">
-              {scopeALabel}
-            </span>
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
-              {title}
-            </span>
-            <button
-              onClick={onJustify}
-              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
-              title="Click for KPI justification and audit details"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
+          <div className="min-w-0 flex-1">
+            {/* Line 1: Scope Information */}
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider mb-0.5">
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel} (Scope 1)</span>
+            </div>
+            {/* Line 2: Metric Title and Justification Trigger */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+                {title}
+              </span>
+              <button
+                onClick={onJustify}
+                className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
           {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
         </div>
@@ -784,22 +787,25 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
       {/* Scope 2: Complete Full Metric Card Directly Below Scope 1 */}
       <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeB.card}`}>
         <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-            <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider truncate">
-              {scopeBLabel}
-            </span>
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
-              {title}
-            </span>
-            <button
-              onClick={compareOnJustify || onJustify}
-              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
-              title="Click for KPI justification and audit details"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
+          <div className="min-w-0 flex-1">
+            {/* Line 1: Scope Information */}
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-0.5">
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel} (Scope 2)</span>
+            </div>
+            {/* Line 2: Metric Title and Justification Trigger */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+                {title}
+              </span>
+              <button
+                onClick={compareOnJustify || onJustify}
+                className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
           {icon && <div className={`shrink-0 ${themeB.icon}`}>{icon}</div>}
         </div>
