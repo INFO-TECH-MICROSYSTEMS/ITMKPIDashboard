@@ -1,89 +1,42 @@
-# License Agreement and Terms of Use
+# Apache License, Version 2.0
 
-**Effective Date:** January 1, 2026  
-**Last Updated:** September 30, 2026
+**Effective Date:** October 2026  
+**License Type:** Open Source Permissive (Apache-2.0)  
+**Project:** ITM Quality Engineering KPI & Data Mining Platform (`ITMKPIDashboard`)
 
-[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Developer Guide](developer_guide.md)
-
----
-
-## 1. COPYRIGHT AND OWNERSHIP
-
-© 2026 **INFO TECH MICROSYSTEMS**. All Rights Reserved.
-
-This software web application, including all source code, components, telemetry engines, interactive calculators, design elements, graphics, algorithms, and associated documentation files (collectively, the "Software"), is the exclusive proprietary property of **INFO TECH MICROSYSTEMS** (113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7). All rights, title, and interest in and to the Software, including all intellectual property rights, trademarks, patents, and trade secrets, are and shall remain the sole property of INFO TECH MICROSYSTEMS.
-
-Unauthorized copying, modification, reverse engineering, decompilation, reproduction, redistribution, sublicensing, or public display of this Software, or any portion thereof, via any medium or channel is strictly prohibited without the prior express written permission of INFO TECH MICROSYSTEMS.
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Developer Guide](developer_guide.md) • [Architecture Guide](architecture_and_modularization.md)
 
 ---
 
-## 2. GRANT OF LIMITED EVALUATION LICENSE
+## License Summary
 
-Subject to the terms and conditions of this Agreement, INFO TECH MICROSYSTEMS grants authorized enterprise evaluators, prospective clients, and internal engineering personnel a personal, non-exclusive, non-transferable, revocable, and limited license to access, view, and interact with the Software solely for evaluation, demonstration, and authorized business collaboration with INFO TECH MICROSYSTEMS.
+Copyright 2026 **INFO TECH MICROSYSTEMS** and Project Contributors.
 
-You may NOT:
-1. Sublicense, sell, lease, rent, or distribute the Software or any derivative works.
-2. Modify, adapt, translate, reverse engineer, decompile, or disassemble the source code or proprietary IndexedDB algorithms.
-3. Remove, alter, or obscure any copyright notices, trademarks, or proprietary markings on or within the Software.
-4. Exploit the Software or any associated telemetry data for commercial gain or to build a competitive product or service.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at:
 
----
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-## 3. DISCLAIMER OF WARRANTY
-
-**THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.**
-
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, INFO TECH MICROSYSTEMS DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF:
-*   **MERCHANTABILITY**
-*   **FITNESS FOR A PARTICULAR PURPOSE**
-*   **NON-INFRINGEMENT**
-*   **ACCURACY, COMPLETENESS, OR TIMELINESS OF DATA AND CALCULATIONS**
-
-INFO TECH MICROSYSTEMS DOES NOT WARRANT THAT THE SOFTWARE WILL BE UNINTERRUPTED, SECURE, ERROR-FREE, OR FREE OF HARMFUL COMPONENTS, OR THAT DEFECTS WILL BE DETECTED OR CORRECTED. THE ENTIRE RISK AS TO THE QUALITY, INTEGRATION, AND PERFORMANCE OF THE SOFTWARE IS BORNE SOLELY BY THE USER.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ---
 
-## 4. LIMITATION OF LIABILITY
+## Key Permissions & Conditions
 
-IN NO EVENT SHALL INFO TECH MICROSYSTEMS, ITS FOUNDER (**Sudarsha Wijenayake**), DIRECTORS, CONSULTANTS, CONTRACTORS, EMPLOYEES, OR AFFILIATES BE LIABLE FOR ANY CLAIM, DAMAGES, LOSSES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE, INABILITY TO USE, OR RELIANCE UPON THE SOFTWARE.
+| Permission / Condition | Description |
+| :--- | :--- |
+| **Commercial Use** | You may use this open-source software suite commercially without licensing fees. |
+| **Modification** | You may modify, extend, and adapt the source code, analytics models, and visualizations. |
+| **Distribution** | You may distribute original or modified copies in source or binary forms. |
+| **Patent Grant** | Contributors provide an express grant of patent rights to users and downstream adopters. |
+| **Attribution** | You must retain copyright, notice files, and author attribution in distributed copies. |
+| **State Changes** | Any modified files must carry prominent notices stating that you changed the files. |
+| **No Trademark Rights** | This license does not grant trademark rights to use the names or logos of INFO TECH MICROSYSTEMS. |
+| **Disclaimer of Warranty** | Provided on an "AS IS" basis without warranties of merchantability or fitness for purpose. |
 
-THIS LIMITATION INCLUDES, BUT IS NOT LIMITED TO:
-*   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
-*   LOSS OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS OPPORTUNITY.
-*   WORK STOPPAGE, SYSTEM OUTAGE, OR DATA CORRUPTION.
-*   DECISIONS MADE OR ACTIONS TAKEN BASED ON DORA METRIC CALCULATIONS, CAPACITY MODELING, QA AUDIT MATRICES, OR SLA TELEMETRY GENERATED BY THE SOFTWARE.
-
----
-
-## 5. TECHNICAL & ADVISORY DISCLAIMER
-
-**THIS SOFTWARE SUITE, INCLUDING ITS ONLINE AUDIT TEMPLATES, DORA ASSESSMENTS, TEAM CAPACITY ESTIMATORS, AND KPI DRILL-DOWN ANALYTICS, IS DESIGNED FOR DEMONSTRATION AND STRATEGIC EVALUATION PURPOSES.**
-
-*   **NOT A FORMAL AUDIT ATTESTATION:** The automated results and scores generated by interactive client-side calculators do not constitute a formal, binding third-party audit report (e.g., SOC 2 Type II, ISO/IEC 27001, PCI-DSS) unless accompanied by a written, signed engagement contract from INFO TECH MICROSYSTEMS.
-*   **CLIENT DATA VERIFICATION:** Users and client organizations remain solely responsible for validating their codebases, release data, sprint velocity metrics, and compliance requirements.
-*   **FORMAL CONSULTING ENGAGEMENTS:** For signed executive audits, custom microservice architecture delivery, dedicated QA automation harnesses, or managed staffing contracts, please contact INFO TECH MICROSYSTEMS directly.
-
----
-
-## 6. JURISDICTION AND GOVERNING LAW
-
-This Agreement shall be governed by and construed in accordance with the laws of the **Province of Ontario** and the federal laws of **Canada** applicable therein, without regard to its conflict of law principles. Any legal action or proceeding arising under this Agreement shall be brought exclusively in the courts located in Ottawa, Ontario, Canada.
-
----
-
-## 7. CORPORATE CONTACT INFORMATION
-
-For licensing inquiries, enterprise master service agreements (MSAs), or permission requests, please contact:
-
-*   **Corporate Entity:** INFO TECH MICROSYSTEMS
-*   **Founder & Principal Consultant:** Sudarsha Wijenayake
-*   **Headquarters:** 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7
-*   **Company Email:** [info.tech.microsystems.ca@gmail.com](mailto:info.tech.microsystems.ca@gmail.com)
-*   **Direct Consultant Email:** [sudarsha.wijenayake@gmail.com](mailto:sudarsha.wijenayake@gmail.com)
-*   **Direct Phone:** [+1 613 266 5285](tel:+16132665285)
-
----
-
-<div align="center">
-  <sub>© 2026 INFO TECH MICROSYSTEMS. All Rights Reserved. • Confidential & Proprietary</sub>
-</div>
+For the full legal text of the Apache 2.0 license, see the root repository [LICENSE](../LICENSE) file.

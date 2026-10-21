@@ -1,139 +1,128 @@
-# INFO TECH MICROSYSTEMS - End-User Guide & Interactive Manual
+# ITM Quality Engineering KPI Platform - User Guide & Interactive Manual
 
-**Document Version:** 2.4.0  
-**Effective Date:** September 2026  
-**Audience:** Enterprise Clients, Prospective Partners, Technology Leaders, Audit Teams
+**Document Version:** 1.0.0 (Open Source Edition)  
+**System Classification:** Open-Source Quality Engineering Telemetry & KPI Platform  
+**Target Audience:** QA Leads, SDETs, Engineering Managers, DevOps Engineers, and Agile Teams
 
-[← Back to Main README](../README.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Developer Guide](developer_guide.md) • [Deployment Guide](deployment_guide.md) • [License](LICENSE.md)
-
----
-
-## 1. Welcome to INFO TECH MICROSYSTEMS
-
-Welcome to the official enterprise web portal and interactive engineering suite for **INFO TECH MICROSYSTEMS**. Headquartered in Ottawa, Ontario, Canada, INFO TECH MICROSYSTEMS is an elite engineering consultancy founded by **Sudarsha Wijenayake** to bridge the gap between high-level technology strategy and production-grade software delivery.
-
-This manual provides an in-depth walkthrough of all user capabilities, online tools, telemetry views, and configuration options available on this platform.
+[← Back to Main README](../README.md) • [Architecture Guide](architecture_and_modularization.md) • [Developer Guide](developer_guide.md) • [Deployment Guide](deployment_guide.md) • [License](LICENSE.md)
 
 ---
 
-## 2. Global Navigation & Accessibility Controls
+## 1. Overview
 
-The top header and collapsible sidebar provide intuitive navigation across the entire suite:
+The **ITM Quality Engineering KPI & Data Mining Platform** is a standalone, client-side analytics suite engineered to monitor, evaluate, and elevate software delivery performance. It translates raw engineering data (work items, bug reports, automated test runs, and release pipelines) into clear, actionable executive scorecards and tactical quality metrics.
+
+The platform runs completely within your web browser using a deterministic **IndexedDB** database engine (Dexie.js), ensuring complete data privacy with zero external telemetry transmission.
+
+---
+
+## 2. Navigation & Interface Layout
 
 ```mermaid
 graph LR
-    Header["Top Navigation Bar"] --> Lang["Language Dropdown (11 Languages + Flags)"]
-    Header --> Theme["Theme Toggle (Dark / Light Mode)"]
-    Header --> ContactQuick["Direct Contact Links (Phone & Email)"]
+    Header["Top Header Bar"] --> Brand["ITM KPI Dashboard Emblem"]
+    Header --> Lang["Language Selector (11 Languages)"]
+    Header --> Theme["Theme Switcher (Dark / Light)"]
     
-    Sidebar["Sidebar Navigation"] --> Home["Home Page"]
-    Sidebar --> Services["Services Directory (7 Disciplines)"]
-    Sidebar --> KPI["KPI Telemetry Platform (Live Engine)"]
-    Sidebar --> Tools["Interactive Tools & Calculators"]
-    Sidebar --> About["About & Founder Spotlight"]
-    Sidebar --> Contact["Executive Inquiry Form"]
+    Sidebar["Collapsible Sidebar"] --> Root["Live KPI Dashboard"]
+    Sidebar --> Collapse["Collapse / Expand Pane"]
+    
+    Dashboard["KPI Dashboard Canvas"] --> FilterBar["Multi-Dimensional Filter Bar"]
+    Dashboard --> CategoryTabs["Category View Selector (6 Views)"]
+    Dashboard --> Export["PDF & PPTX Export Modals"]
+    Dashboard --> Connectors["ALM Connector Config"]
+    Dashboard --> MetricCards["Interactive KPI Cards & Explainability Modals"]
 ```
 
-### 2.1 Language & Country Flag Selector
-*   Located at the top right of the navigation header.
-*   Displays the active language accompanied by its national flag (e.g. `🇺🇸 English`, `🇨🇳 中文 (简体)`, `🇪🇸 Español`, `🇸🇦 العربية`).
-*   **Automatic Browser Detection**: Brand new visitors automatically receive their native language based on their browser settings.
-*   **Persistent Caching**: If you change the language, your preference is saved in local storage (`itm_language`) and restored on subsequent visits.
-*   **Right-to-Left (RTL) Support**: Selecting Arabic automatically switches the entire website layout to RTL reading orientation.
+### 2.1 Top Navigation Bar
+- **Language Selector**: Switch between 11 supported international languages with country flag indicators.
+- **Theme Switcher**: Toggle between the high-contrast cyber dark mode and modern crisp light mode.
+- **Corporate Location & Support Info**: Quick reference contact information.
 
-### 2.2 Dark & Light Theme Switcher
-*   Click the **Sun / Moon** icon in the header to alternate between the high-contrast cyber dark mode and the modern executive light mode.
-*   Your theme selection is instantly applied and persisted across sessions.
+### 2.2 Collapsible Sidebar
+- Features a dual desktop mode (full-width or compact icon-only rail) and a mobile slide-out drawer.
+- Provides persistent layout state saved to your browser's local storage (`itm_sidebar_collapsed`).
 
 ---
 
-## 3. The 7 Dedicated Enterprise Services
+## 3. Multi-Dimensional Filter Bar
 
-Explore in-depth architectural specifications and delivery methodologies for each discipline:
+Fine-tune the scope of data analyzed across your engineering organization:
 
-| Service # | Offering Title | Focus Areas | Key Deliverables |
-| :---: | :--- | :--- | :--- |
-| **01** | **[Software Product Development & Maintenance](../services/software-development)** | Modern Web, Cloud SaaS, Microservices, Mobile Apps | Full Git code, ADRs, CI/CD pipelines, automated test suites, Swagger docs |
-| **02** | **[Architectural & Lifecycle Consulting](../services/software-consulting)** | Requirements, Architecture, Testing, Support, Audits | Software Requirements Spec (SRS), system blueprints, TCO/ROI models |
-| **03** | **[Workforce & Team Technical Training](../services/workforce-training)** | Full-Stack, TDD, SDET, Cloud Native, DevOps | Custom sandboxes, interactive code labs, competency assessment matrices |
-| **04** | **[Quality Assurance & Test Engineering](../services/quality-assurance)** | Shift-left QA, Playwright, Cypress, Load & Security | Master Test Strategy, automated regression harness, k6 load benchmarks |
-| **05** | **[Technical Staffing & Talent Recruitment](../services/technical-recruitment)** | Elite Developers, SDETs, Scrum Masters, Tech Leads | Architect-reviewed candidate dossiers, live coding scores, 90-day guarantee |
-| **06** | **[Software KPIs & Process Audits](../services/kpis-and-audits)** | DORA metrics, code debt analysis, compliance reviews | DORA telemetry dashboards, SonarQube audit reports, tech due diligence |
-| **07** | **[Personnel Performance Management](../services/performance-management)** | Competency frameworks, 360 reviews, retention | Engineering career ladders, 1-on-1 guides, retention risk radar maps |
+| Filter Dimension | Available Options | Impact on Metrics |
+| :--- | :--- | :--- |
+| **Product Line** | *All Products*, *Enterprise Core Banking*, *HealthTech Patient Portal*, *OmniChannel Commerce* | Filters work items, defect pools, and test suites by product scope. |
+| **Component** | *All Components*, *Auth & Gateway*, *Ledger Service*, *Payment Gateway*, *Reporting Engine* | Drills down into specific microservices and architectural boundaries. |
+| **Sprint Cadence** | *All Sprints*, *Sprint 24*, *Sprint 25*, *Sprint 26*, *Sprint 27* | Isolates sprint velocity, burndown, and work item completion. |
+| **Release Target** | *All Releases*, *v2.4.0*, *v2.5.0-RC*, *v3.0.0-Beta* | Evaluates release readiness and gating thresholds. |
+| **Time Window** | *Last 30 Days*, *Last 90 Days*, *Last 180 Days* | Adjusts trend timelines, defect aging, and historical lead times. |
 
 ---
 
-## 4. Interactive Engineering Tools & Calculators (`/tools`)
+## 4. The 6 Analytical Perspectives
 
-The **Tools & Calculators** suite provides instant, browser-based evaluation across four interactive tabs:
+The platform categorizes telemetry into 6 dedicated operational perspectives:
 
-### 4.1 Tab 1: DORA & Velocity Health Calculator
-*   **Input Sliders**: Adjust your team's current **Deployment Frequency**, **Lead Time for Changes**, **Change Failure Rate (CFR)**, **Mean Time to Restore (MTTR)**, **Test Coverage**, and **Defect Escape Rate**.
-*   **Instant Scoring**: Computes your DevOps tier (**Elite Performer**, **High Performer**, **Medium Performer**, or **Low Performer**) and assigns a letter grade (**A+** down to **C-**).
-*   **Targeted ITM Recommendation**: Generates tailored architectural and CI/CD remediation advice based on your weakest metric.
+### 4.1 Executive Scorecard
+- **DORA Performance Metrics**: Deployment Frequency, Lead Time for Changes, Change Failure Rate (CFR), and Mean Time to Restore (MTTR).
+- **DevOps Tier Rating**: Automated categorization into *Elite*, *High*, *Medium*, or *Low* performer tiers with benchmark comparison.
+- **Overall Quality Health Index**: Composite score blending defect density, test coverage, and release stability.
 
-### 4.2 Tab 2: QA Strategy & Architecture Audit Matrix
-*   **24-Point Verification Checklist**: Review critical capabilities across 4 categories:
-    1.  *Software Architecture & Scalability Audit*
-    2.  *Quality Assurance & Test Automation Audit*
-    3.  *Security, Compliance & Audit Trail Matrix*
-    4.  *Engineering Process & Governance Audit*
-*   **Maturity Scorecard**: Live percentage tracker recalculates readiness in real time.
-*   **One-Click Report Copy**: Click **"Copy Audit Report"** to generate a formatted text summary with timestamps and pass/fail indicators directly to your clipboard.
+### 4.2 Quality & Defect Governance
+- **Defect Severity Distribution**: Real-time breakdown across Critical (P1), High (P2), Medium (P3), and Low (P4) bugs.
+- **Defect Removal Efficiency (DRE)**: Ratio of defects found before release versus total defects discovered.
+- **Defect Aging Buckets**: Distribution of open defects across time intervals (<7 days, 8-30 days, >30 days).
+- **Discovery Origin Tracking**: Distinguishes between unit test catches, automation harness catches, exploratory testing, and production escapes.
 
-### 4.3 Tab 3: Squad Capacity & Staffing Estimator
-*   **Resource Modeling**: Configure the number of **Developers**, **QA Automation Engineers (SDETs)**, and **Project Managers / Scrum Masters**, along with your **Sprint Cadence** (1 to 4 weeks).
-*   **Throughput Forecasting**: Predicts total story points delivered per sprint and per month.
-*   **Dev-to-QA Health Check**: Assesses staffing balance (e.g. *Balanced QA Safety*, *Moderate QA Load*, or *High Bottleneck Risk*).
+### 4.3 Risk & Release Gating
+- **Blast Radius Analysis**: Identifies high-risk architectural modules with tight coupling or broad downstream dependencies.
+- **Automated Gating Criteria**: Evaluates blocking issues against pre-set release criteria before promotion to staging or production.
+- **Flaky Test Quarantine**: Highlights non-deterministic tests requiring immediate triage.
 
-### 4.4 Tab 4: Enterprise Software KPI Reference Catalog
-*   A standardized directory of 10 mission-critical software metrics, providing formal **Calculation Formulas**, **Google Cloud DORA Target Benchmarks**, and **Executive Business Justifications**.
+### 4.4 Automation & Performance
+- **Test Automation Pyramid**: Visual distribution of Unit, Integration, API, and End-to-End (E2E) automated tests.
+- **Pass Rate Trends**: Time-series view of test stability across CI/CD execution runs.
+- **API Performance Latencies**: P95 and P99 latency tracking against defined Service Level Objectives (SLOs).
 
----
+### 4.5 Productivity & Delivery Flow
+- **Sprint Burndown Velocity**: Real-time progress against committed story points.
+- **Cycle Time & Lead Time**: Measures elapsed time from commit to production deployment.
+- **Pull Request Review Turnaround**: Average turnaround time for code reviews and PR approvals.
 
-## 5. Live Enterprise KPI Governance Platform (`/kpi`)
-
-The **KPI Telemetry Platform** simulates a real-time enterprise monitoring center powered entirely by the browser's IndexedDB database:
-
-### 5.1 Multi-Dimensional Filter Bar
-Drill down across your engineering portfolio:
-*   **Product Line**: *Enterprise Core Banking*, *HealthTech Portal*, *OmniChannel Commerce*, etc.
-*   **Architecture Component**: *Auth & Gateway*, *Ledger Service*, *Payment Gateway*, *Reporting Engine*, etc.
-*   **Sprint Cadence & Release Target**: Filter across active sprints and upcoming minor/major releases.
-*   **Time Range**: 30-Day, 90-Day, or 180-Day historical telemetry windows.
-
-### 5.2 Six Dedicated View Perspectives
-1.  **Executive Scorecard**: DORA tier badges, release stability, deployment velocity, and overall test distribution.
-2.  **Quality & Defects**: Defect aging buckets (P1 to P4), Defect Removal Efficiency (DRE), and Mean Time to Detect (MTTD).
-3.  **Risk & Release Gating**: Blast radius assessments, component coupling indices, and flaky test quarantine counts.
-4.  **Automation & Performance**: P95 latency benchmarks, API response thresholds, and test automation ROI.
-5.  **Productivity & Velocity**: Sprint burndown rates, story point velocity, and PR review turnaround durations.
-6.  **Governance & SLAs**: Compliance gate violations, SOC2 control status, and SLA breach tracking.
-
-### 5.3 Metric Justification & Explainability Modals
-*   Click **"Why This Metric Matters"** or **"Target Deviation"** on any KPI card to open an interactive audit modal detailing:
-    *   *Mathematical Formula*
-    *   *Target vs. Actual Deviation*
-    *   *Root-Cause Analysis*
-    *   *Actionable Remediation Checklist*
+### 4.6 Governance, SLAs & Leading Indicators
+- **Production SLA Compliance**: Uptime and error budget tracking against 99.9% availability targets.
+- **Leading vs. Lagging Indicators**: Early warning signals (e.g., test coverage drops, code churn spikes) before production incidents emerge.
+- **Compliance & Audit Readiness**: Adherence to quality gates, SOC2 controls, and internal engineering standards.
 
 ---
 
-## 6. Executive Contact & Inquiry Submission
+## 5. Metric Explainability & Audit Modals
 
-Ready to engage on a formal project, schedule an architecture audit, or discuss talent recruitment?
+Every KPI card in the platform features deep root-cause explainability:
 
-1.  Navigate to **[Contact Us](../contact)**.
-2.  Complete the secure executive inquiry form:
-    *   *Full Name*, *Corporate Email*, *Direct Phone*, *Organization*
-    *   *Service Offering Required* (select from the 7 disciplines or comprehensive turnkey)
-    *   *Engagement Timeline* and *Project Budget Scope*
-    *   *Technical Details & Requirements*
-3.  Click **"Send Message to Sudarsha"**.
-4.  The system records the inquiry, provides a pre-formatted email launch action, and enables one-click clipboard copying for direct delivery to `info.tech.microsystems.ca@gmail.com` (CC: `sudarsha.wijenayake@gmail.com`).
+1. Click on any metric card to open its **Metric Justification Modal**.
+2. Review:
+   - **Mathematical Calculation Formula**: The exact industry-standard formula used to derive the score.
+   - **Target vs. Actual Deviation**: Visual indicators detailing whether the metric is Optimal, Approaching Target, or in Breach.
+   - **Root-Cause Analysis**: Practical context on why a deviation occurs (e.g., flaky infrastructure, complex PRs, insufficient unit tests).
+   - **Actionable Remediation Checklist**: Step-by-step best practices to bring the metric back into the optimal zone.
 
 ---
 
-<div align="center">
-  <sub>© 2026 INFO TECH MICROSYSTEMS. For technical inquiries, call +1 613 266 5285.</sub>
-</div>
+## 6. Publication-Ready Executive Exports (PDF & PPTX)
+
+Export your current dashboard view into polished executive presentations:
+
+1. Click **"Export PDF"** or **"Export PPTX"** in the top action bar.
+2. The export engine automatically:
+   - Captures the active filter scope (product line, component, release, date range).
+   - Groups all KPIs into their respective operational categories.
+   - Renders each metric card with its exact color-coded status badge (Optimal green, Warning amber, Breach rose).
+   - Generates a standalone, presentation-ready `.pdf` or `.pptx` file directly in your browser.
+
+---
+
+## 7. Data Connectors & Reset
+
+- **Connectors**: Click **"Configure Connectors"** to simulate and configure ALM connections (Jira, GitHub Actions, TestRail, SonarQube).
+- **Reset Database**: Need a fresh batch of synthetic telemetry? Use the **"Reset Data"** option to reseed the local IndexedDB database with clean benchmark records.

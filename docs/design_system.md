@@ -1,20 +1,20 @@
 # Design System & UI Specifications
 
-**Document Version:** 2.4.0  
-**Effective Date:** September 2026  
-**Aesthetic Style:** Cyber-Executive Neon Glassmorphism & High-Contrast Light Mode
+**Document Version:** 1.0.0 (Open Source Edition)  
+**Aesthetic Style:** Cyber-Executive Neon Glassmorphism & Accessible Light Mode  
+**System Classification:** Open-Source UI Specification & Design Tokens
 
-[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture Guide](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
 
 ---
 
-## 1. Visual Identity & Design Principles
+## 1. Visual Philosophy & Design Principles
 
-The INFO TECH MICROSYSTEMS design system merges high-technology precision with executive authority:
-*   **Precision & Rigor**: Sharp, purposeful typography, monospaced data indicators, and mathematical accuracy.
-*   **Dual-Aesthetic Harmony**: A high-impact cyber dark mode with luminous neon accents balanced against a pristine, accessible corporate light mode.
-*   **Information Hierarchy**: Multi-layer cards, glassmorphic backdrop filters, and clear visual signifiers that draw focus to actionable metrics.
-*   **Dual-Coding Statuses**: Status indicators pair color with distinct glyphs and explicit text labels for universal comprehension.
+The **ITM KPI Dashboard** design system balances high-precision telemetry data with executive presentation aesthetics:
+*   **Clarity & Scannability**: Metric values, thresholds, and deviations are prominent and easily readable at a glance.
+*   **Dual-Aesthetic Excellence**: A cyber-inspired dark mode featuring deep obsidian surfaces and neon accents paired with an executive light mode.
+*   **Status Dual-Coding**: Telemetry indicators combine background tints, distinct border styling, semantic icons, and explicit textual status labels (avoiding color-only cues).
+*   **Glassmorphic Hierarchy**: Subtle backdrop blur filters, fine border lines, and consistent border-radius hierarchies (`rounded-xl`).
 
 ---
 
@@ -22,89 +22,65 @@ The INFO TECH MICROSYSTEMS design system merges high-technology precision with e
 
 ```mermaid
 graph LR
-    subgraph BrandColors["Primary Brand Accents"]
+    subgraph BrandTokens["Brand & Accent Tokens"]
         Cyan["Electric Cyan (#06b6d4 / #0891b2) - Innovation, Velocity"]
-        Purple["Quantum Purple (#9333ea / #a855f7) - Strategy, Intelligence"]
+        Purple["Quantum Purple (#9333ea / #a855f7) - Governance, Strategy"]
     end
     
     subgraph StatusTokens["Telemetry Status Tokens"]
-        Emerald["Emerald (#10b981) - Optimal / Compliant / Pass"]
-        Amber["Amber (#f59e0b) - Warning / Moderate / Action Needed"]
-        Rose["Rose (#f43f5e) - Breach / Critical / Risk Alert"]
-        Blue["Sky Blue (#0284c7) - Standard / In-Flight / Info"]
+        Emerald["Emerald (#10b981) - Optimal / Compliant / Elite"]
+        Amber["Amber (#f59e0b) - Warning / Moderate / Attention Needed"]
+        Rose["Rose (#f43f5e) - Breach / Critical / Blast Radius Alert"]
+        Blue["Sky Blue (#0284c7) - Info / In-Flight / Scope Title"]
     end
     
-    subgraph Neutrals["Neutral Foundations"]
-        DarkBg["Deep Obsidian (#070913) - Dark Surface"]
-        DarkCard["Slate Navy (#0f172a / #0d1428) - Dark Card"]
-        LightBg["Pure White (#ffffff) / Slate 50 (#f8fafc) - Light Surface"]
-        LightCard["Slate 100 (#f1f5f9) - Light Card"]
+    subgraph NeutralTokens["Neutral Canvas Tokens"]
+        DarkSurface["Deep Obsidian (#070913) - Dark Canvas"]
+        DarkCard["Slate Navy (#0f172a / #0d1428) - Dark Card Surface"]
+        LightSurface["Pure White (#ffffff) / Slate 50 (#f8fafc) - Light Canvas"]
+        LightCard["Slate 100 (#f1f5f9) - Light Card Surface"]
     end
 ```
 
-### Color Token Reference Table
+### Semantic Token Reference Table
 
 | Token Name | Light Mode Value | Dark Mode Value | Usage Context |
 | :--- | :--- | :--- | :--- |
-| **`primary`** | `cyan-700` (`#0e7490`) | `cyan-400` (`#22d3ee`) | Primary buttons, active tabs, metric values |
-| **`secondary`** | `purple-700` (`#7e22ce`) | `purple-400` (`#c084fc`) | Secondary accents, target indicators, badges |
-| **`background`** | `white` (`#ffffff`) | `#070913` | Root page canvas |
-| **`card`** | `slate-50` / `white` | `slate-900/80` (`#0f172a`) | Glassmorphic surface containers |
-| **`border`** | `slate-200` (`#e2e8f0`) | `slate-800` / `cyan-500/20` | Container outlines, subtle separators |
-| **`status-optimal`** | `emerald-700` / `emerald-50` | `emerald-400` / `emerald-950/80` | Passing SLAs, <5% CFR, >95% DRE |
-| **`status-warning`** | `amber-700` / `amber-50` | `amber-400` / `amber-950/80` | Moderate churn, lagging code reviews |
-| **`status-breach`** | `rose-700` / `rose-50` | `rose-400` / `rose-950/80` | SLA violations, blast radius alerts |
+| **`primary`** | `cyan-700` (`#0e7490`) | `cyan-400` (`#22d3ee`) | Brand highlights, active category tabs, key metric values |
+| **`secondary`** | `purple-700` (`#7e22ce`) | `purple-400` (`#c084fc`) | Secondary metrics, target indicators, badges |
+| **`background`** | `slate-50` (`#f8fafc`) | `#070913` | Root canvas background |
+| **`card`** | `white` (`#ffffff`) | `slate-900/80` (`#0f172a`) | Glassmorphic card surfaces |
+| **`border`** | `slate-200` (`#e2e8f0`) | `slate-800` / `cyan-500/20` | Container boundaries and subtle dividers |
+| **`status-optimal`**| `emerald-600` (`#059669`) | `emerald-400` (`#34d399`) | Passing SLAs, DORA Elite status, low defect escape |
+| **`status-warning`**| `amber-600` (`#d97706`) | `amber-400` (`#fbbf24`) | Moderate defect churn, approaching SLA breach thresholds |
+| **`status-breach`** | `rose-600` (`#e11d48`) | `rose-400` (`#fb7185`) | SLA violations, blast radius alerts, critical defects |
 
 ---
 
-## 3. Typography & Hierarchy
+## 3. Typography & Monospaced Telemetry
 
-The platform utilizes three distinct font families to establish hierarchy:
+The platform pairs a modern geometric display typeface with clean monospaced font stacks:
 
-| Font Role | Family | Fallbacks | Primary Purpose |
+| Role | Font Family | Fallback | Primary Usage |
 | :--- | :--- | :--- | :--- |
-| **Display Headings** | `'Outfit'` | `sans-serif` | Page titles, hero banners, service headings, metric values |
-| **Body & UI Text** | `system-ui` / `'Inter'` | `-apple-system, BlinkMacSystemFont, Segoe UI` | Paragraphs, documentation, navigation items, form inputs |
-| **Monospace Telemetry** | `'JetBrains Mono'` / `monospace` | `ui-monospace, SFMono-Regular, Menlo, Consolas` | Formulas, DORA metrics, code badges, timestamps, calculation keys |
-
-### Scale Reference:
-*   `text-3xl` / `text-5xl` (`Outfit font-black`): Top-level hero titles
-*   `text-xl` / `text-2xl` (`Outfit font-bold`): Section titles and modal headers
-*   `text-sm` / `text-base` (`leading-relaxed`): Explanatory descriptions and case studies
-*   `text-xs` (`font-mono tracking-wider uppercase`): Category badges and metadata tags
+| **Display & Headings** | `'Outfit'` | `sans-serif` | Page titles, category headers, metric values |
+| **Interface Body** | `system-ui` / `'Inter'` | `-apple-system, BlinkMacSystemFont, Segoe UI` | Descriptions, modal text, filter options |
+| **Monospace Telemetry**| `'JetBrains Mono'` | `ui-monospace, Menlo, Consolas, monospace` | Math formulas, DORA metric scores, timestamps, commit hashes |
 
 ---
 
-## 4. UI Component Library
+## 4. Metric Card Component Pattern
 
-### 4.1 Buttons
-*   **Primary Action**: Gradient pill with shadow:
-    `bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/20`
-*   **Secondary Action**: Glass outline button:
-    `bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-cyan-400 text-slate-900 dark:text-white rounded-xl`
+Every KPI card follows a standardized visual rhythm:
 
-### 4.2 Interactive Sliders
-*   Custom accent color per metric domain:
-    *   Deployment Cadence: `accent-cyan-600 dark:accent-cyan-400`
-    *   MTTR Recovery: `accent-purple-600 dark:accent-purple-400`
-    *   Change Failure Rate: `accent-rose-600 dark:accent-rose-400`
-
-### 4.3 KPI Cards & Status Themes
-Governed centrally in [`src/constants/kpiConstants.ts`](file:///c:/Users/Developer/Documents/GitHub/ITMWebSite/src/constants/kpiConstants.ts):
-```typescript
-export const KPI_STATUS_THEMES = {
-  optimal: {
-    bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-    border: 'border-emerald-300 dark:border-emerald-500/40',
-    text: 'text-emerald-700 dark:text-emerald-400',
-    badge: 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300'
-  },
-  // warning, breach, neutral definitions...
-};
-```
-
----
-
-<div align="center">
-  <sub>Document maintained by INFO TECH MICROSYSTEMS UI/UX Design System Team.</sub>
-</div>
+1. **Card Header**:
+   - Category or metric title with subtle icon glyph.
+   - Status badge (e.g. `OPTIMAL`, `WARNING`, `BREACH`) with matching semantic background tint and border.
+2. **Metric Body**:
+   - Primary metric figure in large display typography.
+   - Sub-label indicating unit of measurement (e.g., `%`, `days`, `hours`, `score`).
+3. **Target Comparison**:
+   - Benchmark target indicator (e.g., `Target: < 5.0%`).
+   - Deviation percentage pill showing difference against SLA or industry benchmark.
+4. **Interactive Action Strip**:
+   - "Why This Metric Matters" explainability trigger opening the deep-dive audit modal.

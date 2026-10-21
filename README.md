@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="public/assets/itm-logo-dark.png" alt="INFO TECH MICROSYSTEMS Logo" width="130" height="130" />
-  <h1>INFO TECH MICROSYSTEMS</h1>
-  <p><b>Enterprise Software Engineering, Architectural Advisory, QA Automation & KPI Governance</b></p>
+  <img src="public/assets/itm-logo-dark.png" alt="ITM KPI Dashboard Logo" width="110" height="110" />
+  <h1>ITM Quality Engineering KPI & Data Mining Platform</h1>
+  <p><b>Open-Source Client-Side Engineering Telemetry, DORA Analytics, Defect Governance & Executive Reporting Suite</b></p>
   <p>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19.2.8-blue.svg" alt="React 19" /></a>
     <a href="https://vite.dev/"><img src="https://img.shields.io/badge/Vite-8.3.1-646CFF.svg" alt="Vite 8" /></a>
@@ -10,125 +10,135 @@
     <a href="https://dexie.org/"><img src="https://img.shields.io/badge/IndexedDB-Dexie_4.4.6-orange.svg" alt="Dexie.js IndexedDB" /></a>
     <a href="docs/globalization_guide.md"><img src="https://img.shields.io/badge/Languages-11_Supported-brightgreen.svg" alt="11 Languages" /></a>
     <a href="docs/accessibility_guide.md"><img src="https://img.shields.io/badge/Accessibility-WCAG_2.1_AA-success.svg" alt="WCAG 2.1 AA" /></a>
-    <a href="docs/LICENSE.md"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0" /></a>
   </p>
 </div>
 
 <br />
 
-Welcome to the official repository for **INFO TECH MICROSYSTEMS (ITM)**. Headquartered in Canada's technology capital (**Ottawa, Ontario**), INFO TECH MICROSYSTEMS was founded by Principal Technology Consultant **Sudarsha Wijenayake** to bridge the critical gap between executive technology strategy and production-grade software delivery.
-
-This web application combines corporate service specifications with an offline-first **Enterprise KPI Telemetry Engine** powered by client-side IndexedDB, offering interactive engineering calculators, DORA velocity assessments, and full globalization across 11 international languages.
+The **ITM Quality Engineering KPI & Data Mining Platform** is a modern, open-source analytical web application designed for engineering leaders, SDETs, DevOps practitioners, and agile teams. It delivers comprehensive software quality telemetry, DORA performance benchmarks, automated risk gating, defect root-cause mining, and publication-ready PDF/PowerPoint executive exports.
 
 > [!NOTE]
-> All telemetry and data querying on this platform are performed entirely within the user's browser using a deterministic **IndexedDB** database engine (Dexie.js). No external backend dependencies or network trackers are required to explore the full depth of the analytics platform.
+> **Zero External Telemetry Trackers & 100% Client-Side Privacy**: All aggregation, data mining, and statistical computations run completely inside the browser using a high-performance **IndexedDB** database (Dexie.js). No proprietary user data is transmitted to external servers.
 
 ---
 
-## ✨ Key Platform Features
+## 🌟 Key Capabilities
 
-- 🏛️ **7 Enterprise Service Disciplines**: Detailed capabilities, 4-step delivery lifecycles, and architectural specifications for Custom Software Development, Strategic Advisory, Workforce Training, Quality Assurance, Talent Recruitment, KPI Process Audits, and Personnel Performance Management.
-- 📊 **Browser-Native KPI Telemetry Engine**: Live IndexedDB analytical database pre-seeded with 2,500+ work items, 4,000+ test executions, and 120+ release cycles across 6 distinct perspectives (*Executive*, *Quality*, *Risk*, *Automation*, *Productivity*, *Governance*).
-- 🧮 **Interactive Engineering Tools**:
-  - **DORA & Velocity Health Calculator**: Evaluates Deployment Frequency, Lead Time, CFR, and MTTR with dynamic tier classification (Elite to Low) and actionable recommendations.
-  - **QA Strategy & Architecture Audit Matrix**: 24-point verification matrix across Architecture, QA, Security, and Governance with instant clipboard export.
-  - **Squad Capacity Modeling**: Live estimation of sprint throughput and dev-to-QA staffing balance.
-  - **Core KPI Reference Directory**: Mathematical formulas, DORA target benchmarks, and business ROI justifications.
-- 🌐 **Comprehensive Globalization (i18n)**:
-  - Full native localization across the **11 most widely spoken languages in the world**: English (`🇺🇸`), Chinese (`🇨🇳`), Hindi (`🇮🇳`), Spanish (`🇪🇸`), French (`🇫🇷`), Arabic (`🇸🇦`), Bengali (`🇧🇩`), Portuguese (`🇧🇷`), Russian (`🇷🇺`), German (`🇩🇪`), and Japanese (`🇯🇵`).
-  - Automatic browser locale detection on first visit with persistent `localStorage` caching (`itm_language`).
-  - Native Right-to-Left (RTL) reading layout support for Arabic.
-- ♿ **WCAG 2.1 AA Accessibility**: Full keyboard navigation across all menus, sliders, tabs, and modals, screen reader compatibility, and dual-coded visual status indicators.
-- 🌓 **Cyberpunk Neon & Corporate Theming**: Interactive theme switcher providing a luminous cyber dark mode and a crisp executive light mode.
-- 📩 **Direct Executive Communication**: Secure corporate inquiry workflow routing directly to `info.tech.microsystems.ca@gmail.com` (CC: `sudarsha.wijenayake@gmail.com`) with one-click clipboard copying.
+- 📊 **6 Comprehensive Analytical Perspectives**:
+  1. **Executive Scorecard**: DORA tier badges, deployment velocity, change failure rate, and cross-squad health.
+  2. **Quality & Defect Governance**: Defect severity breakdown, Defect Removal Efficiency (DRE), defect aging buckets, and discovery origin trends.
+  3. **Risk & Release Gating**: Blast radius scoring, component coupling indices, and flaky test quarantine metrics.
+  4. **Automation & Performance**: Automated test suite distribution, pass rates, test maintenance ROI, and execution duration.
+  5. **Productivity & Flow**: Sprint burndown rates, story point velocity, cycle time, and PR review turnaround durations.
+  6. **Governance, SLAs & Leading Indicators**: Production SLA compliance, regulatory audit gates, and leading vs. lagging near-miss tracking.
+- 🖨️ **Visual-Fidelity Executive Exports**:
+  - Export categorized metrics into presentation-grade **PDF documents** (via jsPDF) and **Microsoft PowerPoint presentations** (via pptxgenjs).
+  - Every card matches the application's color-coded status badges (Optimal, Warning, Breach) and scope headers.
+- 🔍 **Interactive Metric Explainability**:
+  - Click any KPI card to view mathematical formulas, target deviation percentages, root-cause analyses, and actionable remediation checklists.
+- 🌐 **11 International Languages**:
+  - Full native localization across English, Chinese (Simplified), Hindi, Spanish, French, Arabic (with native RTL layout), Bengali, Portuguese, Russian, German, and Japanese.
+- 🌓 **Adaptive Theming & WCAG 2.1 AA Accessibility**:
+  - Cyberpunk dark mode and clean executive light mode with high-contrast color pairs and complete keyboard accessibility.
+- 🔌 **Configurable ALM Connectors**:
+  - Simulated and extensible connector integrations for Jira, GitHub Actions, TestRail, and SonarQube.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-Ensure you have the following installed on your local workstation:
 - [Node.js](https://nodejs.org/) (`v20.0.0` or higher, `v24.x LTS` recommended)
 - [npm](https://www.npmjs.com/) (`v10.0.0` or higher)
 - [Git](https://git-scm.com/)
 
-### Installation & Local Execution
+### Installation & Run
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/INFO-TECH-MICROSYSTEMS/ITMWebSite.git
-   cd ITMWebSite
+   git clone https://github.com/INFO-TECH-MICROSYSTEMS/ITMKPIDashboard.git
+   cd ITMKPIDashboard
    ```
 
-2. **Install project dependencies:**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Start the Vite development server:**
+3. **Start the local development server:**
    ```bash
    npm run dev
    ```
-   Open your browser to `http://localhost:5173` to explore the platform.
+   Open your browser to [http://localhost:5173](http://localhost:5173).
 
-4. **Execute TypeScript verification & production build:**
+4. **Build for production:**
    ```bash
    npm run build
    ```
 
-5. **Preview the production distribution build locally:**
-   ```bash
-   npm run preview
-   ```
+---
+
+## 📂 Architecture & Directory Layout
+
+```plaintext
+ITMKPIDashboard/
+├── docs/                        # Project technical documentation
+│   ├── accessibility_guide.md   # WCAG 2.1 AA keyboard & contrast specifications
+│   ├── architecture_and_modularization.md # Layered system architecture
+│   ├── deployment_guide.md      # Docker, edge hosting, and CDN guidelines
+│   ├── design_system.md         # Color tokens, typography, and card designs
+│   ├── developer_guide.md       # Engineering conventions & workflow
+│   ├── globalization_guide.md   # 11-language i18n & RTL system
+│   ├── implemented_requirements.md # Feature matrix & verification records
+│   ├── LICENSE.md               # Apache 2.0 license summary
+│   └── user_guide.md            # Interactive user manual
+├── public/                      # Static logos and assets
+├── src/
+│   ├── components/
+│   │   ├── kpi/                 # Filter bars, connector dialogs, and views
+│   │   │   ├── export/          # PDF and PowerPoint export modals
+│   │   │   └── views/           # Executive, Quality, Risk, Automation views
+│   │   ├── Footer.tsx           # Application footer
+│   │   ├── LanguageSelector.tsx # 11-language picker with flags
+│   │   ├── Sidebar.tsx          # Collapsible responsive navigation drawer
+│   │   └── TopHeader.tsx        # Status header and mode toggles
+│   ├── constants/               # KPI definitions, categories, and thresholds
+│   ├── context/                 # Reactive ThemeProvider (Dark / Light)
+│   ├── db/                      # IndexedDB schema (Dexie.js) & synthetic seed generator
+│   ├── i18n/                    # i18next configuration & language detectors
+│   ├── locales/                 # JSON translation dictionaries (11 languages)
+│   ├── pages/                   # KPIPlatformPage root container
+│   ├── services/                # Calculation, justification, and export engines
+│   └── types/                   # TypeScript interfaces and telemetry contracts
+├── CONTRIBUTING.md               # Open source contribution guidelines
+├── LICENSE                       # Apache License 2.0 full text
+└── package.json                 # Project dependencies and build scripts
+```
 
 ---
 
 ## 📚 Documentation Portfolio
 
-We maintain an extensive, professional documentation portfolio adhering to enterprise architecture standards. All guides are cross-linked:
+Explore our comprehensive technical guides in the [`docs/`](docs/) directory:
 
-| Document | Description | Target Audience |
-| :--- | :--- | :--- |
-| 📖 **[User Guide](docs/user_guide.md)** | Complete walkthrough of all services, tools, KPI telemetry views, and contact flows. | Clients, Partners, Evaluators |
-| 🏗️ **[Architecture & Modularization](docs/architecture_and_modularization.md)** | System architecture diagrams, component hierarchy, IndexedDB engine, and design patterns. | Architects, Lead Engineers |
-| 🛠️ **[Developer Guide](docs/developer_guide.md)** | Environment setup, project structure, conventions, i18n workflows, and testing. | Contributing Developers |
-| 🌐 **[Globalization Guide](docs/globalization_guide.md)** | Localization architecture, 11 supported languages, flags, RTL layout, and caching. | i18n Specialists, Translators |
-| ♿ **[Accessibility Guide](docs/accessibility_guide.md)** | WCAG 2.1 Level AA compliance matrix, keyboard navigation maps, and color contrast. | QA Engineers, Accessibility Officers |
-| 🚢 **[Deployment Guide](docs/deployment_guide.md)** | Production build pipeline, AWS/Vercel/Netlify hosting, Docker Nginx, and security headers. | DevOps, SREs, SysAdmins |
-| 🎨 **[Design System](docs/design_system.md)** | UI tokens, cyber neon color palettes, typography scales, and component guidelines. | UI/UX Designers, Frontend Devs |
-| 📋 **[Implemented Requirements](docs/implemented_requirements.md)** | Complete traceability matrix mapping requirements to components and verification tests. | Project Managers, Auditors |
-| ⚖️ **[License Agreement](docs/LICENSE.md)** | Proprietary license agreement, terms of use, and corporate legal disclaimers. | Legal Counsel, Enterprise Clients |
+- 📖 **[User Guide](docs/user_guide.md)**: Walkthrough of filtering, views, metric justifications, and exports.
+- 🏗️ **[Architecture & Modularization](docs/architecture_and_modularization.md)**: Layered client-side architecture and data flow.
+- 💻 **[Developer Guide](docs/developer_guide.md)**: Development setup, coding guidelines, and scripts.
+- 🚀 **[Deployment Guide](docs/deployment_guide.md)**: Containerization and static edge hosting instructions.
+- 🎨 **[Design System](docs/design_system.md)**: Glassmorphic cyber theme tokens, typography, and status indicators.
+- ♿ **[Accessibility Guide](docs/accessibility_guide.md)**: WCAG 2.1 AA keyboard navigation, contrast ratios, and screen reader testing.
+- 🌐 **[Globalization Guide](docs/globalization_guide.md)**: RTL handling, locale detection, and translation workflow.
+- ✅ **[Implemented Requirements Matrix](docs/implemented_requirements.md)**: Verification status across all features.
 
 ---
 
-## 🛠️ Technology Stack
+## 🤝 Contributing
 
-| Category | Technology | Version | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Core Framework** | [React](https://react.dev/) | `^19.2.8` | Component-driven declarative user interface |
-| **Build & Dev Tool** | [Vite](https://vite.dev/) | `^8.3.0` | Ultra-fast ESM bundling and Hot Module Replacement |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) | `~6.0.2` | Compile-time type safety and interface definitions |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | `^4.3.3` | Utility-first responsive design and cyber neon tokens |
-| **Client Database** | [Dexie.js](https://dexie.org/) | `^4.4.6` | Offline-first IndexedDB storage for 10,000+ telemetry records |
-| **Internationalization**| [i18next](https://www.i18next.com/) | `^26.4.2` | Runtime localization with automatic language detection |
-| **Icons** | [Lucide React](https://lucide.dev/) | `^1.48.0` | High-fidelity vector iconography |
-| **Routing** | [React Router](https://reactrouter.com/) | `^7.18.4` | Client-side routing with automatic scroll restoration |
+Contributions from the open-source community are warmly welcomed! Please read our [Contributing Guidelines](CONTRIBUTING.md) to learn how to propose bug fixes, add new metrics, or translate additional languages.
 
 ---
 
-## 🏢 Corporate Headquarters & Contact
+## 📄 License
 
-*   **Corporate Entity:** INFO TECH MICROSYSTEMS
-*   **Founder & Principal Consultant:** Sudarsha Wijenayake
-*   **Headquarters:** 113 Whernside Terrace, Ottawa, Ontario, Canada, K2W0C7
-*   **Operating Timezone:** Eastern Standard Time (EST / EDT) • Kanata North Technology Corridor
-*   **Telephone (Canada):** [+1 613 266 5285](tel:+16132665285)
-*   **Company Inquiries:** [info.tech.microsystems.ca@gmail.com](mailto:info.tech.microsystems.ca@gmail.com)
-*   **Principal Consultant Direct:** [sudarsha.wijenayake@gmail.com](mailto:sudarsha.wijenayake@gmail.com)
-
----
-
-<div align="center">
-  <sub>© 2026 INFO TECH MICROSYSTEMS. All Rights Reserved. • Built with precision in Ottawa, Canada</sub>
-</div>
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.

@@ -1,106 +1,71 @@
 # Globalization & Internationalization (i18n) Guide
 
-**Document Version:** 2.4.0  
-**Effective Date:** September 2026  
-**Standards:** ISO 639-1, W3C Internationalization, Unicode CLDR
+**Document Version:** 1.0.0 (Open Source Edition)  
+**Standards:** ISO 639-1, W3C Internationalization, Unicode CLDR  
+**System Classification:** Open-Source Internationalization & Localization Architecture
 
-[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture & Modularization](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
+[← Back to Main README](../README.md) • [User Guide](user_guide.md) • [Architecture Guide](architecture_and_modularization.md) • [Accessibility Guide](accessibility_guide.md) • [License](LICENSE.md)
 
 ---
 
-## 1. Globalization Architecture Overview
+## 1. Overview
 
-The INFO TECH MICROSYSTEMS web suite is engineered from the ground up to support international enterprises, multinational engineering squads, and global clients. The platform provides complete localization across the **11 most widely spoken languages in the world**, featuring dynamic runtime switching, automatic browser locale detection, persistent caching, and full Right-to-Left (RTL) bidirectional layout handling.
+The **ITM KPI Dashboard** is architected for international engineering teams and distributed multinational organizations. The platform provides full native localization across the **11 most widely spoken languages globally**, complete with runtime language detection, persistent caching, and bidirectional Right-to-Left (RTL) layout switching.
 
 ```mermaid
 graph TD
-    ClientReq["Client Visitor Enters Site"] --> Detector["LanguageDetector (i18next-browser-languagedetector)"]
+    User["User Visits Dashboard"] --> Detector["Language Detector Engine"]
     Detector --> CheckStorage{"Cached in localStorage ('itm_language')?"}
-    CheckStorage -- Yes --> LoadCached["Load Cached Language Code"]
-    CheckStorage -- No --> CheckNav{"Inspect navigator.languages"}
-    CheckNav -- Supported --> MapNav["Map to Supported Code"]
-    CheckNav -- Unsupported --> Default["Fallback to Default ('en')"]
+    CheckStorage -- Yes --> UseCached["Apply Stored Preference"]
+    CheckStorage -- No --> CheckBrowser{"Match navigator.languages"}
+    CheckBrowser -- Match Found --> UseBrowser["Apply Detected Language"]
+    CheckBrowser -- No Match --> Fallback["Default to English ('en')"]
     
-    LoadCached --> InitI18n["Initialize i18next Engine"]
-    MapNav --> InitI18n
-    Default --> InitI18n
+    UseCached --> Init["Initialize i18next"]
+    UseBrowser --> Init
+    Fallback --> Init
     
-    InitI18n --> DOMUpdate["Update HTML Attributes: lang & dir ('ltr'/'rtl')"]
-    InitI18n --> ReactiveState["React i18next Context Ready"]
-    ReactiveState --> UI["Render Localized UI + Flag Selector"]
+    Init --> DOM["Update HTML lang & dir ('ltr'/'rtl') Attributes"]
+    Init --> Render["Render Localized Telemetry Cards & Filter UI"]
 ```
 
 ---
 
-## 2. Supported Languages & Regional Configuration
+## 2. Supported Languages & Regional Matrix
 
-| Language Code | Language Name | Native Script Name | Country Flag | Text Direction | Target Population / Region |
+| Code | Language | Native Name | Flag | Text Direction | Regional Coverage |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **`en`** | English *(Default)* | English | 🇺🇸 | **LTR** | Global Enterprise, North America, UK, International |
-| **`zh`** | Chinese (Simplified) | 中文 (简体) | 🇨🇳 | **LTR** | China, East Asia, Global Chinese Diaspora |
+| **`en`** | English *(Default)* | English | 🇺🇸 | **LTR** | Global International / North America / UK |
+| **`zh`** | Chinese (Simplified) | 中文 (简体) | 🇨🇳 | **LTR** | China, East Asia, Global Diaspora |
 | **`hi`** | Hindi | हिन्दी | 🇮🇳 | **LTR** | India, South Asia |
-| **`es`** | Spanish | Español | 🇪🇸 | **LTR** | Spain, Latin America, North America |
-| **`fr`** | French | Français | 🇫🇷 | **LTR** | Canada (Federal / Quebec), France, Francophonie |
-| **`ar`** | Arabic | العربية | 🇸🇦 | **RTL** | Middle East, North Africa, Arab World |
-| **`bn`** | Bengali | বাংলা | 🇧🇩 | **LTR** | Bangladesh, West Bengal, South Asia |
-| **`pt`** | Portuguese | Português | 🇧🇷 | **LTR** | Brazil, Portugal, Global Lusophone |
+| **`es`** | Spanish | Español | 🇪🇸 | **LTR** | Spain, Latin America |
+| **`fr`** | French | Français | 🇫🇷 | **LTR** | France, Canada (Quebec), Francophonie |
+| **`ar`** | Arabic | العربية | 🇸🇦 | **RTL** | Middle East, North Africa |
+| **`bn`** | Bengali | বাংলা | 🇧🇩 | **LTR** | Bangladesh, West Bengal |
+| **`pt`** | Portuguese | Português | 🇧🇷 | **LTR** | Brazil, Portugal |
 | **`ru`** | Russian | Русский | 🇷🇺 | **LTR** | Eastern Europe, Central Asia |
-| **`de`** | German | Deutsch | 🇩🇪 | **LTR** | Germany, Austria, Switzerland, Central Europe |
-| **`ja`** | Japanese | 日本語 | 🇯🇵 | **LTR** | Japan, Global Tech Enterprises |
+| **`de`** | German | Deutsch | 🇩🇪 | **LTR** | Germany, Austria, Switzerland |
+| **`ja`** | Japanese | 日本語 | 🇯🇵 | **LTR** | Japan |
 
 ---
 
-## 3. Runtime Detection & Persistent Caching
+## 3. Right-to-Left (RTL) Layout Management
 
-### 3.1 Detection Strategy
-The internationalization engine (`src/i18n/index.ts`) configures a multi-tier detection order:
-1.  **`localStorage` Cache**: Looks for key `itm_language`. If the user has ever explicitly chosen a language, that choice takes absolute precedence.
-2.  **`navigator.languages`**: For first-time visitors, the browser's preferred language string (e.g. `zh-CN`, `es-MX`, `fr-CA`) is parsed, stripped to its ISO 639-1 code (`zh`, `es`, `fr`), and matched against supported languages.
-3.  **Default Fallback**: If no match is found, the system defaults cleanly to `en` (English).
+For Arabic (`ar`), the application dynamically applies `dir="rtl"` to the root `<html>` element. 
 
-### 3.2 HTML Document Synchronization
-When switching languages, the system dynamically synchronizes the root document element attributes:
-```typescript
-export const updateHtmlAttributes = (langCode: string) => {
-  if (typeof document !== 'undefined') {
-    const code = supportedCodes.includes(langCode) ? langCode : DEFAULT_LANGUAGE;
-    document.documentElement.lang = code;
-    document.documentElement.dir = getLanguageDirection(code);
-  }
-};
-```
+Layout considerations:
+*   **Icon Mirroring**: Directional arrows and chevrons automatically reverse orientation using Tailwind's `rtl:rotate-180` utility.
+*   **Navigation Placement**: Margins and padding adapt cleanly without breaking visual balance.
+*   **Data Grids & Charts**: Metric values and formulas maintain clear reading order.
 
 ---
 
-## 4. Right-to-Left (RTL) Layout Management
+## 4. Contributing Translations
 
-For Arabic (`ar`), the document direction attribute is set to `dir="rtl"`. The application incorporates Tailwind RTL utilities to ensure flawless visual flow:
+All translation dictionaries reside in the [`src/locales/`](../src/locales/) directory as structured JSON files (e.g., `en.json`, `es.json`, `fr.json`).
 
-*   **Directional Icons**: Navigation arrows and chevrons automatically rotate 180 degrees using `rtl:rotate-180` and `rtl:group-hover:-translate-x-1`.
-*   **Border Accents**: Left borders (`border-l-2`) adapt naturally or flip to maintain hierarchy.
-*   **Alignment**: Flex layouts and text alignment respect the native reading flow of the active script.
-
----
-
-## 5. Rich Data & Object Translation (`useLocalizedData`)
-
-To eliminate hardcoded strings in complex domain entities, the platform provides dedicated custom hooks in [`src/hooks/useLocalizedData.ts`](file:///c:/Users/Developer/Documents/GitHub/ITMWebSite/src/hooks/useLocalizedData.ts):
-
-### 5.1 Service Model Translation (`useLocalizedServices`)
-Translates multi-paragraph corporate specifications without mutating underlying data contracts:
-```typescript
-const services = useLocalizedServices();
-// services[0].title -> "定制软件产品开发、功能增强与持续维护" (zh)
-// services[0].tagline -> "现代 Web、多层架构、企业级、云 SaaS、移动及微服务架构的端到端工程交付。" (zh)
-// services[0].capabilities -> Array of translated capability objects with bullet points
-```
-
-### 5.2 QA Audit & KPI Translation
-*   `useLocalizedAuditTemplates()`: Translates all 4 checklist categories and 24 verification items.
-*   `useLocalizedCoreKPIs()`: Translates formulas, benchmarks, category badges, and business impact rationale.
-
----
-
-<div align="center">
-  <sub>Document maintained by INFO TECH MICROSYSTEMS Internationalization Working Group.</sub>
-</div>
+To contribute a new translation or enhance existing strings:
+1. Locate the JSON file under `src/locales/<lang-code>.json`.
+2. Add or update the key-value pairs matching the reference structure in `en.json`.
+3. If adding a new language, register the language definition in `src/i18n/languages.ts`.
+4. Submit a pull request following our [Contributing Guidelines](../CONTRIBUTING.md).
