@@ -9,7 +9,8 @@
 /**
  * Custom Hook: useKPIData
  * Decouples presentation components from the data repository and business engine.
- * Reactive state management, filtering, and sync triggering.
+ * Reactive state management, multi-scope filtering, and sync triggering.
+ * Supports both Standard Single-Scope and Dual-Scope Comparison Modes.
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -35,12 +36,33 @@ export const INITIAL_FILTER_STATE: KPIFilterState = {
   releaseVersion: PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][0] // '21.4.2'
 };
 
+export const INITIAL_COMPARE_FILTER_STATE: KPIFilterState = {
+  product: APP_PRODUCTS[0],
+  component: 'All',
+  sprint: 'All',
+  releaseVersion: PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][1] || PRODUCT_RELEASES_MAP[APP_PRODUCTS[0]][0]
+};
+
 export function useKPIData() {
+  // Scope A (Primary Scope)
   const [filters, setFilters] = useState<KPIFilterState>(INITIAL_FILTER_STATE);
+
+  // Scope B (Comparative Scope) & Toggle
+  const [isCompareMode, setIsCompareMode] = useState<boolean>(false);
+  const [filtersB, setFiltersB] = useState<KPIFilterState>(INITIAL_COMPARE_FILTER_STATE);
+
+  // Raw telemetry datasets for Scope A
   const [jiraItems, setJiraItems] = useState<JiraWorkItem[]>([]);
   const [testRailExecutions, setTestRailExecutions] = useState<TestRailExecution[]>([]);
   const [githubPRs, setGithubPRs] = useState<GitHubPullRequest[]>([]);
   const [githubCommits, setGithubCommits] = useState<GitHubCommit[]>([]);
+
+  // Raw telemetry datasets for Scope B (when in compare mode)
+  const [jiraItemsB, setJiraItemsB] = useState<JiraWorkItem[]>([]);
+  const [testRailExecutionsB, setTestRailExecutionsB] = useState<TestRailExecution[]>([]);
+  const [githubPRsB, setGithubPRsB] = useState<GitHubPullRequest[]>([]);
+  const [githubCommitsB, setGithubCommitsB] = useState<GitHubCommit[]>([]);
+
   const [connectorConfigs, setConnectorConfigs] = useState<DataSourceConfig[]>([]);
   const [syncLogs, setSyncLogs] = useState<SyncAuditLog[]>([]);
 
@@ -48,34 +70,69 @@ export function useKPIData() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(() => new Date());
 
-  // Initialize DB and load data
+  // Initialize DB and load data for Scope A and conditionally Scope B
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
       await kpiRepository.init();
 
-      const [jira, tr, prs, commits, configs, logs] = await Promise.all([
+      const promises: [
+        Promise<JiraWorkItem[]>,
+        Promise<TestRailExecution[]>,
+        Promise<GitHubPullRequest[]>,
+        Promise<GitHubCommit[]>,
+        Promise<DataSourceConfig[]>,
+        Promise<SyncAuditLog[]>,
+        Promise<JiraWorkItem[]>?,
+        Promise<TestRailExecution[]>?,
+        Promise<GitHubPullRequest[]>?,
+        Promise<GitHubCommit[]>?
+      ] = [
         kpiRepository.getJiraItems(filters),
         kpiRepository.getTestRailExecutions(filters),
         kpiRepository.getGitHubPullRequests(filters),
         kpiRepository.getGitHubCommits(filters),
         kpiRepository.getConnectorConfigs(),
         kpiRepository.getSyncLogs()
-      ]);
+      ];
 
-      setJiraItems(jira);
-      setTestRailExecutions(tr);
-      setGithubPRs(prs);
-      setGithubCommits(commits);
-      setConnectorConfigs(configs);
-      setSyncLogs(logs);
+      if (isCompareMode) {
+        promises.push(
+          kpiRepository.getJiraItems(filtersB),
+          kpiRepository.getTestRailExecutions(filtersB),
+          kpiRepository.getGitHubPullRequests(filtersB),
+          kpiRepository.getGitHubCommits(filtersB)
+        );
+      }
+
+      const results = await Promise.all(promises);
+
+      setJiraItems(results[0]);
+      setTestRailExecutions(results[1]);
+      setGithubPRs(results[2]);
+      setGithubCommits(results[3]);
+      setConnectorConfigs(results[4]);
+      setSyncLogs(results[5]);
+
+      if (isCompareMode && results.length >= 10) {
+        setJiraItemsB(results[6] as JiraWorkItem[]);
+        setTestRailExecutionsB(results[7] as TestRailExecution[]);
+        setGithubPRsB(results[8] as GitHubPullRequest[]);
+        setGithubCommitsB(results[9] as GitHubCommit[]);
+      } else {
+        setJiraItemsB([]);
+        setTestRailExecutionsB([]);
+        setGithubPRsB([]);
+        setGithubCommitsB([]);
+      }
+
       setLastRefreshedAt(new Date());
     } catch (err) {
       console.error('Failed to load KPI platform data:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, [filters, isCompareMode, filtersB]);
 
   useEffect(() => {
     loadData();
@@ -85,7 +142,6 @@ export function useKPIData() {
   const triggerSyncNow = useCallback(async (_source?: DataSourceType) => {
     setIsSyncing(true);
     try {
-      // Simulate real mining API fetch and replace
       await new Promise(resolve => setTimeout(resolve, 800));
       await kpiRepository.resetToSampleDataset();
       await loadData();
@@ -116,9 +172,29 @@ export function useKPIData() {
     setConnectorConfigs(updated);
   }, []);
 
-  // Update specific filter property
+  // Update Scope A filter property
   const updateFilter = useCallback(<K extends keyof KPIFilterState>(key: K, value: KPIFilterState[K]) => {
     setFilters(prev => {
+      if (key === 'product') {
+        const prod = value as AppProduct;
+        const latestRelease = PRODUCT_RELEASES_MAP[prod]?.[0] || '1.0.0';
+        return {
+          ...prev,
+          product: prod,
+          component: 'All',
+          releaseVersion: latestRelease
+        };
+      }
+      return {
+        ...prev,
+        [key]: value
+      };
+    });
+  }, []);
+
+  // Update Scope B filter property
+  const updateFilterB = useCallback(<K extends keyof KPIFilterState>(key: K, value: KPIFilterState[K]) => {
+    setFiltersB(prev => {
       if (key === 'product') {
         const prod = value as AppProduct;
         const latestRelease = PRODUCT_RELEASES_MAP[prod]?.[0] || '1.0.0';
@@ -140,7 +216,16 @@ export function useKPIData() {
     setFilters(INITIAL_FILTER_STATE);
   }, []);
 
-  // Compute calculated metrics via Business Logic service
+  const resetFiltersB = useCallback(() => {
+    setFiltersB(INITIAL_COMPARE_FILTER_STATE);
+  }, []);
+
+  const swapScopes = useCallback(() => {
+    setFilters(filtersB);
+    setFiltersB(filters);
+  }, [filters, filtersB]);
+
+  // Scope A Calculations
   const executiveScorecard = useMemo(() => 
     KPICalculatorService.calculateExecutiveScorecard(jiraItems, testRailExecutions, githubPRs),
     [jiraItems, testRailExecutions, githubPRs]
@@ -180,6 +265,16 @@ export function useKPIData() {
     ),
     [filters.product, filters.releaseVersion, testRailExecutions, jiraItems]
   );
+
+  const releaseWindowB = useMemo(() => {
+    if (!isCompareMode) return undefined;
+    return KPICalculatorService.getReleaseWindow(
+      filtersB.product,
+      filtersB.releaseVersion,
+      testRailExecutionsB,
+      jiraItemsB
+    );
+  }, [isCompareMode, filtersB.product, filtersB.releaseVersion, testRailExecutionsB, jiraItemsB]);
 
   const defectTrends = useMemo(() => 
     KPICalculatorService.calculateDefectDiscoveryTrends(jiraItems, releaseWindow),
@@ -226,15 +321,66 @@ export function useKPIData() {
     [jiraItems, testRailExecutions]
   );
 
+  // Scope B Calculations (when compare mode is active)
+  const metricsB = useMemo(() => {
+    if (!isCompareMode) return undefined;
+
+    const execB = KPICalculatorService.calculateExecutiveScorecard(jiraItemsB, testRailExecutionsB, githubPRsB);
+    const agingB = KPICalculatorService.calculateAgingBuckets(jiraItemsB);
+    const sevB = KPICalculatorService.calculateSeverityCounts(jiraItemsB);
+    const distAllB = KPICalculatorService.calculateTestDistribution(testRailExecutionsB);
+    const distAutoB = KPICalculatorService.calculateTestDistribution(testRailExecutionsB, 'Automated');
+    const distManualB = KPICalculatorService.calculateTestDistribution(testRailExecutionsB, 'Manual');
+    const trendsB = KPICalculatorService.calculateDefectDiscoveryTrends(jiraItemsB, releaseWindowB);
+    const burnoutB = KPICalculatorService.calculateTestExecutionBurnoutForecast(testRailExecutionsB, releaseWindowB);
+    const compB = KPICalculatorService.calculateComponentRisks(jiraItemsB, testRailExecutionsB);
+    const prodB = KPICalculatorService.calculateProductivityMetrics(testRailExecutionsB, jiraItemsB);
+    const autoB = KPICalculatorService.calculateAutomationHealth(testRailExecutionsB, githubPRsB);
+    const autoForecastB = KPICalculatorService.calculateTestAutomationBurnoutForecast(testRailExecutionsB, releaseWindowB);
+    const mttrB = KPICalculatorService.calculateMttrAndMttd(jiraItemsB);
+    const leadLagB = KPICalculatorService.calculateLeadingLaggingMetrics(jiraItemsB, testRailExecutionsB, githubPRsB);
+    const nearB = KPICalculatorService.calculateNearMissAnalytics(jiraItemsB, testRailExecutionsB);
+
+    return {
+      executiveScorecard: execB,
+      agingBuckets: agingB,
+      severityCounts: sevB,
+      testDistributionAll: distAllB,
+      testDistributionAutomated: distAutoB,
+      testDistributionManual: distManualB,
+      defectTrends: trendsB,
+      testBurnoutForecast: burnoutB,
+      testAutomationForecast: autoForecastB,
+      componentRisks: compB,
+      productivityMetrics: prodB.metrics,
+      squadSummary: prodB.summary,
+      automationHealth: autoB,
+      mttrMttd: mttrB,
+      leadingLaggingMetrics: leadLagB,
+      nearMissAnalytics: nearB
+    };
+  }, [isCompareMode, jiraItemsB, testRailExecutionsB, githubPRsB, releaseWindowB]);
+
   return {
     filters,
+    filtersB,
+    isCompareMode,
+    setIsCompareMode,
     releaseWindow,
+    releaseWindowB,
     updateFilter,
+    updateFilterB,
     resetFilters,
+    resetFiltersB,
+    swapScopes,
     jiraItems,
+    jiraItemsB,
     testRailExecutions,
+    testRailExecutionsB,
     githubPRs,
+    githubPRsB,
     githubCommits,
+    githubCommitsB,
     connectorConfigs,
     syncLogs,
     isLoading,
@@ -261,6 +407,7 @@ export function useKPIData() {
       mttrMttd,
       leadingLaggingMetrics,
       nearMissAnalytics
-    }
+    },
+    metricsB
   };
 }

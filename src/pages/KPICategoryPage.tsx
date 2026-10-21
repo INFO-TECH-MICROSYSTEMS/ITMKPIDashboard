@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { 
   RefreshCw, Settings, Sparkles, FileText, Presentation, 
   ChevronRight, ShieldCheck, Activity, AlertTriangle, 
-  Cpu, TrendingUp, Gauge, Compass
+  Cpu, TrendingUp, Gauge, Compass, ArrowLeftRight
 } from 'lucide-react';
 import { useKPIDataContext } from '../context/KPIDataContext';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
@@ -48,21 +48,32 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<'pdf' | 'pptx'>('pdf');
+  const [compareTab, setCompareTab] = useState<'A' | 'B'>('A');
 
   const {
     filters,
+    filtersB,
+    isCompareMode,
+    setIsCompareMode,
     releaseWindow,
+    releaseWindowB,
     updateFilter,
+    updateFilterB,
     resetFilters,
+    resetFiltersB,
+    swapScopes,
     jiraItems,
+    jiraItemsB,
     testRailExecutions,
+    testRailExecutionsB,
     connectorConfigs,
     isLoading,
     isSyncing,
     triggerSyncNow,
     resetToSampleData,
     saveConnectorConfig,
-    metrics
+    metrics,
+    metricsB
   } = useKPIDataContext();
 
   const currentCategory = KPI_CATEGORIES.find(c => c.id === categoryId) || KPI_CATEGORIES[0];
@@ -85,6 +96,14 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         <span className="text-slate-900 dark:text-slate-200 font-semibold truncate">
           {categoryName}
         </span>
+        {isCompareMode && (
+          <>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-500/30">
+              Comparing Scope A vs Scope B
+            </span>
+          </>
+        )}
       </nav>
 
       {/* Page Header & Global Controls */}
@@ -101,13 +120,24 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
 
             {/* In-App Scope Context Indicator */}
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              <span className="text-slate-400 font-normal">{t('kpiPlatform.exportScopeBadge', 'Scope')}:</span>
+              <span className="text-slate-400 font-normal">Scope A:</span>
               <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">{filters.product}</strong>
               <span className="text-slate-400">•</span>
               <span className="text-slate-700 dark:text-slate-300 font-medium">{filters.component}</span>
               <span className="text-slate-400">•</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">v{filters.releaseVersion}</span>
             </span>
+
+            {isCompareMode && filtersB && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-purple-50 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                <span className="text-purple-400 font-normal">Scope B:</span>
+                <strong className="text-purple-600 dark:text-purple-400 font-semibold">{filtersB.product}</strong>
+                <span className="text-purple-400">•</span>
+                <span className="text-purple-700 dark:text-purple-300 font-medium">{filtersB.component}</span>
+                <span className="text-purple-400">•</span>
+                <span className="text-purple-600 dark:text-purple-400 font-semibold">v{filtersB.releaseVersion}</span>
+              </span>
+            )}
 
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-semibold border border-cyan-300 dark:border-cyan-500/30">
               {badgeText}
@@ -170,7 +200,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         </div>
       </div>
 
-      {/* Multi-Dimensional Filter Bar */}
+      {/* Multi-Dimensional Filter Bar with Dual-Scope Comparison Support */}
       <KPIFilterBar
         filters={filters}
         releaseWindow={releaseWindow}
@@ -178,7 +208,53 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         onResetFilters={resetFilters}
         totalFilteredJira={jiraItems.length}
         totalFilteredTests={testRailExecutions.length}
+        isCompareMode={isCompareMode}
+        onToggleCompareMode={() => setIsCompareMode(!isCompareMode)}
+        filtersB={filtersB}
+        onFilterChangeB={updateFilterB}
+        onResetFiltersB={resetFiltersB}
+        onSwapScopes={swapScopes}
+        totalFilteredJiraB={jiraItemsB.length}
+        totalFilteredTestsB={testRailExecutionsB.length}
+        releaseWindowB={releaseWindowB}
       />
+
+      {/* When in Compare Mode, provide quick Scope Switcher for product-specific ledgers/tables */}
+      {isCompareMode && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-xs">
+          <div className="flex items-center gap-2">
+            <ArrowLeftRight className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+            <span className="text-slate-700 dark:text-slate-300">
+              <strong>Comparison Mode:</strong> Key numerical KPIs are evaluated side-by-side. For backlog ledgers and component matrices specific to one codebase, switch active target below:
+            </span>
+          </div>
+
+          <div className="inline-flex rounded-lg p-0.5 bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800 shrink-0">
+            <button
+              type="button"
+              onClick={() => setCompareTab('A')}
+              className={`px-3 py-1 rounded-md text-xs font-mono font-bold transition-all cursor-pointer ${
+                compareTab === 'A'
+                  ? 'bg-cyan-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              Scope A: {filters.product}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCompareTab('B')}
+              className={`px-3 py-1 rounded-md text-xs font-mono font-bold transition-all cursor-pointer ${
+                compareTab === 'B'
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              Scope B: {filtersB?.product || 'Scope B'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Category Content View */}
       <div className="transition-all duration-200">
@@ -193,63 +269,63 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
           <>
             {categoryId === 'executive' && (
               <ExecutiveScorecardView
-                scorecard={metrics.executiveScorecard}
-                testDistribution={metrics.testDistributionAll}
-                testBurnoutForecast={metrics.testBurnoutForecast}
-                jiraItems={jiraItems}
-                testRailExecutions={testRailExecutions}
+                scorecard={compareTab === 'B' && metricsB ? metricsB.executiveScorecard : metrics.executiveScorecard}
+                testDistribution={compareTab === 'B' && metricsB ? metricsB.testDistributionAll : metrics.testDistributionAll}
+                testBurnoutForecast={compareTab === 'B' && metricsB ? metricsB.testBurnoutForecast : metrics.testBurnoutForecast}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
+                testRailExecutions={compareTab === 'B' && isCompareMode ? testRailExecutionsB : testRailExecutions}
               />
             )}
 
             {categoryId === 'quality' && (
               <QualityDefectView
-                agingBuckets={metrics.agingBuckets}
-                severityCounts={metrics.severityCounts}
-                defectTrends={metrics.defectTrends}
-                mttrMttd={metrics.mttrMttd}
-                jiraItems={jiraItems}
+                agingBuckets={compareTab === 'B' && metricsB ? metricsB.agingBuckets : metrics.agingBuckets}
+                severityCounts={compareTab === 'B' && metricsB ? metricsB.severityCounts : metrics.severityCounts}
+                defectTrends={compareTab === 'B' && metricsB ? metricsB.defectTrends : metrics.defectTrends}
+                mttrMttd={compareTab === 'B' && metricsB ? metricsB.mttrMttd : metrics.mttrMttd}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
               />
             )}
 
             {categoryId === 'risk' && (
               <RiskGatingView
-                componentRisks={metrics.componentRisks}
-                jiraItems={jiraItems}
-                testRailExecutions={testRailExecutions}
+                componentRisks={compareTab === 'B' && metricsB ? metricsB.componentRisks : metrics.componentRisks}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
+                testRailExecutions={compareTab === 'B' && isCompareMode ? testRailExecutionsB : testRailExecutions}
               />
             )}
 
             {categoryId === 'automation' && (
               <AutomationView
-                automatedDistribution={metrics.testDistributionAutomated}
-                manualDistribution={metrics.testDistributionManual}
-                automationHealth={metrics.automationHealth}
-                testRailExecutions={testRailExecutions}
-                testAutomationForecast={metrics.testAutomationForecast}
+                automatedDistribution={compareTab === 'B' && metricsB ? metricsB.testDistributionAutomated : metrics.testDistributionAutomated}
+                manualDistribution={compareTab === 'B' && metricsB ? metricsB.testDistributionManual : metrics.testDistributionManual}
+                automationHealth={compareTab === 'B' && metricsB ? metricsB.automationHealth : metrics.automationHealth}
+                testRailExecutions={compareTab === 'B' && isCompareMode ? testRailExecutionsB : testRailExecutions}
+                testAutomationForecast={compareTab === 'B' && metricsB ? metricsB.testAutomationForecast : metrics.testAutomationForecast}
               />
             )}
 
             {categoryId === 'productivity' && (
               <ProductivityView
-                productivityMetrics={metrics.productivityMetrics}
-                squadSummary={metrics.squadSummary}
-                jiraItems={jiraItems}
+                productivityMetrics={compareTab === 'B' && metricsB ? metricsB.productivityMetrics : metrics.productivityMetrics}
+                squadSummary={compareTab === 'B' && metricsB ? metricsB.squadSummary : metrics.squadSummary}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
               />
             )}
 
             {categoryId === 'governance' && (
               <GovernanceSlaView
-                scorecard={metrics.executiveScorecard}
-                jiraItems={jiraItems}
+                scorecard={compareTab === 'B' && metricsB ? metricsB.executiveScorecard : metrics.executiveScorecard}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
               />
             )}
 
             {categoryId === 'leadingLagging' && (
               <LeadingLaggingNearMissView
-                leadingLaggingMetrics={metrics.leadingLaggingMetrics}
-                nearMissAnalytics={metrics.nearMissAnalytics}
-                jiraItems={jiraItems}
-                testRailExecutions={testRailExecutions}
+                leadingLaggingMetrics={compareTab === 'B' && metricsB ? metricsB.leadingLaggingMetrics : metrics.leadingLaggingMetrics}
+                nearMissAnalytics={compareTab === 'B' && metricsB ? metricsB.nearMissAnalytics : metrics.nearMissAnalytics}
+                jiraItems={compareTab === 'B' && isCompareMode ? jiraItemsB : jiraItems}
+                testRailExecutions={compareTab === 'B' && isCompareMode ? testRailExecutionsB : testRailExecutions}
               />
             )}
           </>
