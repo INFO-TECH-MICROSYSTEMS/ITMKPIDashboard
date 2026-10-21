@@ -10,10 +10,22 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   BarChart3, ChevronLeft, ChevronRight, Sun, Moon,
-  MapPin, Phone, Mail, X
+  MapPin, Phone, Mail, X, ShieldCheck, Activity,
+  AlertTriangle, Cpu, TrendingUp, Gauge, Compass
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { KPI_CATEGORIES } from '../constants/kpiConstants';
+
+const iconMap: Record<string, React.ReactNode> = {
+  ShieldCheck: <ShieldCheck className="w-4 h-4 shrink-0" />,
+  Activity: <Activity className="w-4 h-4 shrink-0" />,
+  AlertTriangle: <AlertTriangle className="w-4 h-4 shrink-0" />,
+  Cpu: <Cpu className="w-4 h-4 shrink-0" />,
+  TrendingUp: <TrendingUp className="w-4 h-4 shrink-0" />,
+  Gauge: <Gauge className="w-4 h-4 shrink-0" />,
+  Compass: <Compass className="w-4 h-4 shrink-0" />
+};
 
 interface SidebarProps {
   isMobileOpen: boolean;
@@ -32,10 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { t } = useTranslation();
   const location = useLocation();
 
-  const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/' || location.pathname.startsWith('/kpi');
-    return location.pathname.startsWith(path);
-  };
+  const isOverviewActive = location.pathname === '/' || location.pathname === '/kpi' || location.pathname === '/kpis';
 
   return (
     <>
@@ -133,25 +142,64 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Middle Navigation Links (Scrollable) */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1.5 custom-scrollbar">
-          {/* Quality Engineering KPI Platform Link */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1 custom-scrollbar">
+          {/* Main Overview Dashboard Link */}
           <Link
             to="/"
+            onClick={() => setIsMobileOpen(false)}
             title={isCollapsed ? t('nav.kpiDashboard', 'KPI Dashboard') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              isActive('/')
+              isOverviewActive
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
                 : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           >
             <BarChart3 className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <div className={`flex items-center gap-2 truncate ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
+            <div className={`flex items-center justify-between gap-2 truncate flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
               <span className="truncate">{t('nav.kpiDashboard', 'KPI Dashboard')}</span>
-              <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">
                 {t('nav.live', 'Live')}
               </span>
             </div>
           </Link>
+
+          {/* Section Divider & Header */}
+          <div className="pt-3 pb-1.5 px-3">
+            <div className={`text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 ${isCollapsed ? 'lg:text-center lg:px-0' : ''}`}>
+              {isCollapsed ? 'KPIs' : 'KPI Categories'}
+            </div>
+          </div>
+
+          {/* Individual Category Pages */}
+          {KPI_CATEGORIES.map(category => {
+            const isCatActive = location.pathname === category.path;
+            const categoryName = t(`kpiPlatform.categories.${category.id}`, category.name);
+            const badgeText = t(`kpiPlatform.categories.${category.id}Badge`, category.badge);
+
+            return (
+              <Link
+                key={category.id}
+                to={category.path}
+                onClick={() => setIsMobileOpen(false)}
+                title={isCollapsed ? categoryName : undefined}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                  isCatActive
+                    ? 'text-cyan-700 bg-cyan-50/80 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/50 dark:border-cyan-500/40 shadow-sm font-semibold'
+                    : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
+                } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
+              >
+                <span className={`${isCatActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  {iconMap[category.iconName]}
+                </span>
+                <div className={`flex flex-col min-w-0 flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
+                  <span className="truncate leading-tight">{categoryName}</span>
+                  <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                    {badgeText}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         {/* Bottom Section: Theme Toggle and HQ Contact Info */}
