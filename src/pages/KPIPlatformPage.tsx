@@ -8,18 +8,19 @@
 
 /**
  * Main Quality Engineering KPI & Data Mining Platform Page
- * Central orchestration view delivering interactive categorized KPI dashboards,
+ * Central orchestration overview delivering interactive categorized KPI dashboards,
  * multi-dimensional filtering, and data mining connector management.
  */
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, Activity, AlertTriangle, Cpu, 
   TrendingUp, Gauge, Compass, RefreshCw, Settings, Sparkles,
-  FileText, Presentation 
+  FileText, Presentation, ExternalLink
 } from 'lucide-react';
-import { useKPIData } from '../hooks/useKPIData';
+import { useKPIDataContext } from '../context/KPIDataContext';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
 import { KPIFilterBar } from '../components/kpi/KPIFilterBar';
 import { ConnectorConfigModal } from '../components/kpi/ConnectorConfigModal';
@@ -46,6 +47,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export const KPIPlatformPage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<string>('executive');
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
@@ -61,17 +63,18 @@ export const KPIPlatformPage: React.FC = () => {
     connectorConfigs,
     isLoading,
     isSyncing,
-    lastRefreshedAt,
     triggerSyncNow,
     resetToSampleData,
     saveConnectorConfig,
     metrics
-  } = useKPIData();
+  } = useKPIDataContext();
 
   const handleOpenExport = (format: 'pdf' | 'pptx') => {
     setExportFormat(format);
     setIsExportOpen(true);
   };
+
+  const activeCategoryDef = KPI_CATEGORIES.find(c => c.id === activeCategory) || KPI_CATEGORIES[0];
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 animate-in fade-in duration-300">
@@ -99,69 +102,61 @@ export const KPIPlatformPage: React.FC = () => {
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-['Outfit'] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-['Outfit']">
             {t('kpiPlatform.title')}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl mt-1">
             {t('kpiPlatform.subtitle')}
           </p>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Last refreshed timestamp */}
-          <div className="hidden xl:flex flex-col text-right text-[11px] font-mono text-slate-500 dark:text-slate-400 mr-2">
-            <span>{t('kpiPlatform.snapshot')}: {lastRefreshedAt.toLocaleTimeString()}</span>
-            <span className="text-[10px] text-cyan-600 dark:text-cyan-400">{t('kpiPlatform.indexedDb')}</span>
-          </div>
+        {/* Global Action Controls: Export Buttons, Connector Modal, Demo Data Reset */}
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          {/* Dedicated Category Page Deep-Link */}
+          <button
+            type="button"
+            onClick={() => navigate(activeCategoryDef.path)}
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs shadow-md shadow-cyan-600/20 transition-all cursor-pointer"
+            title={`Open dedicated page for ${activeCategoryDef.name}`}
+          >
+            <span>Open Dedicated View</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
 
           {/* Export PDF Button */}
           <button
             type="button"
             onClick={() => handleOpenExport('pdf')}
-            disabled={isLoading || isSyncing}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-semibold text-xs border border-rose-200 dark:border-rose-800/60 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
-            title="Export selected KPIs to branded PDF document"
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors cursor-pointer"
+            title={t('kpiPlatform.exportPdf', 'Export KPI Report (PDF)')}
           >
-            <FileText className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-            <span>{t('kpiPlatform.exportPdf', 'Export PDF')}</span>
+            <FileText className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span className="hidden sm:inline">{t('kpiPlatform.exportPdf', 'Export PDF')}</span>
           </button>
 
-          {/* Export Presentation (PPTX) Button */}
+          {/* Export PPT Button */}
           <button
             type="button"
             onClick={() => handleOpenExport('pptx')}
-            disabled={isLoading || isSyncing}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-semibold text-xs border border-amber-200 dark:border-amber-800/60 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
-            title="Export selected KPIs to PowerPoint presentation"
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors cursor-pointer"
+            title={t('kpiPlatform.exportPpt', 'Export KPI Deck (PowerPoint PPTX)')}
           >
-            <Presentation className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>{t('kpiPlatform.exportPpt', 'Export PPT')}</span>
+            <Presentation className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+            <span className="hidden sm:inline">{t('kpiPlatform.exportPpt', 'Export PPT')}</span>
           </button>
 
-          {/* Sync Now Button (Atomic Wipe & Replace) */}
-          <button
-            type="button"
-            onClick={() => triggerSyncNow()}
-            disabled={isSyncing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs transition-all shadow-sm hover:shadow cursor-pointer disabled:opacity-50"
-            title={t('kpiPlatform.syncTitle')}
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? t('kpiPlatform.miningData') : t('kpiPlatform.syncWipe')}</span>
-          </button>
-
-          {/* Connectors & Mining Settings Button */}
+          {/* Connectors & Schedule Modal Trigger */}
           <button
             type="button"
             onClick={() => setIsConfigOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-800 transition-colors shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 font-semibold text-xs border border-cyan-200 dark:border-cyan-500/30 transition-colors cursor-pointer"
+            title={t('kpiPlatform.syncTitle')}
           >
             <Settings className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-            <span>{t('kpiPlatform.connectorsSchedule')}</span>
+            <span className="hidden sm:inline">{t('kpiPlatform.connectorsSchedule')}</span>
           </button>
 
-          {/* Reset to Sample Dataset */}
+          {/* Reset Demo Data Button */}
           <button
             type="button"
             onClick={resetToSampleData}
@@ -305,17 +300,16 @@ export const KPIPlatformPage: React.FC = () => {
         isSyncing={isSyncing}
       />
 
-      {/* KPI Export Modal (PDF / PPTX) */}
+      {/* KPI Export Modal Dialog */}
       <KPIExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
-        filters={filters}
-        releaseWindow={releaseWindow}
         metrics={metrics}
-        jiraItems={jiraItems}
-        testRailExecutions={testRailExecutions}
+        filters={filters}
         initialFormat={exportFormat}
       />
+
     </div>
   );
 };
+export default KPIPlatformPage;
