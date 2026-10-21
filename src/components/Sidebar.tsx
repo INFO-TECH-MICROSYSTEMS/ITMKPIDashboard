@@ -9,7 +9,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, BarChart3, ChevronLeft, ChevronRight, Sun, Moon,
+  Home, ChevronLeft, ChevronRight, Sun, Moon,
   MapPin, Phone, Mail, X, ShieldCheck, Activity,
   AlertTriangle, Cpu, TrendingUp, Gauge, Compass
 } from 'lucide-react';
@@ -45,7 +45,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
 
   const isHomeActive = location.pathname === '/';
-  const isKpiActive = location.pathname === '/kpi' || location.pathname === '/kpis';
 
   return (
     <>
@@ -151,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             title={isCollapsed ? t('nav.home', 'Home') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isHomeActive
-                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
+                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm font-semibold'
                 : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           >
@@ -159,26 +158,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className={`truncate flex-1 ${isCollapsed ? 'lg:hidden' : 'block'}`}>
               {t('nav.home', 'Home')}
             </span>
-          </Link>
-
-          {/* Unified KPI Dashboard Link */}
-          <Link
-            to="/kpi"
-            onClick={() => setIsMobileOpen(false)}
-            title={isCollapsed ? t('nav.kpiDashboard', 'KPI Dashboard') : undefined}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              isKpiActive
-                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
-                : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
-            } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
-          >
-            <BarChart3 className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <div className={`flex items-center justify-between gap-2 truncate flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-              <span className="truncate">{t('nav.kpiDashboard', 'KPI Dashboard')}</span>
-              <span className="text-[9px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">
-                {t('nav.live', 'Live')}
-              </span>
-            </div>
           </Link>
 
           {/* Section Divider & Header */}

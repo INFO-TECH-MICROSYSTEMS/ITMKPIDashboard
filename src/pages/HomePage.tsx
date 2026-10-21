@@ -10,7 +10,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
-  BarChart3, ShieldCheck, Activity, AlertTriangle, Cpu, 
+  ShieldCheck, Activity, AlertTriangle, Cpu, 
   TrendingUp, Gauge, Compass, ArrowRight, Database, 
   Layers, Lock, Sparkles, FileText
 } from 'lucide-react';
@@ -70,20 +70,20 @@ export const HomePage: React.FC = () => {
           {/* Quick CTA Actions */}
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
-              to="/kpi"
+              to="/executive"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-600/25 transition-all hover:scale-[1.02] cursor-pointer"
             >
-              <BarChart3 className="w-4 h-4" />
-              <span>Launch Unified KPI Platform</span>
+              <ShieldCheck className="w-4 h-4" />
+              <span>Explore Executive Scorecard</span>
               <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
 
             <Link
-              to="/executive"
+              to="/quality"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:scale-[1.02] cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-              <span>View Executive Scorecard</span>
+              <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Quality & Defect Diagnostics</span>
             </Link>
           </div>
         </div>
@@ -250,11 +250,11 @@ export const HomePage: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Link
-            to="/kpi"
+            to="/executive"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition-all cursor-pointer"
           >
             <FileText className="w-4 h-4" />
-            <span>Open Export Modal in Unified View</span>
+            <span>Open Executive Export & Reporting</span>
           </Link>
         </div>
       </div>

@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   RefreshCw, Settings, Sparkles, FileText, Presentation, 
   ChevronRight, ShieldCheck, Activity, AlertTriangle, 
@@ -45,7 +45,6 @@ interface KPICategoryPageProps {
 
 export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<'pdf' | 'pptx'>('pdf');
@@ -80,7 +79,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-slate-400">
         <Link to="/" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
-          {t('nav.kpiDashboard', 'KPI Dashboard')}
+          {t('nav.home', 'Home')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
         <span className="text-slate-900 dark:text-slate-200 font-semibold truncate">
@@ -180,39 +179,6 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         totalFilteredJira={jiraItems.length}
         totalFilteredTests={testRailExecutions.length}
       />
-
-      {/* Secondary Fast Category Switcher Pill Tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7 gap-2.5 items-stretch">
-        {KPI_CATEGORIES.map(category => {
-          const isActive = currentCategory.id === category.id;
-          return (
-            <button
-              key={category.id}
-              type="button"
-              onClick={() => navigate(category.path)}
-              className={`flex flex-col justify-between h-[88px] min-h-[88px] max-h-[88px] w-full p-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer text-left border ${
-                isActive
-                  ? 'bg-gradient-to-br from-cyan-600 via-blue-600 to-purple-600 text-white border-transparent shadow-md shadow-cyan-600/20'
-                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800 shadow-2xs'
-              }`}
-            >
-              <div className="flex items-center justify-between gap-1.5 w-full">
-                <span className={`p-1.5 rounded-lg shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-cyan-50 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400'}`}>
-                  {iconMap[category.iconName]}
-                </span>
-                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full truncate max-w-[120px] text-right ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-                }`}>
-                  {t(`kpiPlatform.categories.${category.id}Badge`, category.badge)}
-                </span>
-              </div>
-              <span className="font-['Outfit'] font-bold leading-tight line-clamp-2 mt-auto">
-                {t(`kpiPlatform.categories.${category.id}`, category.name)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
 
       {/* Category Content View */}
       <div className="transition-all duration-200">

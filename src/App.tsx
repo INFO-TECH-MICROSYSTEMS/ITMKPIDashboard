@@ -15,7 +15,6 @@ import { TopHeader } from './components/TopHeader';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { HomePage } from './pages/HomePage';
-import { KPIPlatformPage } from './pages/KPIPlatformPage';
 import { KPICategoryPage } from './pages/KPICategoryPage';
 
 export function App() {
@@ -61,10 +60,6 @@ export function App() {
                 <Routes>
                   {/* Root Route: Informative Landing Page */}
                   <Route path="/" element={<HomePage />} />
-
-                  {/* Unified KPI Overview Dashboard */}
-                  <Route path="/kpi" element={<KPIPlatformPage />} />
-                  <Route path="/kpis" element={<KPIPlatformPage />} />
 
                   {/* Dedicated Category Pages */}
                   <Route path="/executive" element={<KPICategoryPage categoryId="executive" />} />
