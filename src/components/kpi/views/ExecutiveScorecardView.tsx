@@ -622,40 +622,28 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
       ) : (
         <div className="space-y-4">
           {/* Scope 1 Test Distribution */}
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase">
-                {scopeALabel} Execution Health
-              </span>
-              <span className="text-xs font-mono text-slate-500">
-                {testDistribution.total.toLocaleString()} tests
-              </span>
-            </div>
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
             <StackedProgressBar
               distribution={testDistribution}
-              title={`${scopeALabel} Distribution`}
+              title={t('kpiPlatform.executiveView.stackedTitle', 'Consolidated QA Execution Health (Automated + Manual)')}
+              scopeLabel={scopeALabel}
+              scopeType="primary"
               onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistribution, 'All'))}
             />
           </div>
 
           {/* Scope 2 Test Distribution directly underneath */}
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 uppercase">
-                {scopeBLabel} Execution Health
-              </span>
-              <span className="text-xs font-mono text-slate-500">
-                {(testDistributionB?.total ?? 0).toLocaleString()} tests
-              </span>
-            </div>
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
             {testDistributionB ? (
               <StackedProgressBar
                 distribution={testDistributionB}
-                title={`${scopeBLabel} Distribution`}
+                title={t('kpiPlatform.executiveView.stackedTitle', 'Consolidated QA Execution Health (Automated + Manual)')}
+                scopeLabel={scopeBLabel}
+                scopeType="secondary"
                 onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistributionB, 'All'))}
               />
             ) : (
-              <div className="text-xs font-mono text-slate-400 py-4">Scope 2 distribution unavailable</div>
+              <div className="text-xs font-mono text-slate-400 py-4">Distribution unavailable</div>
             )}
           </div>
         </div>
@@ -765,53 +753,51 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           </div>
 
           {/* Scope 1 Burnout Forecast */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                {scopeALabel} Runway
-              </span>
-              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${testBurnoutForecast.isVelocityHealthy ? 'bg-emerald-50 text-emerald-600 border-emerald-300' : 'bg-amber-50 text-amber-600 border-amber-300'}`}>
-                {testBurnoutForecast.daysToCompletion}d runway • {testBurnoutForecast.estimatedCompletionDate}
-              </span>
-            </div>
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
             <AreaTrendChart
               data={testBurnoutForecast.historyAndForecast}
-              title={`${scopeALabel} Burnout`}
-              series1Name="Total"
-              series2Name="Done"
-              series3Name="Remaining"
+              title={t('kpiPlatform.executiveView.burnoutTitle')}
+              scopeLabel={scopeALabel}
+              scopeType="primary"
+              series1Name={t('kpiPlatform.executiveView.totalTestsSeries')}
+              series2Name={t('kpiPlatform.executiveView.completedTestsSeries')}
+              series3Name={t('kpiPlatform.executiveView.remainingTestsSeries')}
+              series1Color="#f43f5e"
+              series2Color="#10b981"
+              series3Color="#f59e0b"
+              projectionLineColor="#06b6d4"
+              series3ProjectionLineColor="#fbbf24"
+              forecastBadge={`${testBurnoutForecast.daysToCompletion}d runway • ${testBurnoutForecast.estimatedCompletionDate}`}
+              forecastStatus={testBurnoutForecast.isVelocityHealthy ? 'emerald' : 'amber'}
               onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast))}
               height={160}
             />
           </div>
 
           {/* Scope 2 Burnout Forecast directly underneath */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400">
-                {scopeBLabel} Runway
-              </span>
-              {testBurnoutForecastB ? (
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${testBurnoutForecastB.isVelocityHealthy ? 'bg-emerald-50 text-emerald-600 border-emerald-300' : 'bg-amber-50 text-amber-600 border-amber-300'}`}>
-                  {testBurnoutForecastB.daysToCompletion}d runway • {testBurnoutForecastB.estimatedCompletionDate}
-                </span>
-              ) : (
-                <span className="text-[10px] text-slate-400">Runway unavailable</span>
-              )}
-            </div>
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
             {testBurnoutForecastB ? (
               <AreaTrendChart
                 data={testBurnoutForecastB.historyAndForecast}
-                title={`${scopeBLabel} Burnout`}
-                series1Name="Total"
-                series2Name="Done"
-                series3Name="Remaining"
+                title={t('kpiPlatform.executiveView.burnoutTitle')}
+                scopeLabel={scopeBLabel}
+                scopeType="secondary"
+                series1Name={t('kpiPlatform.executiveView.totalTestsSeries')}
+                series2Name={t('kpiPlatform.executiveView.completedTestsSeries')}
+                series3Name={t('kpiPlatform.executiveView.remainingTestsSeries')}
+                series1Color="#f43f5e"
+                series2Color="#10b981"
+                series3Color="#f59e0b"
+                projectionLineColor="#06b6d4"
+                series3ProjectionLineColor="#fbbf24"
+                forecastBadge={`${testBurnoutForecastB.daysToCompletion}d runway • ${testBurnoutForecastB.estimatedCompletionDate}`}
+                forecastStatus={testBurnoutForecastB.isVelocityHealthy ? 'emerald' : 'amber'}
                 onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecastB))}
                 height={160}
               />
             ) : (
               <div className="h-[160px] flex items-center justify-center text-xs font-mono text-slate-400">
-                Scope 2 burnout data not available
+                Runway data not available
               </div>
             )}
           </div>

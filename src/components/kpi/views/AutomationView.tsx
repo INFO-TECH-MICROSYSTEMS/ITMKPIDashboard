@@ -292,7 +292,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Area Trend & Burnout Chart: Scope 1 */}
           <AreaTrendChart
             data={testAutomationForecast.historyAndForecast}
-            title={isCompareMode ? `${t('kpiPlatform.automationView.burnoutTitle')} — ${scopeALabel}` : t('kpiPlatform.automationView.burnoutTitle')}
+            title={t('kpiPlatform.automationView.burnoutTitle')}
+            scopeLabel={isCompareMode ? scopeALabel : undefined}
+            scopeType="primary"
             series1Name={t('kpiPlatform.automationView.totalTestsSeries', 'Total Tests')}
             series2Name={t('kpiPlatform.automationView.automatedTestsSeries', 'Automated Tests')}
             series3Name={t('kpiPlatform.automationView.manualTestsSeries', 'Manual Tests')}
@@ -310,21 +312,19 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Scope 2 Forecast Stacked Directly Below Scope 1 */}
           {isCompareMode && testAutomationForecastB && (
             <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} Automation Runway</span>
-              </div>
               <AreaTrendChart
                 data={testAutomationForecastB.historyAndForecast}
-                title={`${t('kpiPlatform.automationView.burnoutTitle')} — ${scopeBLabel}`}
+                title={t('kpiPlatform.automationView.burnoutTitle')}
+                scopeLabel={scopeBLabel}
+                scopeType="secondary"
                 series1Name={t('kpiPlatform.automationView.totalTestsSeries', 'Total Tests')}
                 series2Name={t('kpiPlatform.automationView.automatedTestsSeries', 'Automated Tests')}
                 series3Name={t('kpiPlatform.automationView.manualTestsSeries', 'Manual Tests')}
-                series1Color="#c084fc"
-                series2Color="#a855f7"
-                series3Color="#eab308"
-                projectionLineColor="#9333ea"
-                series3ProjectionLineColor="#f59e0b"
+                series1Color="#f43f5e"
+                series2Color="#10b981"
+                series3Color="#f59e0b"
+                projectionLineColor="#06b6d4"
+                series3ProjectionLineColor="#fbbf24"
                 forecastBadge={`Target 100% Automated: ${testAutomationForecastB.estimatedAllAutomatedDate}`}
                 forecastStatus={testAutomationForecastB.isVelocityHealthy ? 'emerald' : 'amber'}
                 height={185}
@@ -360,9 +360,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Scope 1 Bar */}
           <div className="space-y-1">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} ({automatedDistribution.total.toLocaleString()} runs)</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel} ({automatedDistribution.total.toLocaleString()} runs)</span>
               </span>
             )}
             <StackedProgressBar 
@@ -374,9 +374,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Scope 2 Bar Stacked Below */}
           {isCompareMode && automatedDistributionB && (
             <div className="space-y-1 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} ({automatedDistributionB.total.toLocaleString()} runs)</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel} ({automatedDistributionB.total.toLocaleString()} runs)</span>
               </span>
               <StackedProgressBar distribution={automatedDistributionB} />
             </div>
@@ -407,9 +407,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Scope 1 Bar */}
           <div className="space-y-1">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel} ({manualDistribution.total.toLocaleString()} runs)</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel} ({manualDistribution.total.toLocaleString()} runs)</span>
               </span>
             )}
             <StackedProgressBar 
@@ -421,9 +421,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           {/* Scope 2 Bar Stacked Below */}
           {isCompareMode && manualDistributionB && (
             <div className="space-y-1 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} ({manualDistributionB.total.toLocaleString()} runs)</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel} ({manualDistributionB.total.toLocaleString()} runs)</span>
               </span>
               <StackedProgressBar distribution={manualDistributionB} />
             </div>

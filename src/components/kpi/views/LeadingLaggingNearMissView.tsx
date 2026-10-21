@@ -207,9 +207,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Primary Leading Indicators */}
           <div className="space-y-3">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             {leadingLaggingMetrics.leadingIndicators.map(indicator => {
@@ -271,9 +271,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Comparative Leading Indicators Stacked Below */}
           {isCompareMode && leadingLaggingMetricsB && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               {leadingLaggingMetricsB.leadingIndicators.map(indicator => (
                 <div 
@@ -327,9 +327,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Primary Lagging Indicators */}
           <div className="space-y-3">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             {leadingLaggingMetrics.laggingIndicators.map(indicator => {
@@ -395,9 +395,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Comparative Lagging Indicators Stacked Below */}
           {isCompareMode && leadingLaggingMetricsB && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               {leadingLaggingMetricsB.laggingIndicators.map(indicator => (
                 <div 
@@ -453,9 +453,9 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
 
           <div className="space-y-3">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             {[
@@ -515,16 +515,16 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Comparative Method Distribution Stacked Below */}
           {isCompareMode && nearMissAnalyticsB && (
             <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               {[
-                { label: 'Formal Scripted TestRail', count: nearMissAnalyticsB.discoveryMethodDistribution.formalScripted, color: 'bg-cyan-500' },
-                { label: 'Automated CI/CD Pipeline', count: nearMissAnalyticsB.discoveryMethodDistribution.automatedCi, color: 'bg-emerald-500' },
-                { label: 'Exploratory & Ad-hoc Probing', count: nearMissAnalyticsB.discoveryMethodDistribution.exploratoryAdHoc, color: 'bg-amber-500' },
-                { label: 'Bug Bash & Dogfooding', count: nearMissAnalyticsB.discoveryMethodDistribution.bugBashDogfood, color: 'bg-purple-500' },
-                { label: 'Escaped Customer APARs', count: nearMissAnalyticsB.discoveryMethodDistribution.productionEscaped, color: 'bg-rose-500' }
+                { label: 'Formal Scripted TestRail', count: nearMissAnalyticsB.discoveryMethodDistribution.formalScripted, color: 'bg-cyan-500', badgeColor: 'text-cyan-600 dark:text-cyan-400' },
+                { label: 'Automated CI/CD Pipeline', count: nearMissAnalyticsB.discoveryMethodDistribution.automatedCi, color: 'bg-emerald-500', badgeColor: 'text-emerald-600 dark:text-emerald-400' },
+                { label: 'Exploratory & Ad-hoc Probing', count: nearMissAnalyticsB.discoveryMethodDistribution.exploratoryAdHoc, color: 'bg-amber-500', badgeColor: 'text-amber-600 dark:text-amber-400' },
+                { label: 'Bug Bash & Dogfooding', count: nearMissAnalyticsB.discoveryMethodDistribution.bugBashDogfood, color: 'bg-purple-500', badgeColor: 'text-purple-600 dark:text-purple-400' },
+                { label: 'Escaped Customer APARs', count: nearMissAnalyticsB.discoveryMethodDistribution.productionEscaped, color: 'bg-rose-500', badgeColor: 'text-rose-600 dark:text-rose-400' }
               ].map(item => {
                 const total = 
                   nearMissAnalyticsB.discoveryMethodDistribution.formalScripted +
@@ -538,7 +538,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                   <div key={item.label} className="space-y-1">
                     <div className="flex justify-between text-xs font-mono">
                       <span className="text-slate-700 dark:text-slate-300 font-medium">{item.label}</span>
-                      <span className="font-bold text-purple-600 dark:text-purple-400">{item.count} ({pct}%)</span>
+                      <span className={`font-bold ${item.badgeColor}`}>{item.count} ({pct}%)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div className={`${item.color} h-full rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />

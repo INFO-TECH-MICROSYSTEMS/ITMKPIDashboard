@@ -481,7 +481,9 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         <div className="lg:col-span-8 space-y-4">
           <AreaTrendChart
             data={defectTrends}
-            title={isCompareMode ? `${t('kpiPlatform.qualityView.trendChartTitle')} — ${scopeALabel}` : t('kpiPlatform.qualityView.trendChartTitle')}
+            title={t('kpiPlatform.qualityView.trendChartTitle')}
+            scopeLabel={isCompareMode ? scopeALabel : undefined}
+            scopeType="primary"
             series1Name={t('kpiPlatform.qualityView.discoveredDefects')}
             series2Name={t('kpiPlatform.qualityView.resolvedBurnedOut')}
             series1Color="#f43f5e" // Rose
@@ -495,11 +497,13 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {isCompareMode && defectTrendsB && (
             <AreaTrendChart
               data={defectTrendsB}
-              title={`${t('kpiPlatform.qualityView.trendChartTitle')} — ${scopeBLabel}`}
+              title={t('kpiPlatform.qualityView.trendChartTitle')}
+              scopeLabel={scopeBLabel}
+              scopeType="secondary"
               series1Name={t('kpiPlatform.qualityView.discoveredDefects')}
               series2Name={t('kpiPlatform.qualityView.resolvedBurnedOut')}
-              series1Color="#c084fc" // Purple light
-              series2Color="#a855f7" // Purple dark
+              series1Color="#f43f5e" // Rose (same color as primary)
+              series2Color="#10b981" // Emerald (same color as primary)
               height={240}
               forecastBadge={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? '● Burndown Active' : '▲ Net Intake Growth'}
               forecastStatus={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
@@ -538,9 +542,9 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* Scope 1 Severity Distribution */}
           <div className="space-y-3">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             {[
@@ -568,15 +572,15 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           {/* Scope 2 Severity Distribution Stacked Below */}
           {isCompareMode && severityCountsB && (
             <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               {[
-                { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-500', text: 'text-rose-500' },
-                { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCountsB.criticalP2, color: 'bg-amber-500', text: 'text-amber-500' },
-                { label: t('kpiPlatform.qualityView.p3Major'), count: severityCountsB.majorP3, color: 'bg-purple-500', text: 'text-purple-500' },
-                { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCountsB.minorP4, color: 'bg-slate-400', text: 'text-slate-500' }
+                { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
+                { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCountsB.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
+                { label: t('kpiPlatform.qualityView.p3Major'), count: severityCountsB.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
+                { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCountsB.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
               ].map(sev => {
                 const total = severityCountsB.blockerP1 + severityCountsB.criticalP2 + severityCountsB.majorP3 + severityCountsB.minorP4;
                 const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';

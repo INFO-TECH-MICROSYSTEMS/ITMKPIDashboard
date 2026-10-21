@@ -131,6 +131,8 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
 export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
   data: TrendPoint[];
   title: string;
+  scopeLabel?: string;
+  scopeType?: 'primary' | 'secondary';
   series1Name: string;
   series2Name?: string;
   series3Name?: string;
@@ -147,6 +149,8 @@ export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   data,
   title,
+  scopeLabel,
+  scopeType,
   series1Name,
   series2Name,
   series3Name,
@@ -275,64 +279,140 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono">
-      <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-bold text-slate-900 dark:text-white">
-            {title}
-          </span>
-          {forecastBadge && (
-            onJustify ? (
+      {/* Two-Line Header when scopeLabel is provided */}
+      {scopeLabel ? (
+        <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+          {/* Line 1: Scope indicator dot + scope label */}
+          <div 
+            className={`flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider cursor-help ${
+              scopeType === 'secondary' ? 'text-purple-700 dark:text-purple-400' : 'text-cyan-700 dark:text-cyan-400'
+            }`}
+            title={scopeLabel}
+          >
+            <span className={`w-2 h-2 rounded-full shrink-0 ${scopeType === 'secondary' ? 'bg-purple-500' : 'bg-cyan-500'}`} />
+            <span className="truncate">{scopeLabel}</span>
+          </div>
+
+          {/* Line 2: Metric Title, Forecast Badge, Audit Help button, and Series Legends */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
+              <span className="font-bold text-slate-900 dark:text-white">
+                {title}
+              </span>
+              {forecastBadge && (
+                onJustify ? (
+                  <button
+                    type="button"
+                    onClick={onJustify}
+                    className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs ${activeForecastTheme}`}
+                    title="Click to view explanation, formulas, and audit clarification"
+                  >
+                    <span>{forecastBadge}</span>
+                    <HelpCircle className="w-3 h-3 opacity-70" />
+                  </button>
+                ) : (
+                  <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs ${activeForecastTheme}`}>
+                    {forecastBadge}
+                  </span>
+                )
+              )}
+              {onJustify && (
+                <button
+                  type="button"
+                  onClick={onJustify}
+                  className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                  title="Click to view metric clarification & audit modal"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
+              </div>
+              {series2Name && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
+                  <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
+                </div>
+              )}
+              {series3Name && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
+                  <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
+                </div>
+              )}
+              {hasProjection && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+                  <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-slate-900 dark:text-white">
+              {title}
+            </span>
+            {forecastBadge && (
+              onJustify ? (
+                <button
+                  type="button"
+                  onClick={onJustify}
+                  className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs ${activeForecastTheme}`}
+                  title="Click to view explanation, formulas, and audit clarification"
+                >
+                  <span>{forecastBadge}</span>
+                  <HelpCircle className="w-3 h-3 opacity-70" />
+                </button>
+              ) : (
+                <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs ${activeForecastTheme}`}>
+                  {forecastBadge}
+                </span>
+              )
+            )}
+            {onJustify && (
               <button
                 type="button"
                 onClick={onJustify}
-                className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs ${activeForecastTheme}`}
-                title="Click to view explanation, formulas, and audit clarification"
+                className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Click to view metric clarification & audit modal"
               >
-                <span>{forecastBadge}</span>
-                <HelpCircle className="w-3 h-3 opacity-70" />
+                <HelpCircle className="w-3.5 h-3.5" />
               </button>
-            ) : (
-              <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs ${activeForecastTheme}`}>
-                {forecastBadge}
-              </span>
-            )
-          )}
-          {onJustify && (
-            <button
-              type="button"
-              onClick={onJustify}
-              className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Click to view metric clarification & audit modal"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
-            <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
+            )}
           </div>
-          {series2Name && (
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
-              <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
+              <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
             </div>
-          )}
-          {series3Name && (
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
-              <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
-            </div>
-          )}
-          {hasProjection && (
-            <div className="flex items-center gap-1.5">
-              <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
-              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
-            </div>
-          )}
+            {series2Name && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
+              </div>
+            )}
+            {series3Name && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
+              </div>
+            )}
+            {hasProjection && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+                <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="w-full overflow-x-auto">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto min-w-[380px]">
@@ -557,11 +637,15 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 export interface StackedProgressBarProps extends IBaseMetricWidgetProps {
   distribution: TestStatusDistribution;
   title?: string;
+  scopeLabel?: string;
+  scopeType?: 'primary' | 'secondary';
 }
 
 export const StackedProgressBar: React.FC<StackedProgressBarProps> = ({ 
   distribution, 
   title, 
+  scopeLabel,
+  scopeType,
   onJustify 
 }) => {
   const { t } = useTranslation();
@@ -575,6 +659,19 @@ export const StackedProgressBar: React.FC<StackedProgressBarProps> = ({
 
   return (
     <div className="space-y-2">
+      {/* Scope Info on Line 1 if provided */}
+      {scopeLabel && (
+        <div 
+          className={`flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider cursor-help ${
+            scopeType === 'secondary' ? 'text-purple-700 dark:text-purple-400' : 'text-cyan-700 dark:text-cyan-400'
+          }`}
+          title={scopeLabel}
+        >
+          <span className={`w-2 h-2 rounded-full shrink-0 ${scopeType === 'secondary' ? 'bg-purple-500' : 'bg-cyan-500'}`} />
+          <span className="truncate">{scopeLabel} ({total.toLocaleString()} runs)</span>
+        </div>
+      )}
+
       {title && (
         <div className="flex justify-between items-center text-xs">
           <div className="flex items-center gap-1.5">
@@ -672,14 +769,16 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   compareTrend,
   compareTrendPositive,
   compareStatusBadge,
-  compareStatusColor = 'purple',
+  compareStatusColor,
   compareOnJustify,
   delta,
   deltaPositive
 }) => {
   const { t } = useTranslation();
   const themeA = KPI_STATUS_THEMES[statusColor];
-  const themeB = KPI_STATUS_THEMES[compareStatusColor];
+  // In comparison mode, both scopes use the same theme/color styles corresponding to statusColor,
+  // while only the scope info indicator dot and text use cyan for Primary and purple for Secondary.
+  const themeB = compareStatusColor ? KPI_STATUS_THEMES[compareStatusColor] : KPI_STATUS_THEMES[statusColor];
 
   // Standard Single-Scope View
   if (!isComparing) {
