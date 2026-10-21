@@ -18,7 +18,8 @@
     "expandSidebar": "Развернуть панель",
     "lightMode": "Светлый режим",
     "darkMode": "Темный режим",
-    "ottawaCanada": "Оттава, Канада (EST)"
+    "ottawaCanada": "Оттава, Канада (EST)",
+    "home": "Главная"
   },
   "footer": {
     "allRightsReserved": "Все права защищены."

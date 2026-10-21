@@ -18,7 +18,8 @@
     "expandSidebar": "展开侧边栏",
     "lightMode": "浅色模式",
     "darkMode": "深色模式",
-    "ottawaCanada": "加拿大渥太华 (EST)"
+    "ottawaCanada": "加拿大渥太华 (EST)",
+    "home": "首页"
   },
   "footer": {
     "allRightsReserved": "版权所有，保留一切权利。"

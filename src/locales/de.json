@@ -18,7 +18,8 @@
     "expandSidebar": "Seitenleiste ausklappen",
     "lightMode": "Hellmodus",
     "darkMode": "Dunkelmodus",
-    "ottawaCanada": "Ottawa, Kanada (EST)"
+    "ottawaCanada": "Ottawa, Kanada (EST)",
+    "home": "Startseite"
   },
   "footer": {
     "allRightsReserved": "Alle Rechte vorbehalten."

@@ -18,7 +18,8 @@
     "expandSidebar": "Expandir barra lateral",
     "lightMode": "Modo Claro",
     "darkMode": "Modo Oscuro",
-    "ottawaCanada": "Ottawa, Canadá (EST)"
+    "ottawaCanada": "Ottawa, Canadá (EST)",
+    "home": "Inicio"
   },
   "footer": {
     "allRightsReserved": "Todos los derechos reservados."
