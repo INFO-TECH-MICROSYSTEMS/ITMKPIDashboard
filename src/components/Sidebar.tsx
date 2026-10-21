@@ -9,7 +9,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  BarChart3, ChevronLeft, ChevronRight, Sun, Moon,
+  Home, BarChart3, ChevronLeft, ChevronRight, Sun, Moon,
   MapPin, Phone, Mail, X, ShieldCheck, Activity,
   AlertTriangle, Cpu, TrendingUp, Gauge, Compass
 } from 'lucide-react';
@@ -44,7 +44,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { t } = useTranslation();
   const location = useLocation();
 
-  const isOverviewActive = location.pathname === '/' || location.pathname === '/kpi' || location.pathname === '/kpis';
+  const isHomeActive = location.pathname === '/';
+  const isKpiActive = location.pathname === '/kpi' || location.pathname === '/kpis';
 
   return (
     <>
@@ -93,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   ITM KPI
                 </span>
                 <span className="text-[10px] tracking-widest uppercase text-cyan-600 dark:text-cyan-400 font-semibold font-mono truncate">
-                  DASHBOARD
+                  PLATFORM
                 </span>
               </div>
             </Link>
@@ -143,13 +144,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Middle Navigation Links (Scrollable) */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1 custom-scrollbar">
-          {/* Main Overview Dashboard Link */}
+          {/* Home Landing Page Link */}
           <Link
             to="/"
             onClick={() => setIsMobileOpen(false)}
+            title={isCollapsed ? t('nav.home', 'Home') : undefined}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              isHomeActive
+                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
+                : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
+            } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
+          >
+            <Home className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
+            <span className={`truncate flex-1 ${isCollapsed ? 'lg:hidden' : 'block'}`}>
+              {t('nav.home', 'Home')}
+            </span>
+          </Link>
+
+          {/* Unified KPI Dashboard Link */}
+          <Link
+            to="/kpi"
+            onClick={() => setIsMobileOpen(false)}
             title={isCollapsed ? t('nav.kpiDashboard', 'KPI Dashboard') : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              isOverviewActive
+              isKpiActive
                 ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm'
                 : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
             } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
@@ -275,3 +293,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
+export default Sidebar;
