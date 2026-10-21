@@ -88,8 +88,12 @@ export interface IMetricCardContract extends IBaseMetricWidgetProps {
   scopeALabel?: string;
   scopeBLabel?: string;
   compareValue?: string | number;
+  compareTarget?: string;
+  compareTrend?: string;
+  compareTrendPositive?: boolean;
   compareStatusBadge?: string;
   compareStatusColor?: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
+  compareOnJustify?: () => void;
   delta?: string;
   deltaPositive?: boolean;
 }
