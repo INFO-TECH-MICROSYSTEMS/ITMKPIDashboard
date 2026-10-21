@@ -203,9 +203,12 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* Scope 1 Readiness Card */}
           <div className={`p-6 rounded-3xl border relative overflow-hidden transition-all duration-300 ${currentThemeA.card}`}>
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400">
+              <div 
+                className="flex items-center gap-2 cursor-help"
+                title={scopeALabel}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shrink-0" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 truncate max-w-md">
                   {scopeALabel}
                 </span>
               </div>
@@ -219,31 +222,45 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-around gap-6 my-4">
-              <GaugeMeter
-                score={scorecard.overallScore}
-                title={t('kpiPlatform.executiveView.qualityIndex')}
-                subtitle={scopeALabel}
-                grade={scorecard.releaseReadyGrade}
-                size={170}
-                onJustify={handleOpenReleaseIndexJustificationA}
-              />
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full sm:w-auto">
-                <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.gatingDefects')}</span>
-                  <span className="text-lg font-bold">{scorecard.gatingDefectCount} {t('kpiPlatform.executiveView.blockersUnit')}</span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-4">
+              <div className="lg:col-span-4 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 pb-4 lg:pb-0 lg:pr-4">
+                <GaugeMeter
+                  score={scorecard.overallScore}
+                  title={t('kpiPlatform.executiveView.qualityIndex')}
+                  subtitle={t('kpiPlatform.executiveView.qualityIndexSubtitle')}
+                  grade={scorecard.releaseReadyGrade}
+                  size={175}
+                  onJustify={handleOpenReleaseIndexJustificationA}
+                />
+              </div>
+
+              <div className="lg:col-span-8 space-y-3">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-black font-['Outfit'] tracking-tight text-slate-900 dark:text-white">
+                    {t('kpiPlatform.executiveView.assessmentTitle')}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mt-1">
+                    {t('kpiPlatform.executiveView.assessmentDesc')}
+                  </p>
                 </div>
-                <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.defectLeakage')}</span>
-                  <span className="text-lg font-bold">{scorecard.defectLeakageRate}%</span>
-                </div>
-                <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.automationCoverage')}</span>
-                  <span className="text-lg font-bold">{scorecard.automationCoverage}%</span>
-                </div>
-                <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.slaAdherence')}</span>
-                  <span className="text-lg font-bold">{scorecard.slaAdherenceRate}%</span>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
+                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.gatingDefects')}</span>
+                    <span className="text-lg font-bold">{scorecard.gatingDefectCount} {t('kpiPlatform.executiveView.blockersUnit')}</span>
+                  </div>
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
+                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.defectLeakage')}</span>
+                    <span className="text-lg font-bold">{scorecard.defectLeakageRate}%</span>
+                  </div>
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
+                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.automationCoverage')}</span>
+                    <span className="text-lg font-bold">{scorecard.automationCoverage}%</span>
+                  </div>
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeA.calloutBg} ${currentThemeA.calloutBorder}`}>
+                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.slaAdherence')}</span>
+                    <span className="text-lg font-bold">{scorecard.slaAdherenceRate}%</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -252,9 +269,12 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           {/* Scope 2 Readiness Card directly below Scope 1 */}
           <div className={`p-6 rounded-3xl border relative overflow-hidden transition-all duration-300 ${scorecardB ? currentThemeB.card : 'bg-slate-50 dark:bg-slate-900 border-slate-200'}`}>
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400">
+              <div 
+                className="flex items-center gap-2 cursor-help"
+                title={scopeBLabel}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 truncate max-w-md">
                   {scopeBLabel}
                 </span>
               </div>
@@ -271,31 +291,45 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             </div>
 
             {scorecardB ? (
-              <div className="flex flex-col sm:flex-row items-center justify-around gap-6 my-4">
-                <GaugeMeter
-                  score={scorecardB.overallScore}
-                  title={t('kpiPlatform.executiveView.qualityIndex')}
-                  subtitle={scopeBLabel}
-                  grade={scorecardB.releaseReadyGrade}
-                  size={170}
-                  onJustify={handleOpenReleaseIndexJustificationB}
-                />
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full sm:w-auto">
-                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
-                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.gatingDefects')}</span>
-                    <span className="text-lg font-bold">{scorecardB.gatingDefectCount} {t('kpiPlatform.executiveView.blockersUnit')}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-4">
+                <div className="lg:col-span-4 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 pb-4 lg:pb-0 lg:pr-4">
+                  <GaugeMeter
+                    score={scorecardB.overallScore}
+                    title={t('kpiPlatform.executiveView.qualityIndex')}
+                    subtitle={t('kpiPlatform.executiveView.qualityIndexSubtitle')}
+                    grade={scorecardB.releaseReadyGrade}
+                    size={175}
+                    onJustify={handleOpenReleaseIndexJustificationB}
+                  />
+                </div>
+
+                <div className="lg:col-span-8 space-y-3">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black font-['Outfit'] tracking-tight text-slate-900 dark:text-white">
+                      {t('kpiPlatform.executiveView.assessmentTitle')}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mt-1">
+                      {t('kpiPlatform.executiveView.assessmentDesc')}
+                    </p>
                   </div>
-                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
-                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.defectLeakage')}</span>
-                    <span className="text-lg font-bold">{scorecardB.defectLeakageRate}%</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
-                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.automationCoverage')}</span>
-                    <span className="text-lg font-bold">{scorecardB.automationCoverage}%</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
-                    <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.slaAdherence')}</span>
-                    <span className="text-lg font-bold">{scorecardB.slaAdherenceRate}%</span>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                    <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
+                      <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.gatingDefects')}</span>
+                      <span className="text-lg font-bold">{scorecardB.gatingDefectCount} {t('kpiPlatform.executiveView.blockersUnit')}</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
+                      <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.defectLeakage')}</span>
+                      <span className="text-lg font-bold">{scorecardB.defectLeakageRate}%</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
+                      <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.automationCoverage')}</span>
+                      <span className="text-lg font-bold">{scorecardB.automationCoverage}%</span>
+                    </div>
+                    <div className={`p-3 rounded-xl border text-xs font-mono ${currentThemeB.calloutBg} ${currentThemeB.calloutBorder}`}>
+                      <span className="text-slate-500 dark:text-slate-400 block">{t('kpiPlatform.executiveView.slaAdherence')}</span>
+                      <span className="text-lg font-bold">{scorecardB.slaAdherenceRate}%</span>
+                    </div>
                   </div>
                 </div>
               </div>

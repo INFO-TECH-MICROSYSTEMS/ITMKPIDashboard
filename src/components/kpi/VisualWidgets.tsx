@@ -737,7 +737,10 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0 flex-1">
             {/* Line 1: Scope Information */}
-            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider mb-0.5">
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider mb-0.5 cursor-help"
+              title={scopeALabel}
+            >
               <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
               <span className="truncate">{scopeALabel}</span>
             </div>
@@ -789,7 +792,10 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0 flex-1">
             {/* Line 1: Scope Information */}
-            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-0.5">
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-0.5 cursor-help"
+              title={scopeBLabel}
+            >
               <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
               <span className="truncate">{scopeBLabel}</span>
             </div>

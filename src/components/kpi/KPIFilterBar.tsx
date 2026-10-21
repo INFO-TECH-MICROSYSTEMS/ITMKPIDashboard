@@ -237,7 +237,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
           <div className="flex items-center justify-between text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-purple-500" />
-              Comparative Target
+              Secondary Scope
             </span>
 
             <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
                   onClick={onResetFiltersB}
                   className="text-[11px] text-slate-500 hover:text-purple-600 transition-colors cursor-pointer"
                 >
-                  Reset Comparative
+                  Reset Secondary
                 </button>
               )}
               {onToggleCompareMode && (
