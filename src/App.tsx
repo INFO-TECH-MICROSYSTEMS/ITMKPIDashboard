@@ -13,14 +13,7 @@ import { Sidebar } from './components/Sidebar';
 import { TopHeader } from './components/TopHeader';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
-
-import { HomePage } from './pages/HomePage';
-import { ServicesOverviewPage } from './pages/ServicesOverviewPage';
-import { ServiceDetailPage } from './pages/ServiceDetailPage';
-import { ToolsPage } from './pages/ToolsPage';
 import { KPIPlatformPage } from './pages/KPIPlatformPage';
-import { AboutPage } from './pages/AboutPage';
-import { ContactPage } from './pages/ContactPage';
 
 export function App() {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -62,14 +55,9 @@ export function App() {
             
             <main className="flex-grow">
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/services" element={<ServicesOverviewPage />} />
-                <Route path="/services/:slug" element={<ServiceDetailPage />} />
+                <Route path="/" element={<KPIPlatformPage />} />
                 <Route path="/kpi" element={<KPIPlatformPage />} />
                 <Route path="/kpis" element={<KPIPlatformPage />} />
-                <Route path="/tools" element={<ToolsPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
@@ -84,4 +72,3 @@ export function App() {
 }
 
 export default App;
-

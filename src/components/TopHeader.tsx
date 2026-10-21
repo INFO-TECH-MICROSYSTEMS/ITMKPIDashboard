@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Mail, Sun, Moon, Sparkles } from 'lucide-react';
+import { Menu, Phone, Mail, Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
@@ -47,7 +47,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
                 }}
               />
               <span className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent font-['Outfit']">
-                INFO TECH MICROSYSTEMS
+                ITM KPI DASHBOARD
               </span>
             </Link>
           </div>
@@ -83,7 +83,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
             </div>
           </div>
 
-          {/* Right Action Icons (Both Mobile & Desktop): Language Selector, Theme Toggle, Consultation CTA */}
+          {/* Right Action Icons (Both Mobile & Desktop): Language Selector, Theme Toggle */}
           <div className="flex items-center space-x-2 sm:space-x-2.5">
             {/* Language Selector Dropdown with Flags */}
             <LanguageSelector />
@@ -98,16 +98,6 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-500" />}
             </button>
-
-            {/* Quick Contact CTA */}
-            <Link
-              to="/contact"
-              className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold shadow-sm hover:shadow transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('header.requestConsultation', 'Request Consultation')}</span>
-              <span className="sm:hidden">{t('header.contact', 'Contact')}</span>
-            </Link>
           </div>
 
         </div>
