@@ -104,6 +104,7 @@ export const DEV_ENGINEERS = [
 
 export interface KPICategoryDefinition {
   id: string;
+  path: string;
   name: string;
   badge: string;
   description: string;
@@ -113,6 +114,7 @@ export interface KPICategoryDefinition {
 export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   {
     id: 'executive',
+    path: '/executive',
     name: 'Executive & Senior Management Scorecard',
     badge: 'C-Level / Director',
     description: 'Release Readiness, Overall Quality Scorecard, Production Stability, and Enterprise Delivery Health.',
@@ -120,6 +122,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'quality',
+    path: '/quality',
     name: 'Quality & Defect Diagnostics',
     badge: 'Operational Testing',
     description: 'Blocking/Gating defects, Regression rates, Defect discovery vs burnout trends, MTTR/MTTD, and QA Aging.',
@@ -127,6 +130,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'risk',
+    path: '/risk',
     name: 'Risk Assessment & Quality Gates',
     badge: 'Pre-Release Gating',
     description: 'Uncovered code, Missing unit/API tests, High dependency depth, High failure components, and Bottlenecks.',
@@ -134,6 +138,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'automation',
+    path: '/automation',
     name: 'Automation ROI & Pipeline Health',
     badge: 'SDET & CI/CD',
     description: 'Automated test suite pass rates, Flaky test detection, CI/CD runtimes, and Automation vs Manual defect discovery.',
@@ -141,6 +146,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'productivity',
+    path: '/productivity',
     name: 'Planning, Velocity & Throughput',
     badge: 'Squad Capacity',
     description: 'Test assignments and completion per engineer, Regression cycle times, Over-commitment detection, and Sprint velocity.',
@@ -148,6 +154,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'governance',
+    path: '/governance',
     name: 'SLAs, Accessibility & Benchmarks',
     badge: 'Compliance & Performance',
     description: 'SLA adherence, WCAG 2.2 AA accessibility audit compliance, and P95/P99 latency benchmarks under load.',
@@ -155,6 +162,7 @@ export const KPI_CATEGORIES: KPICategoryDefinition[] = [
   },
   {
     id: 'leadingLagging',
+    path: '/leading-lagging',
     name: 'Leading, Lagging & Near Misses',
     badge: 'Predictive & Exploratory',
     description: 'Leading indicators, Lagging outcomes, Near-miss defect containment, and Exploratory non-formal discovery ratio.',
