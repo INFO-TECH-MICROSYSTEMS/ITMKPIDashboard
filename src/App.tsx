@@ -14,6 +14,7 @@ import { Sidebar } from './components/Sidebar';
 import { TopHeader } from './components/TopHeader';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
+import { HomePage } from './pages/HomePage';
 import { KPIPlatformPage } from './pages/KPIPlatformPage';
 import { KPICategoryPage } from './pages/KPICategoryPage';
 
@@ -58,8 +59,10 @@ export function App() {
               
               <main className="flex-grow">
                 <Routes>
-                  {/* Central Overview Platform */}
-                  <Route path="/" element={<KPIPlatformPage />} />
+                  {/* Root Route: Informative Landing Page */}
+                  <Route path="/" element={<HomePage />} />
+
+                  {/* Unified KPI Overview Dashboard */}
                   <Route path="/kpi" element={<KPIPlatformPage />} />
                   <Route path="/kpis" element={<KPIPlatformPage />} />
 
