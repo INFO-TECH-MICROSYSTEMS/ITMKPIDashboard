@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { 
   BarChart3, ShieldCheck, Activity, AlertTriangle, Cpu, 
   TrendingUp, Gauge, Compass, ArrowRight, Database, 
-  Layers, Lock, CheckCircle2, Sparkles, FileText, Presentation
+  Layers, Lock, Sparkles, FileText
 } from 'lucide-react';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
 import { useKPIDataContext } from '../context/KPIDataContext';
@@ -31,7 +31,7 @@ export const HomePage: React.FC = () => {
   const { t } = useTranslation();
   const { metrics, jiraItems, testRailExecutions } = useKPIDataContext();
 
-  const totalGatingDefects = metrics.executiveScorecard.openGatingDefectsCount;
+  const totalGatingDefects = metrics.executiveScorecard.gatingDefectCount;
   const overallQualityScore = metrics.executiveScorecard.overallScore;
   const releaseReadyGrade = metrics.executiveScorecard.releaseReadyGrade;
 
