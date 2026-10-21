@@ -9,6 +9,7 @@
 /**
  * KPI View: Quality & Defect Diagnostics
  * In-depth metrics on gating defects, aging queues, discovery vs burnout curves, and MTTR.
+ * Seamlessly supports both single-scope analysis and vertically stacked (Scope 1 on top of Scope 2) comparison.
  */
 
 import React, { useState } from 'react';
@@ -20,20 +21,22 @@ import type {
   AgingBuckets, 
   DefectSeverityCounts, 
   TrendPoint, 
-  JiraWorkItem,
+  JiraWorkItem, 
   QualityDiagnosticsSummary,
   KPIJustification 
 } from '../../../types/kpiPlatform';
 import { MetricCard, AreaTrendChart } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
+import type { ViewComparisonProps } from '../contracts/ViewComparisonContract';
 
-interface QualityDefectViewProps {
+interface QualityDefectViewProps extends ViewComparisonProps {
   agingBuckets: AgingBuckets;
   severityCounts: DefectSeverityCounts;
   defectTrends: TrendPoint[];
   mttrMttd: QualityDiagnosticsSummary;
   jiraItems: JiraWorkItem[];
+  jiraItemsB?: JiraWorkItem[];
 }
 
 export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
@@ -41,11 +44,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
   severityCounts,
   defectTrends,
   mttrMttd,
-  jiraItems
+  jiraItems,
+  jiraItemsB = [],
+  isCompareMode = false,
+  scopeALabel = 'Scope 1',
+  scopeBLabel = 'Scope 2',
+  metricsB
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
 
+  // Scope 1 filtered items
   const gatingDefectsList = jiraItems.filter(i => i.isGatingDefect && i.status !== 'Done');
   const customerAparList = jiraItems.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
 
@@ -55,10 +64,26 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
     agingBuckets.pending14To21Days + 
     agingBuckets.pending21PlusDays;
 
+  // Scope 2 extracted telemetry (when comparison mode is active)
+  const mttrMttdB = metricsB?.mttrMttd;
+  const agingBucketsB = metricsB?.agingBuckets;
+  const severityCountsB = metricsB?.severityCounts;
+  const defectTrendsB = metricsB?.defectTrends;
+  const customerAparListB = jiraItemsB.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
+  const gatingDefectsListB = jiraItemsB.filter(i => i.isGatingDefect && i.status !== 'Done');
+
+  const totalAgingItemsB = agingBucketsB ? (
+    agingBucketsB.pending7Days + 
+    agingBucketsB.pending7To14Days + 
+    agingBucketsB.pending14To21Days + 
+    agingBucketsB.pending21PlusDays
+  ) : 0;
+
   return (
     <div className="space-y-6">
-      {/* Metrics Row */}
+      {/* Metrics Row: Vertically Stacked Metric Cards (Scope 1 on Top of Scope 2) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. MTTR */}
         <MetricCard
           title={t('kpiPlatform.qualityView.mttrCard', 'Mean Time to Resolve (MTTR)')}
           value={`${mttrMttd.avgMttrHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
@@ -69,7 +94,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.avgMttrHours <= 24.0 ? 'emerald' : mttrMttd.avgMttrHours <= 36.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMttrJustification(mttrMttd.avgMttrHours))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.avgMttrHours} ${t('kpiPlatform.hrsUnit', 'hrs')}` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.avgMttrHours <= 24.0 ? 'SLA Met' : mttrMttdB.avgMttrHours <= 36.0 ? 'Warning' : 'Breached') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.avgMttrHours <= 24.0 ? 'emerald' : mttrMttdB.avgMttrHours <= 36.0 ? 'amber' : 'rose') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.avgMttrHours - mttrMttdB.avgMttrHours) > 0 ? '+' : ''}${(mttrMttd.avgMttrHours - mttrMttdB.avgMttrHours).toFixed(1)}h` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.avgMttrHours <= mttrMttdB.avgMttrHours}
         />
+
+        {/* 2. MTTD */}
         <MetricCard
           title={t('kpiPlatform.qualityView.mttdCard', 'Mean Time to Detect (MTTD)')}
           value={`${mttrMttd.avgMttdHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
@@ -79,7 +114,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.avgMttdHours <= 6.0 ? 'emerald' : mttrMttd.avgMttdHours <= 12.0 ? 'amber' : 'rose'}
           icon={<Flame className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMttdJustification(mttrMttd.avgMttdHours))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.avgMttdHours} ${t('kpiPlatform.hrsUnit', 'hrs')}` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.avgMttdHours <= 6.0 ? 'Fast Discovery' : mttrMttdB.avgMttdHours <= 12.0 ? 'Lagging' : 'Critical Lag') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.avgMttdHours <= 6.0 ? 'emerald' : mttrMttdB.avgMttdHours <= 12.0 ? 'amber' : 'rose') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.avgMttdHours - mttrMttdB.avgMttdHours) > 0 ? '+' : ''}${(mttrMttd.avgMttdHours - mttrMttdB.avgMttdHours).toFixed(1)}h` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.avgMttdHours <= mttrMttdB.avgMttdHours}
         />
+
+        {/* 3. Defect Reopen Rate */}
         <MetricCard
           title={t('kpiPlatform.qualityView.reopenCard', 'Defect Reopen Rate')}
           value={`${mttrMttd.reopenRate}%`}
@@ -90,7 +135,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.reopenRate < 5 ? 'emerald' : mttrMttd.reopenRate <= 10 ? 'amber' : 'rose'}
           icon={<RefreshCw className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getReopenRateJustification(mttrMttd.reopenRate, mttrMttd.reopenedCount))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.reopenRate}%` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.reopenRate < 5 ? 'Stable' : mttrMttdB.reopenRate <= 10 ? 'Elevated' : 'High Churn') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.reopenRate < 5 ? 'emerald' : mttrMttdB.reopenRate <= 10 ? 'amber' : 'rose') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.reopenRate - mttrMttdB.reopenRate) > 0 ? '+' : ''}${(mttrMttd.reopenRate - mttrMttdB.reopenRate).toFixed(1)}%` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.reopenRate <= mttrMttdB.reopenRate}
         />
+
+        {/* 4. Customer Escalations (APARs) */}
         <MetricCard
           title={t('kpiPlatform.qualityView.aparCard', 'Customer Escalations (APARs)')}
           value={customerAparList.length}
@@ -100,8 +155,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={customerAparList.length <= 10 ? 'emerald' : customerAparList.length <= 20 ? 'amber' : 'rose'}
           icon={<Bug className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getCustomerAparJustification(customerAparList))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={customerAparListB.length}
+          compareStatusBadge={customerAparListB.length <= 10 ? 'Controlled' : customerAparListB.length <= 20 ? 'Elevated' : 'Severe'}
+          compareStatusColor={customerAparListB.length <= 10 ? 'emerald' : customerAparListB.length <= 20 ? 'amber' : 'rose'}
+          delta={isCompareMode ? `${(customerAparList.length - customerAparListB.length) > 0 ? '+' : ''}${customerAparList.length - customerAparListB.length} APARs` : undefined}
+          deltaPositive={customerAparList.length <= customerAparListB.length}
         />
-        {/* Enriched Quality Metrics: Defect Density per KLOC */}
+
+        {/* 5. Defect Density per KLOC */}
         <MetricCard
           title={t('kpiPlatform.qualityView.defectDensityCard', 'Defect Density per KLOC')}
           value={`${mttrMttd.defectDensityKloc} / KLOC`}
@@ -112,8 +176,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.defectDensityKloc < 1.0 ? 'emerald' : 'rose'}
           icon={<Bug className="w-5 h-5 text-teal-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getDefectDensityJustification(mttrMttd.defectDensityKloc))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.defectDensityKloc} / KLOC` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.defectDensityKloc < 1.0 ? 'Optimal' : 'Elevated') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.defectDensityKloc < 1.0 ? 'emerald' : 'rose') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.defectDensityKloc - mttrMttdB.defectDensityKloc) > 0 ? '+' : ''}${(mttrMttd.defectDensityKloc - mttrMttdB.defectDensityKloc).toFixed(2)}/KLOC` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.defectDensityKloc <= mttrMttdB.defectDensityKloc}
         />
-        {/* Enriched Quality Metrics: First-Time Fix Rate */}
+
+        {/* 6. First-Time Fix Rate */}
         <MetricCard
           title={t('kpiPlatform.qualityView.ftfrCard', 'First-Time Fix Rate (FTFR)')}
           value={`${mttrMttd.firstTimeFixRate}%`}
@@ -124,8 +197,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.firstTimeFixRate >= 90.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-indigo-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getFirstTimeFixRateJustification(mttrMttd.firstTimeFixRate))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.firstTimeFixRate}%` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.firstTimeFixRate >= 90.0 ? 'Rigorous' : 'Churn Risk') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.firstTimeFixRate >= 90.0 ? 'emerald' : 'amber') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.firstTimeFixRate - mttrMttdB.firstTimeFixRate) > 0 ? '+' : ''}${(mttrMttd.firstTimeFixRate - mttrMttdB.firstTimeFixRate).toFixed(1)}%` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.firstTimeFixRate >= mttrMttdB.firstTimeFixRate}
         />
-        {/* Enriched Quality Metrics: Net Defect Intake Velocity */}
+
+        {/* 7. Net Defect Intake Velocity */}
         <MetricCard
           title={t('kpiPlatform.qualityView.netIntakeCard', 'Net Defect Intake Velocity')}
           value={`${mttrMttd.netDefectIntakeVelocity > 0 ? `+${mttrMttd.netDefectIntakeVelocity}` : `${mttrMttd.netDefectIntakeVelocity}`} ${t('kpiPlatform.qualityView.bugsUnit', 'Bugs')}`}
@@ -136,12 +218,20 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           statusColor={mttrMttd.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
           icon={<Flame className="w-5 h-5 text-orange-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNetDefectVelocityJustification(mttrMttd.netDefectIntakeVelocity))}
+          isComparing={isCompareMode}
+          scopeALabel={scopeALabel}
+          scopeBLabel={scopeBLabel}
+          compareValue={mttrMttdB ? `${mttrMttdB.netDefectIntakeVelocity > 0 ? `+${mttrMttdB.netDefectIntakeVelocity}` : `${mttrMttdB.netDefectIntakeVelocity}`} Bugs` : undefined}
+          compareStatusBadge={mttrMttdB ? (mttrMttdB.netDefectIntakeVelocity <= 0 ? 'Burndown' : 'Growth') : undefined}
+          compareStatusColor={mttrMttdB ? (mttrMttdB.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber') : undefined}
+          delta={mttrMttdB !== undefined ? `${(mttrMttd.netDefectIntakeVelocity - mttrMttdB.netDefectIntakeVelocity) > 0 ? '+' : ''}${mttrMttd.netDefectIntakeVelocity - mttrMttdB.netDefectIntakeVelocity} Bugs` : undefined}
+          deltaPositive={mttrMttdB !== undefined && mttrMttd.netDefectIntakeVelocity <= mttrMttdB.netDefectIntakeVelocity}
         />
       </div>
 
-      {/* Aging of Items Pending Testing */}
+      {/* Aging of Items Pending Testing: Single Scope or Vertically Stacked (Scope 1 on Top of Scope 2) */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <div>
               <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
@@ -164,128 +254,234 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-          {/* < 7 Days */}
-          <div 
-            onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, 'under7'))}
-            className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 cursor-pointer hover:shadow-md transition-shadow group"
-            title="Click for metric clarification"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
-                {t('kpiPlatform.qualityView.under7Days')}
-              </span>
-              <HelpCircle className="w-3.5 h-3.5 text-emerald-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+        {/* Scope 1 Aging Buckets */}
+        <div className="space-y-2">
+          {isCompareMode && (
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-700 dark:text-cyan-400">
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
+              <span>{scopeALabel} (Scope 1)</span>
+              <span className="text-slate-400 font-normal">({totalAgingItems} items)</span>
             </div>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-700 dark:text-emerald-400">
-                {agingBuckets.pending7Days}
-              </span>
-              <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                {t('kpiPlatform.qualityView.freshHealthy')}
-              </span>
+          )}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {/* < 7 Days */}
+            <div 
+              onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, 'under7'))}
+              className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+              title="Click for metric clarification"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
+                  {t('kpiPlatform.qualityView.under7Days')}
+                </span>
+                <HelpCircle className="w-3.5 h-3.5 text-emerald-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex items-baseline justify-between mt-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-700 dark:text-emerald-400">
+                  {agingBuckets.pending7Days}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  {t('kpiPlatform.qualityView.freshHealthy')}
+                </span>
+              </div>
+              <div className="w-full bg-emerald-200 dark:bg-emerald-900/60 h-1.5 rounded-full mt-2">
+                <div 
+                  className="bg-emerald-500 h-1.5 rounded-full" 
+                  style={{ width: `${(agingBuckets.pending7Days / Math.max(1, totalAgingItems)) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full bg-emerald-200 dark:bg-emerald-900/60 h-1.5 rounded-full mt-2">
-              <div 
-                className="bg-emerald-500 h-1.5 rounded-full" 
-                style={{ width: `${(agingBuckets.pending7Days / Math.max(1, totalAgingItems)) * 100}%` }}
-              />
-            </div>
-          </div>
 
-          {/* 7 - 14 Days */}
-          <div 
-            onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '7to14'))}
-            className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30 cursor-pointer hover:shadow-md transition-shadow group"
-            title="Click for metric clarification"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
-                {t('kpiPlatform.qualityView.days7To14')}
-              </span>
-              <HelpCircle className="w-3.5 h-3.5 text-cyan-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+            {/* 7 - 14 Days */}
+            <div 
+              onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '7to14'))}
+              className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+              title="Click for metric clarification"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days7To14')}
+                </span>
+                <HelpCircle className="w-3.5 h-3.5 text-cyan-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex items-baseline justify-between mt-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-cyan-700 dark:text-cyan-400">
+                  {agingBuckets.pending7To14Days}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400">
+                  {t('kpiPlatform.qualityView.normalCadence')}
+                </span>
+              </div>
+              <div className="w-full bg-cyan-200 dark:bg-cyan-900/60 h-1.5 rounded-full mt-2">
+                <div 
+                  className="bg-cyan-500 h-1.5 rounded-full" 
+                  style={{ width: `${(agingBuckets.pending7To14Days / Math.max(1, totalAgingItems)) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-cyan-700 dark:text-cyan-400">
-                {agingBuckets.pending7To14Days}
-              </span>
-              <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                {t('kpiPlatform.qualityView.normalCadence')}
-              </span>
-            </div>
-            <div className="w-full bg-cyan-200 dark:bg-cyan-900/60 h-1.5 rounded-full mt-2">
-              <div 
-                className="bg-cyan-500 h-1.5 rounded-full" 
-                style={{ width: `${(agingBuckets.pending7To14Days / Math.max(1, totalAgingItems)) * 100}%` }}
-              />
-            </div>
-          </div>
 
-          {/* 14 - 21 Days */}
-          <div 
-            onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '14to21'))}
-            className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 cursor-pointer hover:shadow-md transition-shadow group"
-            title="Click for metric clarification"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
-                {t('kpiPlatform.qualityView.days14To21')}
-              </span>
-              <HelpCircle className="w-3.5 h-3.5 text-amber-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+            {/* 14 - 21 Days */}
+            <div 
+              onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '14to21'))}
+              className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+              title="Click for metric clarification"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days14To21')}
+                </span>
+                <HelpCircle className="w-3.5 h-3.5 text-amber-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex items-baseline justify-between mt-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-amber-700 dark:text-amber-400">
+                  {agingBuckets.pending14To21Days}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
+                  {t('kpiPlatform.statusAtRisk')}
+                </span>
+              </div>
+              <div className="w-full bg-amber-200 dark:bg-amber-900/60 h-1.5 rounded-full mt-2">
+                <div 
+                  className="bg-amber-500 h-1.5 rounded-full" 
+                  style={{ width: `${(agingBuckets.pending14To21Days / Math.max(1, totalAgingItems)) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-amber-700 dark:text-amber-400">
-                {agingBuckets.pending14To21Days}
-              </span>
-              <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
-                {t('kpiPlatform.statusAtRisk')}
-              </span>
-            </div>
-            <div className="w-full bg-amber-200 dark:bg-amber-900/60 h-1.5 rounded-full mt-2">
-              <div 
-                className="bg-amber-500 h-1.5 rounded-full" 
-                style={{ width: `${(agingBuckets.pending14To21Days / Math.max(1, totalAgingItems)) * 100}%` }}
-              />
-            </div>
-          </div>
 
-          {/* 21+ Days */}
-          <div 
-            onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '21plus'))}
-            className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 cursor-pointer hover:shadow-md transition-shadow group"
-            title="Click for metric clarification"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
-                {t('kpiPlatform.qualityView.days21Plus')}
-              </span>
-              <HelpCircle className="w-3.5 h-3.5 text-rose-500 opacity-60 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-rose-700 dark:text-rose-400">
-                {agingBuckets.pending21PlusDays}
-              </span>
-              <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400">
-                {t('kpiPlatform.qualityView.criticalSlaBreach')}
-              </span>
-            </div>
-            <div className="w-full bg-rose-200 dark:bg-rose-900/60 h-1.5 rounded-full mt-2">
-              <div 
-                className="bg-rose-500 h-1.5 rounded-full" 
-                style={{ width: `${(agingBuckets.pending21PlusDays / Math.max(1, totalAgingItems)) * 100}%` }}
-              />
+            {/* 21+ Days */}
+            <div 
+              onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, '21plus'))}
+              className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+              title="Click for metric clarification"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days21Plus')}
+                </span>
+                <HelpCircle className="w-3.5 h-3.5 text-rose-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex items-baseline justify-between mt-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-rose-700 dark:text-rose-400">
+                  {agingBuckets.pending21PlusDays}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400">
+                  {t('kpiPlatform.qualityView.criticalSlaBreach')}
+                </span>
+              </div>
+              <div className="w-full bg-rose-200 dark:bg-rose-900/60 h-1.5 rounded-full mt-2">
+                <div 
+                  className="bg-rose-500 h-1.5 rounded-full" 
+                  style={{ width: `${(agingBuckets.pending21PlusDays / Math.max(1, totalAgingItems)) * 100}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Scope 2 Aging Buckets Stacked Below Scope 1 */}
+        {isCompareMode && agingBucketsB && (
+          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+              <span>{scopeBLabel} (Scope 2)</span>
+              <span className="text-slate-400 font-normal">({totalAgingItemsB} items)</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {/* Scope 2: < 7 Days */}
+              <div className="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30">
+                <span className="text-xs font-semibold text-purple-800 dark:text-purple-300 block font-mono">
+                  {t('kpiPlatform.qualityView.under7Days')}
+                </span>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                    {agingBucketsB.pending7Days}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-purple-600 dark:text-purple-400">
+                    Fresh
+                  </span>
+                </div>
+                <div className="w-full bg-purple-200 dark:bg-purple-900/60 h-1.5 rounded-full mt-2">
+                  <div 
+                    className="bg-purple-500 h-1.5 rounded-full" 
+                    style={{ width: `${(agingBucketsB.pending7Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Scope 2: 7 - 14 Days */}
+              <div className="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30">
+                <span className="text-xs font-semibold text-purple-800 dark:text-purple-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days7To14')}
+                </span>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                    {agingBucketsB.pending7To14Days}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-purple-600 dark:text-purple-400">
+                    Normal
+                  </span>
+                </div>
+                <div className="w-full bg-purple-200 dark:bg-purple-900/60 h-1.5 rounded-full mt-2">
+                  <div 
+                    className="bg-purple-500 h-1.5 rounded-full" 
+                    style={{ width: `${(agingBucketsB.pending7To14Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Scope 2: 14 - 21 Days */}
+              <div className="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30">
+                <span className="text-xs font-semibold text-purple-800 dark:text-purple-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days14To21')}
+                </span>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                    {agingBucketsB.pending14To21Days}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
+                    At Risk
+                  </span>
+                </div>
+                <div className="w-full bg-purple-200 dark:bg-purple-900/60 h-1.5 rounded-full mt-2">
+                  <div 
+                    className="bg-amber-500 h-1.5 rounded-full" 
+                    style={{ width: `${(agingBucketsB.pending14To21Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Scope 2: 21+ Days */}
+              <div className="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30">
+                <span className="text-xs font-semibold text-purple-800 dark:text-purple-300 block font-mono">
+                  {t('kpiPlatform.qualityView.days21Plus')}
+                </span>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                    {agingBucketsB.pending21PlusDays}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400">
+                    Breach
+                  </span>
+                </div>
+                <div className="w-full bg-purple-200 dark:bg-purple-900/60 h-1.5 rounded-full mt-2">
+                  <div 
+                    className="bg-rose-500 h-1.5 rounded-full" 
+                    style={{ width: `${(agingBucketsB.pending21PlusDays / Math.max(1, totalAgingItemsB)) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Two Column Layout: Defect Trend Area Chart + Severity Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Trend Curve: Defect Discovery vs Burnout */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-8 space-y-4">
           <AreaTrendChart
             data={defectTrends}
-            title={t('kpiPlatform.qualityView.trendChartTitle')}
+            title={isCompareMode ? `${t('kpiPlatform.qualityView.trendChartTitle')} — ${scopeALabel}` : t('kpiPlatform.qualityView.trendChartTitle')}
             series1Name={t('kpiPlatform.qualityView.discoveredDefects')}
             series2Name={t('kpiPlatform.qualityView.resolvedBurnedOut')}
             series1Color="#f43f5e" // Rose
@@ -295,11 +491,25 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             forecastStatus={mttrMttd.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
             onJustify={() => setSelectedJustification(KPIJustificationService.getDefectTrendChartJustification(mttrMttd.netDefectIntakeVelocity))}
           />
+
+          {isCompareMode && defectTrendsB && (
+            <AreaTrendChart
+              data={defectTrendsB}
+              title={`${t('kpiPlatform.qualityView.trendChartTitle')} — ${scopeBLabel}`}
+              series1Name={t('kpiPlatform.qualityView.discoveredDefects')}
+              series2Name={t('kpiPlatform.qualityView.resolvedBurnedOut')}
+              series1Color="#c084fc" // Purple light
+              series2Color="#a855f7" // Purple dark
+              height={240}
+              forecastBadge={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? '● Burndown Active' : '▲ Net Intake Growth'}
+              forecastStatus={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
+            />
+          )}
         </div>
 
         {/* Severity Distribution */}
         <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
                 {t('kpiPlatform.qualityView.severityTitle')}
@@ -325,7 +535,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
             </button>
           </div>
 
+          {/* Scope 1 Severity Distribution */}
           <div className="space-y-3">
+            {isCompareMode && (
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                <span>{scopeALabel} (Scope 1)</span>
+              </span>
+            )}
             {[
               { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCounts.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
               { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCounts.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
@@ -347,16 +564,46 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               );
             })}
           </div>
+
+          {/* Scope 2 Severity Distribution Stacked Below */}
+          {isCompareMode && severityCountsB && (
+            <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-purple-500" />
+                <span>{scopeBLabel} (Scope 2)</span>
+              </span>
+              {[
+                { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-500', text: 'text-rose-500' },
+                { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCountsB.criticalP2, color: 'bg-amber-500', text: 'text-amber-500' },
+                { label: t('kpiPlatform.qualityView.p3Major'), count: severityCountsB.majorP3, color: 'bg-purple-500', text: 'text-purple-500' },
+                { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCountsB.minorP4, color: 'bg-slate-400', text: 'text-slate-500' }
+              ].map(sev => {
+                const total = severityCountsB.blockerP1 + severityCountsB.criticalP2 + severityCountsB.majorP3 + severityCountsB.minorP4;
+                const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';
+                return (
+                  <div key={sev.label} className="space-y-1">
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">{sev.label}</span>
+                      <span className={`font-bold ${sev.text}`}>{sev.count} ({pct}%)</span>
+                    </div>
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className={`${sev.color} h-full rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Gating / Blocking Defects Table */}
+      {/* Gating / Blocking Defects Table: Scope 1 */}
       {gatingDefectsList.length > 0 && (
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
               <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsList.length} {t('kpiPlatform.qualityView.requireSignoff')})</span>
+              <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsList.length} {t('kpiPlatform.qualityView.requireSignoff')}) {isCompareMode ? `— ${scopeALabel}` : ''}</span>
               <button
                 type="button"
                 onClick={() => setSelectedJustification(KPIJustificationService.getGatingDefectsTableJustification(gatingDefectsList))}
@@ -394,6 +641,73 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
                           ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
                           : bug.severity === 'P3-Major'
                           ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                          : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                      }`}>
+                        {bug.severity}
+                      </span>
+                    </td>
+                    <td className="p-2.5 text-slate-600 dark:text-slate-300">{bug.product}</td>
+                    <td className="p-2.5 text-slate-600 dark:text-slate-300">{bug.component}</td>
+                    <td className="p-2.5 text-slate-700 dark:text-slate-300 font-mono">{bug.qaOwner}</td>
+                    <td className="p-2.5">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border shadow-2xs ${
+                        bug.status === 'Done'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                          : bug.status === 'Under QA'
+                          ? 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800'
+                          : bug.status === 'In Development'
+                          ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800'
+                          : bug.status === 'Reopened'
+                          ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                          : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800'
+                      }`}>
+                        {bug.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Gating / Blocking Defects Table: Scope 2 Stacked Below */}
+      {isCompareMode && gatingDefectsListB.length > 0 && (
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-bold text-sm font-['Outfit']">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsListB.length} {t('kpiPlatform.qualityView.requireSignoff')}) — {scopeBLabel}</span>
+            </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-purple-700 dark:text-purple-300 uppercase text-[10px]">
+                <tr>
+                  <th className="p-2.5 rounded-l-lg">{t('kpiPlatform.qualityView.tableKey')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableTitle')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableSeverity')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableProduct')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableComponent')}</th>
+                  <th className="p-2.5">{t('kpiPlatform.qualityView.tableQaOwner')}</th>
+                  <th className="p-2.5 rounded-r-lg">{t('kpiPlatform.qualityView.tableStatus')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                {gatingDefectsListB.slice(0, 5).map(bug => (
+                  <tr key={bug.id} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20">
+                    <td className="p-2.5 font-mono font-bold text-purple-600 dark:text-purple-400">{bug.id}</td>
+                    <td className="p-2.5 text-slate-900 dark:text-white truncate max-w-xs">{bug.title}</td>
+                    <td className="p-2.5 font-mono">
+                      <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${
+                        bug.severity === 'P1-Blocker'
+                          ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                          : bug.severity === 'P2-Critical'
+                          ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                          : bug.severity === 'P3-Major'
+                          ? 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 border-purple-200 dark:border-purple-800/40'
                           : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
                       }`}>
                         {bug.severity}

@@ -651,6 +651,7 @@ export const StackedProgressBar: React.FC<StackedProgressBarProps> = ({
 
 // ==========================================
 // 4. METRIC KPI STAT CARD (Implements IMetricCardContract)
+// Supports Standard Single-Scope & Vertically Stacked (Scope 1 on top of Scope 2) Comparison
 // ==========================================
 
 export const MetricCard: React.FC<IMetricCardContract> = ({
@@ -662,54 +663,145 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   statusBadge,
   statusColor = 'cyan',
   icon,
-  onJustify
+  onJustify,
+  isComparing = false,
+  scopeALabel = 'Scope 1',
+  scopeBLabel = 'Scope 2',
+  compareValue,
+  compareStatusBadge,
+  compareStatusColor = 'purple',
+  delta,
+  deltaPositive
 }) => {
   const { t } = useTranslation();
-  const theme = KPI_STATUS_THEMES[statusColor];
+  const themeA = KPI_STATUS_THEMES[statusColor];
+  const themeB = KPI_STATUS_THEMES[compareStatusColor];
 
+  // Standard Single-Scope View
+  if (!isComparing) {
+    return (
+      <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+              {title}
+            </span>
+            <button
+              onClick={onJustify}
+              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
+              title="Click for KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
+        </div>
+
+        <div className="flex items-baseline justify-between gap-2 my-1">
+          <span className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${themeA.value}`}>
+            {value}
+          </span>
+          {statusBadge && (
+            <button
+              onClick={onJustify}
+              className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 transition-transform hover:scale-105 cursor-pointer ${themeA.badge}`}
+              title="Click for status audit and rule breakdown"
+            >
+              <span>{statusBadge}</span>
+              <HelpCircle className="w-2.5 h-2.5 opacity-60" />
+            </button>
+          )}
+        </div>
+
+        <div className={`flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t ${themeA.footerBorder}`}>
+          {target && <span>{t('kpiPlatform.targetLabel', 'Target')}: <strong className="text-slate-800 dark:text-slate-200">{target}</strong></span>}
+          {trend && (
+            <span className={`font-semibold ${trendPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              {trend}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Vertically Stacked Dual-Scope Comparison View (Scope 1 on Top of Scope 2)
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${theme.card}`}>
-      <div className="flex items-start justify-between gap-2 mb-2">
+    <div className="p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md">
+      {/* Top Header: Metric Title and Help Trigger */}
+      <div className="flex items-start justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800/80">
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+          <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit'] truncate">
             {title}
           </span>
           <button
             onClick={onJustify}
-            className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
-            title="Click for KPI justification and audit details"
+            className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+            title="Click for KPI justification and comparative breakdown"
           >
             <HelpCircle className="w-3.5 h-3.5" />
           </button>
         </div>
-        {icon && <div className={`shrink-0 ${theme.icon}`}>{icon}</div>}
+        {icon && <div className="shrink-0 text-cyan-600 dark:text-cyan-400">{icon}</div>}
       </div>
 
-      <div className="flex items-baseline justify-between gap-2 my-1">
-        <span className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${theme.value}`}>
-          {value}
-        </span>
-        {statusBadge && (
-          <button
-            onClick={onJustify}
-            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 transition-transform hover:scale-105 cursor-pointer ${theme.badge}`}
-            title="Click for status audit and rule breakdown"
-          >
-            <span>{statusBadge}</span>
-            <HelpCircle className="w-2.5 h-2.5 opacity-60" />
-          </button>
-        )}
+      {/* Stacked Scopes: Scope 1 on Top of Scope 2 */}
+      <div className="space-y-2.5 my-2.5">
+        {/* Row 1: Scope 1 (Top) */}
+        <div className="p-2.5 rounded-xl bg-cyan-50/40 dark:bg-cyan-950/20 border border-cyan-100 dark:border-cyan-900/50">
+          <div className="flex items-center justify-between text-[11px] font-mono text-cyan-800 dark:text-cyan-300 mb-1">
+            <span className="font-bold truncate max-w-[200px] flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel}</span>
+            </span>
+            {statusBadge && (
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${themeA.badge}`}>
+                {statusBadge}
+              </span>
+            )}
+          </div>
+          <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${themeA.value}`}>
+            {value}
+          </div>
+        </div>
+
+        {/* Row 2: Scope 2 (Bottom) */}
+        <div className="p-2.5 rounded-xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/50">
+          <div className="flex items-center justify-between text-[11px] font-mono text-purple-800 dark:text-purple-300 mb-1">
+            <span className="font-bold truncate max-w-[200px] flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel}</span>
+            </span>
+            {compareStatusBadge && (
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${themeB.badge}`}>
+                {compareStatusBadge}
+              </span>
+            )}
+          </div>
+          <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${themeB.value}`}>
+            {compareValue !== undefined ? compareValue : '—'}
+          </div>
+        </div>
       </div>
 
-      <div className={`flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t ${theme.footerBorder}`}>
-        {target && <span>{t('kpiPlatform.targetLabel', 'Target')}: <strong className="text-slate-800 dark:text-slate-200">{target}</strong></span>}
-        {trend && (
-          <span className={`font-semibold ${trendPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
-            {trend}
-          </span>
+      {/* Footer: Target & Calculated Delta Indicator */}
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div>
+          {target && (
+            <span>{t('kpiPlatform.targetLabel', 'Target')}: <strong className="text-slate-800 dark:text-slate-200">{target}</strong></span>
+          )}
+        </div>
+
+        {delta && (
+          <div className={`inline-flex items-center gap-1 font-mono font-bold text-[10px] px-2.5 py-0.5 rounded-full border shadow-2xs ${
+            deltaPositive 
+              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
+              : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
+          }`}>
+            <span>{delta}</span>
+          </div>
         )}
       </div>
     </div>
   );
 };
-

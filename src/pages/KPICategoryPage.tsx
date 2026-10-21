@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { 
   RefreshCw, Settings, Sparkles, FileText, Presentation, 
   ChevronRight, ShieldCheck, Activity, AlertTriangle, 
-  Cpu, TrendingUp, Gauge, Compass, ArrowDown
+  Cpu, TrendingUp, Gauge, Compass
 } from 'lucide-react';
 import { useKPIDataContext } from '../context/KPIDataContext';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
@@ -88,77 +88,109 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
   };
 
   /**
-   * Helper to render the entire KPI view for a given scope
+   * Helper to render the active KPI Category View.
+   * When in compare mode, the category view receives dual-scope props and renders
+   * Scope 1 on top of Scope 2 within each metric card and visual widget.
    */
-  const renderCategoryContent = (scopeType: 'A' | 'B') => {
-    const isScopeB = scopeType === 'B';
-    const activeMetrics = isScopeB && metricsB ? metricsB : metrics;
-    const activeJira = isScopeB ? jiraItemsB : jiraItems;
-    const activeTests = isScopeB ? testRailExecutionsB : testRailExecutions;
-
-    if (!activeMetrics) return null;
+  const renderCategoryContent = () => {
+    if (!metrics) return null;
 
     return (
       <>
         {categoryId === 'executive' && (
           <ExecutiveScorecardView
-            scorecard={activeMetrics.executiveScorecard}
-            testDistribution={activeMetrics.testDistributionAll}
-            testBurnoutForecast={activeMetrics.testBurnoutForecast}
-            jiraItems={activeJira}
-            testRailExecutions={activeTests}
+            scorecard={metrics.executiveScorecard}
+            testDistribution={metrics.testDistributionAll}
+            testBurnoutForecast={metrics.testBurnoutForecast}
+            jiraItems={jiraItems}
+            testRailExecutions={testRailExecutions}
+            jiraItemsB={jiraItemsB}
+            testRailExecutionsB={testRailExecutionsB}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'quality' && (
           <QualityDefectView
-            agingBuckets={activeMetrics.agingBuckets}
-            severityCounts={activeMetrics.severityCounts}
-            defectTrends={activeMetrics.defectTrends}
-            mttrMttd={activeMetrics.mttrMttd}
-            jiraItems={activeJira}
+            agingBuckets={metrics.agingBuckets}
+            severityCounts={metrics.severityCounts}
+            defectTrends={metrics.defectTrends}
+            mttrMttd={metrics.mttrMttd}
+            jiraItems={jiraItems}
+            jiraItemsB={jiraItemsB}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'risk' && (
           <RiskGatingView
-            componentRisks={activeMetrics.componentRisks}
-            jiraItems={activeJira}
-            testRailExecutions={activeTests}
+            componentRisks={metrics.componentRisks}
+            jiraItems={jiraItems}
+            testRailExecutions={testRailExecutions}
+            jiraItemsB={jiraItemsB}
+            testRailExecutionsB={testRailExecutionsB}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'automation' && (
           <AutomationView
-            automatedDistribution={activeMetrics.testDistributionAutomated}
-            manualDistribution={activeMetrics.testDistributionManual}
-            automationHealth={activeMetrics.automationHealth}
-            testRailExecutions={activeTests}
-            testAutomationForecast={activeMetrics.testAutomationForecast}
+            automatedDistribution={metrics.testDistributionAutomated}
+            manualDistribution={metrics.testDistributionManual}
+            automationHealth={metrics.automationHealth}
+            testRailExecutions={testRailExecutions}
+            testAutomationForecast={metrics.testAutomationForecast}
+            testRailExecutionsB={testRailExecutionsB}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'productivity' && (
           <ProductivityView
-            productivityMetrics={activeMetrics.productivityMetrics}
-            squadSummary={activeMetrics.squadSummary}
-            jiraItems={activeJira}
+            productivityMetrics={metrics.productivityMetrics}
+            squadSummary={metrics.squadSummary}
+            jiraItems={jiraItems}
+            jiraItemsB={jiraItemsB}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'governance' && (
           <GovernanceSlaView
-            scorecard={activeMetrics.executiveScorecard}
-            jiraItems={activeJira}
+            scorecard={metrics.executiveScorecard}
+            jiraItems={jiraItems}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
 
         {categoryId === 'leadingLagging' && (
           <LeadingLaggingNearMissView
-            leadingLaggingMetrics={activeMetrics.leadingLaggingMetrics}
-            nearMissAnalytics={activeMetrics.nearMissAnalytics}
-            jiraItems={activeJira}
-            testRailExecutions={activeTests}
+            leadingLaggingMetrics={metrics.leadingLaggingMetrics}
+            nearMissAnalytics={metrics.nearMissAnalytics}
+            jiraItems={jiraItems}
+            testRailExecutions={testRailExecutions}
+            isCompareMode={isCompareMode}
+            scopeALabel={scopeALabel}
+            scopeBLabel={scopeBLabel}
+            metricsB={metricsB || undefined}
           />
         )}
       </>
@@ -180,7 +212,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-500/30">
-              Stacked Scope Comparison Active
+              Metric Comparison Active (Scope 1 on Top of Scope 2)
             </span>
           </>
         )}
@@ -299,7 +331,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         releaseWindowB={releaseWindowB}
       />
 
-      {/* Main Content Area: Single Scope View or Stacked Comparison Views (Scope 1 above Scope 2) */}
+      {/* Main Content Area: Renders Category Content (Single Scope or Scope 1 on Top of Scope 2) */}
       <div className="transition-all duration-200">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center p-16 space-y-4">
@@ -308,72 +340,8 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
               {t('kpiPlatform.queryingDb', 'Querying local IndexedDB telemetry cache...')}
             </span>
           </div>
-        ) : !isCompareMode ? (
-          /* Standard Single-Scope Presentation */
-          renderCategoryContent('A')
         ) : (
-          /* Stacked Dual-Scope Presentation: Clean, Uncompromised View 1 followed by View 2 */
-          <div className="space-y-12">
-            {/* Section 1: Scope 1 Header & Complete Original KPI Presentation */}
-            <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-cyan-50/20 dark:bg-cyan-950/10 border-2 border-cyan-500/30 shadow-xs">
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-cyan-200/60 dark:border-cyan-800/50">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-full bg-cyan-500 ring-4 ring-cyan-500/20" />
-                  <div>
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-600 dark:text-cyan-400 font-bold">
-                      Comparison Target 1
-                    </div>
-                    <h2 className="text-lg sm:text-xl font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                      {scopeALabel}
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-bold border border-cyan-300 dark:border-cyan-800">
-                    {testRailExecutions.length.toLocaleString()} Tests • {jiraItems.length.toLocaleString()} Work Items
-                  </span>
-                </div>
-              </div>
-
-              {renderCategoryContent('A')}
-            </div>
-
-            {/* Visual Divider / Flow Indicator */}
-            <div className="flex items-center justify-center gap-4 py-2">
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-mono font-semibold border border-slate-200 dark:border-slate-700 shadow-2xs">
-                <ArrowDown className="w-3.5 h-3.5 text-purple-500 animate-bounce" />
-                <span>Comparing with Scope 2 below</span>
-              </div>
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-            </div>
-
-            {/* Section 2: Scope 2 Header & Complete Original KPI Presentation */}
-            <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-purple-50/20 dark:bg-purple-950/10 border-2 border-purple-500/30 shadow-xs">
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-purple-200/60 dark:border-purple-800/50">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-full bg-purple-500 ring-4 ring-purple-500/20" />
-                  <div>
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-purple-600 dark:text-purple-400 font-bold">
-                      Comparison Target 2
-                    </div>
-                    <h2 className="text-lg sm:text-xl font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                      {scopeBLabel}
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-300 dark:border-purple-800">
-                    {testRailExecutionsB.length.toLocaleString()} Tests • {jiraItemsB.length.toLocaleString()} Work Items
-                  </span>
-                </div>
-              </div>
-
-              {renderCategoryContent('B')}
-            </div>
-          </div>
+          renderCategoryContent()
         )}
       </div>
 

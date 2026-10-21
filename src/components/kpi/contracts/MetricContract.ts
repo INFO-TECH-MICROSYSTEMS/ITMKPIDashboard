@@ -60,10 +60,9 @@ export interface IMetricClarifier<TContext = unknown> {
  */
 export interface IBaseMetricWidgetProps {
   /**
-   * Mandatory Clarification Trigger / Modal Handler.
-   * Required in all metric implementations.
+   * Clarification Trigger / Modal Handler.
    */
-  onJustify: () => void;
+  onJustify?: () => void;
   /**
    * Accessibility title / tooltip for the clarification trigger.
    */
