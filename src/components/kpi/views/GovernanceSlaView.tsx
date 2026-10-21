@@ -10,7 +10,6 @@
  * KPI View: Governance, SLAs, Accessibility & Benchmarks
  * SLA compliance tracking, WCAG 2.2 AA accessibility audit metrics,
  * P95/P99 latency profiles, and customer satisfaction indexes.
- * Supports side-by-side metric comparison across scopes.
  */
 
 import React, { useState } from 'react';
@@ -27,35 +26,26 @@ import { MetricCard } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
 import { KPI_STATUS_THEMES } from '../../../constants/kpiConstants';
-import type { ViewComparisonProps } from '../contracts/ViewComparisonContract';
 
-interface GovernanceSlaViewProps extends ViewComparisonProps {
+interface GovernanceSlaViewProps {
   scorecard: ReleaseQualityScorecard;
   jiraItems: JiraWorkItem[];
-  jiraItemsB?: JiraWorkItem[];
 }
 
 export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
   scorecard,
-  jiraItems,
-  isCompareMode = false,
-  scopeALabel = 'Scope A',
-  scopeBLabel = 'Scope B',
-  metricsB
+  jiraItems
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
-
-  const scorecardB = metricsB?.executiveScorecard;
 
   const customerDefects = jiraItems.filter(i => i.isCustomerDefect || i.type === 'CustomerAPAR');
   const resolvedCustomerDefects = customerDefects.filter(i => i.status === 'Done');
 
   return (
     <div className="space-y-6">
-      {/* Top Governance Cards with Side-by-Side Scope Values */}
+      {/* Top Governance Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* 1. Overall SLA Adherence */}
         <MetricCard
           title={t('kpiPlatform.governanceView.overallSla', 'Overall SLA Adherence')}
           value={`${scorecard.slaAdherenceRate}%`}
@@ -66,17 +56,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor={scorecard.slaAdherenceRate >= 92.0 ? 'emerald' : scorecard.slaAdherenceRate >= 85.0 ? 'amber' : 'rose'}
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={scorecardB ? `${scorecardB.slaAdherenceRate}%` : undefined}
-          compareStatusBadge={scorecardB ? (scorecardB.slaAdherenceRate >= 92.0 ? 'Compliant' : 'Risk') : undefined}
-          compareStatusColor={scorecardB ? (scorecardB.slaAdherenceRate >= 92.0 ? 'emerald' : 'amber') : undefined}
-          delta={scorecardB !== undefined ? `${(scorecard.slaAdherenceRate - scorecardB.slaAdherenceRate) > 0 ? '+' : ''}${(scorecard.slaAdherenceRate - scorecardB.slaAdherenceRate).toFixed(1)}%` : undefined}
-          deltaPositive={scorecardB !== undefined && scorecard.slaAdherenceRate >= scorecardB.slaAdherenceRate}
         />
-
-        {/* 2. WCAG 2.2 AA Accessibility */}
         <MetricCard
           title={t('kpiPlatform.governanceView.accessibilityTitle', 'WCAG 2.2 AA Accessibility')}
           value={`${scorecard.accessibilityScore}%`}
@@ -87,17 +67,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor={scorecard.accessibilityScore >= 95.0 ? 'emerald' : scorecard.accessibilityScore >= 90.0 ? 'amber' : 'rose'}
           icon={<Eye className="w-5 h-5 text-cyan-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAccessibilityJustification(scorecard.accessibilityScore))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={scorecardB ? `${scorecardB.accessibilityScore}%` : undefined}
-          compareStatusBadge={scorecardB ? (scorecardB.accessibilityScore >= 95.0 ? 'Audit Passed' : 'Notice') : undefined}
-          compareStatusColor={scorecardB ? (scorecardB.accessibilityScore >= 95.0 ? 'emerald' : 'amber') : undefined}
-          delta={scorecardB !== undefined ? `${(scorecard.accessibilityScore - scorecardB.accessibilityScore) > 0 ? '+' : ''}${(scorecard.accessibilityScore - scorecardB.accessibilityScore).toFixed(1)}%` : undefined}
-          deltaPositive={scorecardB !== undefined && scorecard.accessibilityScore >= scorecardB.accessibilityScore}
         />
-
-        {/* 3. Performance P95 Latency */}
         <MetricCard
           title={t('kpiPlatform.governanceView.performanceP95', 'Performance P95 Latency')}
           value={`${scorecard.performanceP95Ms} ${t('kpiPlatform.msUnit', 'ms')}`}
@@ -107,17 +77,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor={scorecard.performanceP95Ms <= 180 ? 'emerald' : scorecard.performanceP95Ms <= 250 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getPerformanceP95Justification(scorecard.performanceP95Ms))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={scorecardB ? `${scorecardB.performanceP95Ms} ${t('kpiPlatform.msUnit', 'ms')}` : undefined}
-          compareStatusBadge={scorecardB ? (scorecardB.performanceP95Ms <= 180 ? 'Optimal' : 'Latency Alert') : undefined}
-          compareStatusColor={scorecardB ? (scorecardB.performanceP95Ms <= 180 ? 'emerald' : 'amber') : undefined}
-          delta={scorecardB !== undefined ? `${(scorecard.performanceP95Ms - scorecardB.performanceP95Ms) > 0 ? '+' : ''}${scorecard.performanceP95Ms - scorecardB.performanceP95Ms}ms` : undefined}
-          deltaPositive={scorecardB !== undefined && scorecard.performanceP95Ms <= scorecardB.performanceP95Ms}
         />
-
-        {/* 4. Stakeholder Satisfaction (CSAT) */}
         <MetricCard
           title={t('kpiPlatform.governanceView.csatTitle', 'Stakeholder Satisfaction (CSAT)')}
           value="4.8 / 5.0"
@@ -128,15 +88,8 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor="emerald"
           icon={<ThumbsUp className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getCsatJustification())}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue="4.7 / 5.0"
-          compareStatusBadge="High Trust"
-          compareStatusColor="emerald"
         />
-
-        {/* 5. Contract SLA Penalties */}
+        {/* Enriched Governance Metric 1: Contractual SLA Penalties */}
         <MetricCard
           title={t('kpiPlatform.governanceView.contractPenaltiesCard', 'Contract SLA Penalties')}
           value="$0"
@@ -147,15 +100,8 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getContractSlaPenaltiesJustification())}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue="$0"
-          compareStatusBadge="Zero Penalty"
-          compareStatusColor="emerald"
         />
-
-        {/* 6. Audit Trail Traceability */}
+        {/* Enriched Governance Metric 2: Audit Traceability Index */}
         <MetricCard
           title={t('kpiPlatform.governanceView.auditTraceabilityCard', 'Audit Trail Traceability')}
           value="99.4%"
@@ -166,12 +112,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           statusColor="emerald"
           icon={<ShieldCheck className="w-5 h-5 text-teal-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAuditTraceabilityJustification())}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue="98.9%"
-          compareStatusBadge="Audit Verified"
-          compareStatusColor="emerald"
         />
       </div>
 
@@ -197,7 +137,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'defectTriage',
               name: t('kpiPlatform.slaItems.defectTriageName', 'Defect Triage SLA (P1 < 4h, P2 < 24h)'),
               rateNum: scorecard.slaBreakdown.p1P2TriageRate,
-              rateNumB: scorecardB?.slaBreakdown?.p1P2TriageRate,
               targetNum: 95.0,
               rate: `${scorecard.slaBreakdown.p1P2TriageRate}%`,
               target: '95.0%',
@@ -207,7 +146,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'regressionExec',
               name: t('kpiPlatform.slaItems.regressionExecName', 'Regression Execution SLA'),
               rateNum: scorecard.slaBreakdown.regressionExecutionRate,
-              rateNumB: scorecardB?.slaBreakdown?.regressionExecutionRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.regressionExecutionRate}%`,
               target: '90.0%',
@@ -217,7 +155,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'testCreation',
               name: t('kpiPlatform.slaItems.testCreationName', 'Test Case Creation SLA'),
               rateNum: scorecard.slaBreakdown.testPlanCreationRate,
-              rateNumB: scorecardB?.slaBreakdown?.testPlanCreationRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.testPlanCreationRate}%`,
               target: '90.0%',
@@ -227,7 +164,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'dailyReport',
               name: t('kpiPlatform.slaItems.dailyReportName', 'Daily QA Status Report SLA'),
               rateNum: scorecard.slaBreakdown.dailyReportRate,
-              rateNumB: scorecardB?.slaBreakdown?.dailyReportRate,
               targetNum: 98.0,
               rate: `${scorecard.slaBreakdown.dailyReportRate}%`,
               target: '98.0%',
@@ -237,7 +173,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'autoDelivery',
               name: t('kpiPlatform.slaItems.autoDeliveryName', 'Automation Delivery SLA'),
               rateNum: scorecard.slaBreakdown.automationDeliveryRate,
-              rateNumB: scorecardB?.slaBreakdown?.automationDeliveryRate,
               targetNum: 85.0,
               rate: `${scorecard.slaBreakdown.automationDeliveryRate}%`,
               target: '85.0%',
@@ -247,7 +182,6 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               id: 'customerResolution',
               name: t('kpiPlatform.slaItems.customerResolutionName', 'Customer Defect Resolution SLA'),
               rateNum: scorecard.slaBreakdown.customerDefectResolutionRate,
-              rateNumB: scorecardB?.slaBreakdown?.customerDefectResolutionRate,
               targetNum: 90.0,
               rate: `${scorecard.slaBreakdown.customerDefectResolutionRate}%`,
               target: '90.0%',
@@ -278,13 +212,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
                 <div className={`flex justify-between items-center pt-2 border-t text-xs font-mono ${slaTheme.footerBorder}`}>
-                  <span className="text-slate-500 dark:text-slate-400">
-                    {isCompareMode ? `${scopeALabel}: ` : `${t('kpiPlatform.governanceView.adherenceLabel', 'Adherence')}: `}
-                    <strong className={slaTheme.value}>{sla.rate}</strong>
-                    {isCompareMode && sla.rateNumB !== undefined && (
-                      <span className="text-purple-600 dark:text-purple-400 ml-2">| {scopeBLabel}: <strong>{sla.rateNumB}%</strong></span>
-                    )}
-                  </span>
+                  <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.adherenceLabel', 'Adherence')}: <strong className={slaTheme.value}>{sla.rate}</strong></span>
                   <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.targetSlaLabel', 'Target')}: {sla.target}</span>
                 </div>
               </div>
@@ -325,10 +253,7 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                {scorecard.accessibilityScore}%
-                {isCompareMode && scorecardB && <span className="text-purple-600 dark:text-purple-400 ml-2">({scopeBLabel}: {scorecardB.accessibilityScore}%)</span>}
-              </span>
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
             </div>
             <div className="flex justify-between py-1">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
@@ -361,24 +286,15 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           <div className="space-y-2 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                {scorecard.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')}
-                {isCompareMode && scorecardB && <span className="text-purple-600 dark:text-purple-400 ml-2">({scopeBLabel}: {scorecardB.performanceP95Ms}ms)</span>}
-              </span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">
-                {scorecard.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')}
-                {isCompareMode && scorecardB && <span className="text-purple-600 dark:text-purple-400 ml-2">({scopeBLabel}: {scorecardB.performanceP99Ms}ms)</span>}
-              </span>
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                {scorecard.performanceErrorRate}%
-                {isCompareMode && scorecardB && <span className="text-purple-600 dark:text-purple-400 ml-2">({scopeBLabel}: {scorecardB.performanceErrorRate}%)</span>}
-              </span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceErrorRate}%</span>
             </div>
             <div className="flex justify-between py-1">
               <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>

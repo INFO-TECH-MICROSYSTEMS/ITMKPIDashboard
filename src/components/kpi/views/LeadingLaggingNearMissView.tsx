@@ -10,7 +10,6 @@
  * KPI View: Leading, Lagging & Near Misses Analytics
  * Visualizes predictive leading indicators, historical lagging outcomes,
  * and near-miss defect discoveries intercepted through non-formal exploratory testing.
- * Supports side-by-side metric comparison across scopes.
  */
 
 import React, { useState } from 'react';
@@ -30,32 +29,22 @@ import type {
 import { MetricCard } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
-import type { ViewComparisonProps } from '../contracts/ViewComparisonContract';
 
-interface LeadingLaggingNearMissViewProps extends ViewComparisonProps {
+interface LeadingLaggingNearMissViewProps {
   leadingLaggingMetrics: LeadingLaggingMetricsSummary;
   nearMissAnalytics: NearMissAnalyticsSummary;
   jiraItems: JiraWorkItem[];
   testRailExecutions: TestRailExecution[];
-  jiraItemsB?: JiraWorkItem[];
-  testRailExecutionsB?: TestRailExecution[];
 }
 
 export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProps> = ({
   leadingLaggingMetrics,
   nearMissAnalytics,
   jiraItems,
-  testRailExecutions: _testRailExecutions,
-  isCompareMode = false,
-  scopeALabel = 'Scope A',
-  scopeBLabel = 'Scope B',
-  metricsB
+  testRailExecutions: _testRailExecutions
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
-
-  const leadingLaggingMetricsB = metricsB?.leadingLaggingMetrics;
-  const nearMissAnalyticsB = metricsB?.nearMissAnalytics;
 
   const statusColorMap = {
     Optimal: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-500/30',
@@ -65,7 +54,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
 
   return (
     <div className="space-y-6">
-      {/* Top Telemetry Summary Cards with Side-by-Side Scope Values */}
+      {/* Top Telemetry Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Leading Health Index */}
         <MetricCard
@@ -78,14 +67,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           statusColor={leadingLaggingMetrics.leadingHealthScore >= 80 ? 'emerald' : leadingLaggingMetrics.leadingHealthScore >= 60 ? 'amber' : 'rose'}
           icon={<Compass className="w-5 h-5 text-cyan-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetrics))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={leadingLaggingMetricsB ? `${leadingLaggingMetricsB.leadingHealthScore}/100` : undefined}
-          compareStatusBadge={leadingLaggingMetricsB ? leadingLaggingMetricsB.leadingStatus : undefined}
-          compareStatusColor={leadingLaggingMetricsB ? (leadingLaggingMetricsB.leadingHealthScore >= 80 ? 'emerald' : 'amber') : undefined}
-          delta={leadingLaggingMetricsB !== undefined ? `${(leadingLaggingMetrics.leadingHealthScore - leadingLaggingMetricsB.leadingHealthScore) > 0 ? '+' : ''}${leadingLaggingMetrics.leadingHealthScore - leadingLaggingMetricsB.leadingHealthScore} pts` : undefined}
-          deltaPositive={leadingLaggingMetricsB !== undefined && leadingLaggingMetrics.leadingHealthScore >= leadingLaggingMetricsB.leadingHealthScore}
         />
 
         {/* 2. Lagging Outcome Stability */}
@@ -99,14 +80,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           statusColor={leadingLaggingMetrics.laggingHealthScore >= 80 ? 'emerald' : leadingLaggingMetrics.laggingHealthScore >= 60 ? 'amber' : 'rose'}
           icon={<Activity className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetrics))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={leadingLaggingMetricsB ? `${leadingLaggingMetricsB.laggingHealthScore}/100` : undefined}
-          compareStatusBadge={leadingLaggingMetricsB ? leadingLaggingMetricsB.laggingStatus : undefined}
-          compareStatusColor={leadingLaggingMetricsB ? (leadingLaggingMetricsB.laggingHealthScore >= 80 ? 'emerald' : 'amber') : undefined}
-          delta={leadingLaggingMetricsB !== undefined ? `${(leadingLaggingMetrics.laggingHealthScore - leadingLaggingMetricsB.laggingHealthScore) > 0 ? '+' : ''}${leadingLaggingMetrics.laggingHealthScore - leadingLaggingMetricsB.laggingHealthScore} pts` : undefined}
-          deltaPositive={leadingLaggingMetricsB !== undefined && leadingLaggingMetrics.laggingHealthScore >= leadingLaggingMetricsB.laggingHealthScore}
         />
 
         {/* 3. Near Miss Intercepted Defects */}
@@ -120,14 +93,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           statusColor={nearMissAnalytics.totalNearMisses > 0 ? (nearMissAnalytics.escapePreventionRatio >= 90 ? 'emerald' : 'amber') : 'rose'}
           icon={<Crosshair className="w-5 h-5 text-rose-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={nearMissAnalyticsB ? nearMissAnalyticsB.totalNearMisses : undefined}
-          compareStatusBadge={nearMissAnalyticsB ? (nearMissAnalyticsB.escapePreventionRatio >= 90 ? 'Shield Active' : 'Warning') : undefined}
-          compareStatusColor={nearMissAnalyticsB ? (nearMissAnalyticsB.escapePreventionRatio >= 90 ? 'emerald' : 'amber') : undefined}
-          delta={nearMissAnalyticsB !== undefined ? `${nearMissAnalytics.totalNearMisses - nearMissAnalyticsB.totalNearMisses > 0 ? '+' : ''}${nearMissAnalytics.totalNearMisses - nearMissAnalyticsB.totalNearMisses}` : undefined}
-          deltaPositive={nearMissAnalyticsB !== undefined && nearMissAnalytics.totalNearMisses >= nearMissAnalyticsB.totalNearMisses}
         />
 
         {/* 4. Avoided Production Outage Cost */}
@@ -141,14 +106,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           statusColor={nearMissAnalytics.totalAvoidedOutageCost > 0 ? 'emerald' : 'amber'}
           icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={nearMissAnalyticsB ? `$${nearMissAnalyticsB.totalAvoidedOutageCost.toLocaleString()}` : undefined}
-          compareStatusBadge={nearMissAnalyticsB ? (nearMissAnalyticsB.totalAvoidedOutageCost > 0 ? 'Value Preserved' : 'Warning') : undefined}
-          compareStatusColor={nearMissAnalyticsB ? (nearMissAnalyticsB.totalAvoidedOutageCost > 0 ? 'emerald' : 'amber') : undefined}
-          delta={nearMissAnalyticsB !== undefined ? `${(nearMissAnalytics.totalAvoidedOutageCost - nearMissAnalyticsB.totalAvoidedOutageCost) > 0 ? '+$' : '-$'}${Math.abs(nearMissAnalytics.totalAvoidedOutageCost - nearMissAnalyticsB.totalAvoidedOutageCost).toLocaleString()}` : undefined}
-          deltaPositive={nearMissAnalyticsB !== undefined && nearMissAnalytics.totalAvoidedOutageCost >= nearMissAnalyticsB.totalAvoidedOutageCost}
         />
       </div>
 
@@ -214,8 +171,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                 }
               };
 
-              const indicatorB = leadingLaggingMetricsB?.leadingIndicators.find(i => i.id === indicator.id);
-
               return (
                 <div 
                   key={indicator.id}
@@ -240,21 +195,14 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleJustify}
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
-                        title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
-                      >
-                        {isCompareMode ? `${scopeALabel}: ${indicator.formattedValue}` : indicator.formattedValue}
-                      </button>
-                      {isCompareMode && indicatorB && (
-                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${statusColorMap[indicatorB.status]}`}>
-                          {scopeBLabel}: {indicatorB.formattedValue}
-                        </span>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={handleJustify}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
+                      title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                    >
+                      {indicator.formattedValue}
+                    </button>
                   </div>
 
                   <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
@@ -305,8 +253,6 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                 }
               };
 
-              const indicatorB = leadingLaggingMetricsB?.laggingIndicators.find(i => i.id === indicator.id);
-
               return (
                 <div 
                   key={indicator.id}
@@ -331,21 +277,14 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleJustify}
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
-                        title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
-                      >
-                        {isCompareMode ? `${scopeALabel}: ${indicator.formattedValue}` : indicator.formattedValue}
-                      </button>
-                      {isCompareMode && indicatorB && (
-                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${statusColorMap[indicatorB.status]}`}>
-                          {scopeBLabel}: {indicatorB.formattedValue}
-                        </span>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={handleJustify}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border cursor-pointer hover:scale-105 transition-transform ${statusColorMap[indicator.status]}`}
+                      title={t('kpiPlatform.leadingLaggingView.explainMetric', 'Click to view metric audit justification & formula')}
+                    >
+                      {indicator.formattedValue}
+                    </button>
                   </div>
 
                   <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
@@ -387,35 +326,30 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
               {
                 label: t('kpiPlatform.leadingLaggingView.methodFormalScripted', 'Formal Scripted TestRail'),
                 count: nearMissAnalytics.discoveryMethodDistribution.formalScripted,
-                countB: nearMissAnalyticsB?.discoveryMethodDistribution?.formalScripted,
                 color: 'bg-cyan-500',
                 badgeColor: 'text-cyan-600 dark:text-cyan-400'
               },
               {
                 label: t('kpiPlatform.leadingLaggingView.methodAutomatedCi', 'Automated CI/CD Pipeline'),
                 count: nearMissAnalytics.discoveryMethodDistribution.automatedCi,
-                countB: nearMissAnalyticsB?.discoveryMethodDistribution?.automatedCi,
                 color: 'bg-emerald-500',
                 badgeColor: 'text-emerald-600 dark:text-emerald-400'
               },
               {
                 label: t('kpiPlatform.leadingLaggingView.methodExploratoryAdHoc', 'Exploratory & Ad-hoc Probing'),
                 count: nearMissAnalytics.discoveryMethodDistribution.exploratoryAdHoc,
-                countB: nearMissAnalyticsB?.discoveryMethodDistribution?.exploratoryAdHoc,
                 color: 'bg-amber-500',
                 badgeColor: 'text-amber-600 dark:text-amber-400'
               },
               {
                 label: t('kpiPlatform.leadingLaggingView.methodBugBashDogfood', 'Bug Bash & Dogfooding'),
                 count: nearMissAnalytics.discoveryMethodDistribution.bugBashDogfood,
-                countB: nearMissAnalyticsB?.discoveryMethodDistribution?.bugBashDogfood,
                 color: 'bg-purple-500',
                 badgeColor: 'text-purple-600 dark:text-purple-400'
               },
               {
                 label: t('kpiPlatform.leadingLaggingView.methodProductionEscaped', 'Escaped Customer APARs'),
                 count: nearMissAnalytics.discoveryMethodDistribution.productionEscaped,
-                countB: nearMissAnalyticsB?.discoveryMethodDistribution?.productionEscaped,
                 color: 'bg-rose-500',
                 badgeColor: 'text-rose-600 dark:text-rose-400'
               }
@@ -432,12 +366,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                 <div key={item.label} className="space-y-1">
                   <div className="flex justify-between text-xs font-mono">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">{item.label}</span>
-                    <span className={`font-bold ${item.badgeColor}`}>
-                      {item.count} ({pct}%)
-                      {isCompareMode && item.countB !== undefined && (
-                        <span className="text-purple-600 dark:text-purple-400 ml-2">| {scopeBLabel}: {item.countB}</span>
-                      )}
-                    </span>
+                    <span className={`font-bold ${item.badgeColor}`}>{item.count} ({pct}%)</span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                     <div className={`${item.color} h-full rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
@@ -473,7 +402,7 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
                   {t('kpiPlatform.leadingLaggingView.nearMissTableTitle', 'Major Defects Intercepted via Non-Formal Testing')}
                 </h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {isCompareMode ? `Intercepted defects in ${scopeALabel}` : t('kpiPlatform.leadingLaggingView.nearMissTableSubtitle', 'High-severity bugs found during exploratory sessions that prevented production escape')}
+                  {t('kpiPlatform.leadingLaggingView.nearMissTableSubtitle', 'High-severity bugs found during exploratory sessions that prevented production escape')}
                 </p>
               </div>
             </div>

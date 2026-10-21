@@ -10,7 +10,6 @@
  * KPI View: Automation ROI & Pipeline Health
  * Detailed telemetry on automated test pass rates, flaky test quarantine,
  * CI/CD execution runtimes, and engineering ROI.
- * Supports side-by-side metric comparison across scopes.
  */
 
 import React, { useState } from 'react';
@@ -29,15 +28,13 @@ import type {
 import { MetricCard, StackedProgressBar, AreaTrendChart } from '../VisualWidgets';
 import { MetricJustificationModal } from '../MetricJustificationModal';
 import { KPIJustificationService } from '../../../services/kpiJustificationService';
-import type { ViewComparisonProps } from '../contracts/ViewComparisonContract';
 
-interface AutomationViewProps extends ViewComparisonProps {
+interface AutomationViewProps {
   automatedDistribution: TestStatusDistribution;
   manualDistribution: TestStatusDistribution;
   automationHealth: AutomationHealthSummary;
   testRailExecutions: TestRailExecution[];
   testAutomationForecast?: TestAutomationBurnoutForecast;
-  testRailExecutionsB?: TestRailExecution[];
 }
 
 export const AutomationView: React.FC<AutomationViewProps> = ({
@@ -45,26 +42,17 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
   manualDistribution,
   automationHealth,
   testRailExecutions,
-  testAutomationForecast,
-  isCompareMode = false,
-  scopeALabel = 'Scope A',
-  scopeBLabel = 'Scope B',
-  metricsB
+  testAutomationForecast
 }) => {
   const { t } = useTranslation();
   const [selectedJustification, setSelectedJustification] = useState<KPIJustification | null>(null);
-
-  const automatedDistributionB = metricsB?.testDistributionAutomated;
-  const automationHealthB = metricsB?.automationHealth;
-  const testAutomationForecastB = metricsB?.testAutomationForecast;
 
   const flakyTestsList = testRailExecutions.filter(t => t.isFlaky || t.rerunCount > 0);
 
   return (
     <div className="space-y-6">
-      {/* Top Automation Cards with Side-by-Side Scope Values */}
+      {/* Top Automation Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* 1. Automated Test Suite Pass Rate */}
         <MetricCard
           title={t('kpiPlatform.automationView.suitePassRate', 'Automated Test Suite Pass Rate')}
           value={`${automatedDistribution.passRate}%`}
@@ -75,17 +63,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automatedDistribution.passRate >= 90.0 ? 'emerald' : automatedDistribution.passRate >= 80.0 ? 'amber' : 'rose'}
           icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationPassRateJustification(automatedDistribution.passRate))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automatedDistributionB ? `${automatedDistributionB.passRate}%` : undefined}
-          compareStatusBadge={automatedDistributionB ? (automatedDistributionB.passRate >= 90.0 ? 'Optimal' : 'Acceptable') : undefined}
-          compareStatusColor={automatedDistributionB ? (automatedDistributionB.passRate >= 90.0 ? 'emerald' : 'amber') : undefined}
-          delta={automatedDistributionB !== undefined ? `${(automatedDistribution.passRate - automatedDistributionB.passRate) > 0 ? '+' : ''}${(automatedDistribution.passRate - automatedDistributionB.passRate).toFixed(1)}%` : undefined}
-          deltaPositive={automatedDistributionB !== undefined && automatedDistribution.passRate >= automatedDistributionB.passRate}
         />
-
-        {/* 2. Flaky Test Detection Index */}
         <MetricCard
           title={t('kpiPlatform.automationView.flakyIndex', 'Flaky Test Detection Index')}
           value={`${automationHealth.flakyRate}%`}
@@ -96,17 +74,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.flakyRate <= 4.0 ? 'emerald' : automationHealth.flakyRate <= 8.0 ? 'amber' : 'rose'}
           icon={<AlertCircle className="w-5 h-5 text-rose-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getFlakyTestJustification(automationHealth.flakyRate, automationHealth.flakyCount))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `${automationHealthB.flakyRate}%` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.flakyRate <= 4.0 ? 'Controlled' : 'Alert') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.flakyRate <= 4.0 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.flakyRate - automationHealthB.flakyRate) > 0 ? '+' : ''}${(automationHealth.flakyRate - automationHealthB.flakyRate).toFixed(1)}%` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.flakyRate <= automationHealthB.flakyRate}
         />
-
-        {/* 3. CI/CD Pipeline Runtime */}
         <MetricCard
           title={t('kpiPlatform.automationView.pipelineRuntime', 'CI/CD Pipeline Runtime')}
           value={`${automationHealth.avgPipelineMins} ${t('kpiPlatform.minsUnit', 'mins')}`}
@@ -116,17 +84,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.avgPipelineMins <= 15.0 ? 'emerald' : automationHealth.avgPipelineMins <= 25.0 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getPipelineRuntimeJustification(automationHealth.avgPipelineMins))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `${automationHealthB.avgPipelineMins} ${t('kpiPlatform.minsUnit', 'mins')}` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.avgPipelineMins <= 15.0 ? 'Fast' : 'Moderate') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.avgPipelineMins <= 15.0 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.avgPipelineMins - automationHealthB.avgPipelineMins) > 0 ? '+' : ''}${(automationHealth.avgPipelineMins - automationHealthB.avgPipelineMins).toFixed(1)}m` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.avgPipelineMins <= automationHealthB.avgPipelineMins}
         />
-
-        {/* 4. Manual Hours Saved (ROI) */}
         <MetricCard
           title={t('kpiPlatform.automationView.hoursSavedRoi', 'Manual Hours Saved (ROI)')}
           value={`${automationHealth.manualHoursSaved.toLocaleString()} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
@@ -137,17 +95,8 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.manualHoursSaved > 200 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-emerald-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getManualHoursSavedJustification(automationHealth.manualHoursSaved))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `${automationHealthB.manualHoursSaved.toLocaleString()} ${t('kpiPlatform.hrsUnit', 'hrs')}` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.manualHoursSaved > 200 ? 'High ROI' : 'Moderate') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.manualHoursSaved > 200 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.manualHoursSaved - automationHealthB.manualHoursSaved) > 0 ? '+' : ''}${automationHealth.manualHoursSaved - automationHealthB.manualHoursSaved}h` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.manualHoursSaved >= automationHealthB.manualHoursSaved}
         />
-
-        {/* 5. CI/CD Compute Cost */}
+        {/* Enriched Automation Metric 1: CI/CD Compute Cost */}
         <MetricCard
           title={t('kpiPlatform.automationView.computeCostCard', 'CI/CD Runner Compute Cost')}
           value={`$${automationHealth.cicdComputeCostDollars.toLocaleString()}`}
@@ -158,17 +107,8 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.cicdComputeCostDollars < 250 ? 'emerald' : 'amber'}
           icon={<Cpu className="w-5 h-5 text-blue-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getCicdComputeCostJustification(automationHealth.cicdComputeCostDollars))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `$${automationHealthB.cicdComputeCostDollars.toLocaleString()}` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.cicdComputeCostDollars < 250 ? 'Efficient' : 'Elevated') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.cicdComputeCostDollars < 250 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.cicdComputeCostDollars - automationHealthB.cicdComputeCostDollars) > 0 ? '+$' : '-$'}${Math.abs(automationHealth.cicdComputeCostDollars - automationHealthB.cicdComputeCostDollars)}` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.cicdComputeCostDollars <= automationHealthB.cicdComputeCostDollars}
         />
-
-        {/* 6. MTBF */}
+        {/* Enriched Automation Metric 2: MTBF */}
         <MetricCard
           title={t('kpiPlatform.automationView.mtbfCard', 'Mean Time Between Flakes (MTBF)')}
           value={`${automationHealth.mtbfHours} ${t('kpiPlatform.hrsUnit', 'hrs')}`}
@@ -179,17 +119,8 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.mtbfHours >= 24.0 ? 'emerald' : 'amber'}
           icon={<Clock className="w-5 h-5 text-purple-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getMtbfJustification(automationHealth.mtbfHours))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `${automationHealthB.mtbfHours} ${t('kpiPlatform.hrsUnit', 'hrs')}` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.mtbfHours >= 24.0 ? 'Trustworthy' : 'Warning') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.mtbfHours >= 24.0 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.mtbfHours - automationHealthB.mtbfHours) > 0 ? '+' : ''}${(automationHealth.mtbfHours - automationHealthB.mtbfHours).toFixed(1)}h` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.mtbfHours >= automationHealthB.mtbfHours}
         />
-
-        {/* 7. Automation Defect Catch Ratio */}
+        {/* Enriched Automation Metric 3: Automation Defect Catch Ratio */}
         <MetricCard
           title={t('kpiPlatform.automationView.defectCatchRatioCard', 'Automation Defect Catch Ratio')}
           value={`${automationHealth.automationCatchRatio}%`}
@@ -200,19 +131,11 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
           statusColor={automationHealth.automationCatchRatio >= 70.0 ? 'emerald' : 'amber'}
           icon={<Zap className="w-5 h-5 text-amber-500" />}
           onJustify={() => setSelectedJustification(KPIJustificationService.getAutomationCatchRatioJustification(automationHealth.automationCatchRatio))}
-          isComparing={isCompareMode}
-          scopeALabel={scopeALabel}
-          scopeBLabel={scopeBLabel}
-          compareValue={automationHealthB ? `${automationHealthB.automationCatchRatio}%` : undefined}
-          compareStatusBadge={automationHealthB ? (automationHealthB.automationCatchRatio >= 70.0 ? 'Shift-Left Hero' : 'Manual Lag') : undefined}
-          compareStatusColor={automationHealthB ? (automationHealthB.automationCatchRatio >= 70.0 ? 'emerald' : 'amber') : undefined}
-          delta={automationHealthB !== undefined ? `${(automationHealth.automationCatchRatio - automationHealthB.automationCatchRatio) > 0 ? '+' : ''}${(automationHealth.automationCatchRatio - automationHealthB.automationCatchRatio).toFixed(1)}%` : undefined}
-          deltaPositive={automationHealthB !== undefined && automationHealth.automationCatchRatio >= automationHealthB.automationCatchRatio}
         />
       </div>
 
       {/* Test Automation Burnout & Predictive Velocity Forecast */}
-      {testAutomationForecast && !isCompareMode && (
+      {testAutomationForecast && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
             <div>
@@ -245,6 +168,7 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             </div>
           </div>
 
+          {/* Quick Velocity KPI Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
               <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
@@ -283,17 +207,18 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             </div>
           </div>
 
+          {/* Area Trend & Burnout Chart with Extrapolated Velocity Runway */}
           <AreaTrendChart
             data={testAutomationForecast.historyAndForecast}
             title={t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')}
             series1Name={t('kpiPlatform.automationView.totalTestsSeries', 'Total Tests')}
             series2Name={t('kpiPlatform.automationView.automatedTestsSeries', 'Automated Tests')}
             series3Name={t('kpiPlatform.automationView.manualTestsSeries', 'Manual Tests')}
-            series1Color="#f43f5e"
-            series2Color="#10b981"
-            series3Color="#f59e0b"
-            projectionLineColor="#06b6d4"
-            series3ProjectionLineColor="#fbbf24"
+            series1Color="#f43f5e" // Total Tests (Rose solid)
+            series2Color="#10b981" // Automated Tests (Emerald solid)
+            series3Color="#f59e0b" // Manual Tests (Amber solid)
+            projectionLineColor="#06b6d4" // Automated forecast trajectory (Cyan dashed)
+            series3ProjectionLineColor="#fbbf24" // Manual tests burnout trajectory (Amber dashed)
             forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecast.estimatedAllAutomatedDate}`}
             forecastStatus={testAutomationForecast.isVelocityHealthy ? 'emerald' : 'amber'}
             onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
@@ -302,158 +227,60 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
         </div>
       )}
 
-      {/* Side-by-Side Automation Forecasts when in Compare Mode */}
-      {isCompareMode && testAutomationForecast && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-            <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-              Comparative Test Automation Burnout Trajectories
-            </h4>
-            <span className="text-xs font-mono text-purple-600 dark:text-purple-400">
-              {scopeALabel} vs {scopeBLabel}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Scope A Forecast */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 space-y-3">
-              <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 block">
-                {scopeALabel} Automation Runway ({testAutomationForecast.daysToAllAutomated}d to 100%)
-              </span>
-              <AreaTrendChart
-                data={testAutomationForecast.historyAndForecast}
-                title={`${scopeALabel} Automation`}
-                series1Name="Total"
-                series2Name="Automated"
-                series3Name="Manual"
-                series1Color="#f43f5e"
-                series2Color="#10b981"
-                series3Color="#f59e0b"
-                height={160}
-                onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
-              />
-            </div>
-
-            {/* Scope B Forecast */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 space-y-3">
-              <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 block">
-                {scopeBLabel} Automation Runway ({testAutomationForecastB?.daysToAllAutomated ?? 0}d to 100%)
-              </span>
-              {testAutomationForecastB ? (
-                <AreaTrendChart
-                  data={testAutomationForecastB.historyAndForecast}
-                  title={`${scopeBLabel} Automation`}
-                  series1Name="Total"
-                  series2Name="Automated"
-                  series3Name="Manual"
-                  series1Color="#f43f5e"
-                  series2Color="#10b981"
-                  series3Color="#f59e0b"
-                  height={160}
-                  onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecastB))}
-                />
-              ) : (
-                <div className="h-[160px] flex items-center justify-center text-xs font-mono text-slate-400">
-                  Scope B automation runway not available
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Automated vs Manual Test Execution Distribution Bars */}
-      {!isCompareMode ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyan-500" />
-                <span>{t('kpiPlatform.automationView.automatedExecution')} ({automatedDistribution.total.toLocaleString()} {t('kpiPlatform.automationView.runsCount')})</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Automated Bar */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-cyan-500" />
+              <span>{t('kpiPlatform.automationView.automatedExecution')} ({automatedDistribution.total.toLocaleString()} {t('kpiPlatform.automationView.runsCount')})</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-bold">
+                {automationHealth.automationRatioPercent}% {t('kpiPlatform.automationView.ofSuite')}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-bold">
-                  {automationHealth.automationRatioPercent}% {t('kpiPlatform.automationView.ofSuite')}
-                </span>
-                <button
-                  onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistribution, 'Automated'))}
-                  title="Explain Automated Execution Breakdown"
-                  className="p-1 rounded text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              <button
+                onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistribution, 'Automated'))}
+                title="Explain Automated Execution Breakdown"
+                className="p-1 rounded text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <StackedProgressBar 
-              distribution={automatedDistribution} 
-              onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistribution, 'Automated'))}
-            />
           </div>
-
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-purple-500" />
-                <span>{t('kpiPlatform.automationView.manualExecution')} ({manualDistribution.total.toLocaleString()} {t('kpiPlatform.automationView.runsCount')})</span>
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
-                  {100 - automationHealth.automationRatioPercent}% {t('kpiPlatform.automationView.ofSuite')}
-                </span>
-                <button
-                  onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistribution, 'Manual'))}
-                  title="Explain Manual Execution Breakdown"
-                  className="p-1 rounded text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-            <StackedProgressBar 
-              distribution={manualDistribution} 
-              onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistribution, 'Manual'))}
-            />
-          </div>
+          <StackedProgressBar 
+            distribution={automatedDistribution} 
+            onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistribution, 'Automated'))}
+          />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Scope A Automation Distribution */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase">
-                {scopeALabel} Automated vs Manual
-              </span>
-              <span className="text-xs font-mono text-slate-400">
-                {automationHealth.automationRatioPercent}% Automated
-              </span>
-            </div>
-            <StackedProgressBar 
-              distribution={automatedDistribution} 
-              onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistribution, 'Automated'))}
-            />
-          </div>
 
-          {/* Scope B Automation Distribution */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-500/30 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 uppercase">
-                {scopeBLabel} Automated vs Manual
+        {/* Manual Bar */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-purple-500" />
+              <span>{t('kpiPlatform.automationView.manualExecution')} ({manualDistribution.total.toLocaleString()} {t('kpiPlatform.automationView.runsCount')})</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
+                {100 - automationHealth.automationRatioPercent}% {t('kpiPlatform.automationView.ofSuite')}
               </span>
-              <span className="text-xs font-mono text-slate-400">
-                {automationHealthB?.automationRatioPercent ?? 0}% Automated
-              </span>
+              <button
+                onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistribution, 'Manual'))}
+                title="Explain Manual Execution Breakdown"
+                className="p-1 rounded text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
             </div>
-            {automatedDistributionB ? (
-              <StackedProgressBar 
-                distribution={automatedDistributionB} 
-                onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistributionB, 'Automated'))}
-              />
-            ) : (
-              <div className="text-xs font-mono text-slate-400 py-3">Scope B automated runs unavailable</div>
-            )}
           </div>
+          <StackedProgressBar 
+            distribution={manualDistribution} 
+            onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistribution, 'Manual'))}
+          />
         </div>
-      )}
+      </div>
 
       {/* Flaky Test Quarantine Table */}
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
