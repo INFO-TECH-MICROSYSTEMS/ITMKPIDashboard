@@ -184,18 +184,26 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
 
       {/* SLA Compliance Breakdown Matrix: Scope 1 */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-          <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-            {t('kpiPlatform.governanceView.slaMatrixTitle')} {isCompareMode ? `— ${scopeALabel}` : ''}
-          </h4>
-          <button
-            type="button"
-            onClick={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
-            className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            title="Click for Enterprise Quality SLA Governance justification"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
+        <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+          {isCompareMode && (
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help" title={scopeALabel}>
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+              {t('kpiPlatform.governanceView.slaMatrixTitle')}
+            </h4>
+            <button
+              type="button"
+              onClick={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecard))}
+              className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Click for Enterprise Quality SLA Governance justification"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -290,17 +298,20 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
 
       {/* SLA Compliance Breakdown Matrix: Scope 2 Stacked Below */}
       {isCompareMode && scorecardB && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-purple-100 dark:border-purple-800">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-              <h4 className="text-base font-bold font-['Outfit'] text-purple-900 dark:text-purple-200">
-                {t('kpiPlatform.governanceView.slaMatrixTitle')} — {scopeBLabel}
-              </h4>
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help" title={scopeBLabel}>
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel}</span>
             </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
-              SLA Audit
-            </span>
+            <div className="flex items-center justify-between">
+              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                {t('kpiPlatform.governanceView.slaMatrixTitle')}
+              </h4>
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
+                SLA Audit
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -413,9 +424,9 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           {/* Primary A11y */}
           <div className="space-y-2 text-xs">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -441,18 +452,26 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           {/* Comparative A11y Stacked Below */}
           {isCompareMode && scorecardB && (
             <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-600 dark:text-slate-400">Screen Reader ARIA Compatibility</span>
-                <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{scorecardB.accessibilityScore}% Pass</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.colorContrast', 'Color Contrast Ratios (AA & AAA)')}</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.colorContrastPass', '100% Pass (7:1 High Contrast)')}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.keyboardNav', 'Keyboard Navigation & Focus Traps')}</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.zeroTraps', '0 Traps Detected')}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
+                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-600 dark:text-slate-400">Audit Status</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
                 <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                  {scorecardB.accessibilityScore >= 95 ? 'Certified' : 'Conditional'}
+                  {scorecardB.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
                 </span>
               </div>
             </div>
@@ -481,9 +500,9 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           {/* Primary Perf */}
           <div className="space-y-2 text-xs">
             {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                <span>{scopeALabel}</span>
+              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </span>
             )}
             <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
@@ -509,17 +528,27 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
           {/* Comparative Perf Stacked Below */}
           {isCompareMode && scorecardB && (
             <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel}</span>
+              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
               </span>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-600 dark:text-slate-400">P95 Response Time</span>
-                <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{scorecardB.performanceP95Ms} ms</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
+                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceErrorRate}%</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-600 dark:text-slate-400">HTTP 5xx Server Error Rate</span>
-                <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{scorecardB.performanceErrorRate}%</span>
+                <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  {scorecardB.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
+                </span>
               </div>
             </div>
           )}

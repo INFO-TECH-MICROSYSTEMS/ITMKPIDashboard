@@ -565,28 +565,36 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
 
         {/* Near Miss Defect Intercept Log Table */}
         <div className="lg:col-span-7 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="p-1 rounded bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
-                <AlertTriangle className="w-4 h-4" />
-              </span>
-              <div>
-                <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                  {t('kpiPlatform.leadingLaggingView.nearMissTableTitle', 'Major Defects Intercepted via Non-Formal Testing')} {isCompareMode ? `— ${scopeALabel}` : ''}
-                </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {t('kpiPlatform.leadingLaggingView.nearMissTableSubtitle', 'High-severity bugs found during exploratory sessions that prevented production escape')}
-                </p>
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+            {isCompareMode && (
+              <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help" title={scopeALabel}>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
               </div>
+            )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+                  <AlertTriangle className="w-4 h-4" />
+                </span>
+                <div>
+                  <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.leadingLaggingView.nearMissTableTitle', 'Major Defects Intercepted via Non-Formal Testing')}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.leadingLaggingView.nearMissTableSubtitle', 'High-severity bugs found during exploratory sessions that prevented production escape')}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
+                className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Explain Near Miss Methodology & Justification"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setSelectedJustification(KPIJustificationService.getNearMissAnalyticsJustification(nearMissAnalytics))}
-              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="Explain Near Miss Methodology & Justification"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -669,27 +677,82 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
           {/* Comparative Near Miss Table Stacked Below */}
           {isCompareMode && nearMissAnalyticsB && nearMissAnalyticsB.recentNearMisses.length > 0 && (
             <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" />
-                <span>{scopeBLabel} Near Miss Intercepts</span>
-              </span>
+              <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help" title={scopeBLabel}>
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="truncate">{scopeBLabel}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+                    <AlertTriangle className="w-4 h-4" />
+                  </span>
+                  <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.leadingLaggingView.nearMissTableTitle', 'Major Defects Intercepted via Non-Formal Testing')}
+                  </h4>
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
+                    <tr>
+                      <th className="p-2.5 rounded-l-lg">{t('kpiPlatform.qualityView.tableKey', 'Key')}</th>
+                      <th className="p-2.5">{t('kpiPlatform.qualityView.tableTitle', 'Title')}</th>
+                      <th className="p-2.5">{t('kpiPlatform.qualityView.tableSeverity', 'Severity')}</th>
+                      <th className="p-2.5">{t('kpiPlatform.leadingLaggingView.tableDiscovery', 'Discovery')}</th>
+                      <th className="p-2.5">{t('kpiPlatform.leadingLaggingView.tableAvoidedCost', 'Avoided Cost')}</th>
+                      <th className="p-2.5 rounded-r-lg">{t('kpiPlatform.leadingLaggingView.tableTestRailBackfill', 'TestRail Backfill')}</th>
+                    </tr>
+                  </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                     {nearMissAnalyticsB.recentNearMisses.map(defect => (
-                      <tr key={defect.id} className="hover:bg-purple-50/20 dark:hover:bg-purple-950/20">
-                        <td className="p-2.5 font-mono font-bold text-purple-600 dark:text-purple-400">{defect.id}</td>
+                      <tr key={defect.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                        <td className="p-2.5 font-mono font-bold text-cyan-600 dark:text-cyan-400">{defect.id}</td>
                         <td className="p-2.5 text-slate-900 dark:text-white truncate max-w-xs">{defect.title}</td>
                         <td className="p-2.5 font-mono">
-                          <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border border-rose-300 text-rose-600">
+                          <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${
+                            defect.severity === 'P1-Blocker'
+                              ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                              : defect.severity === 'P2-Critical'
+                              ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                              : defect.severity === 'P3-Major'
+                              ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                              : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                          }`}>
                             {defect.severity}
                           </span>
                         </td>
-                        <td className="p-2.5 font-mono text-[10px] text-slate-600 dark:text-slate-400">
-                          {defect.discoveryMethod}
+                        <td className="p-2.5 font-mono">
+                          <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-2xs ${
+                            defect.discoveryMethod === 'Exploratory / Ad-hoc'
+                              ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                              : defect.discoveryMethod === 'Bug Bash / Dogfooding'
+                              ? 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 border-purple-200 dark:border-purple-800/40'
+                              : defect.discoveryMethod === 'Automated CI Pipeline'
+                              ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800/40'
+                              : defect.discoveryMethod === 'Production / Customer APAR'
+                              ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                              : 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                          }`}>
+                            {defect.discoveryMethod}
+                          </span>
                         </td>
-                        <td className="p-2.5 font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                          ${defect.preventedOutageCost.toLocaleString()}
+                        <td className="p-2.5 font-mono">
+                          <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/40 shadow-2xs">
+                            ${defect.preventedOutageCost.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="p-2.5 font-mono">
+                          {defect.hasFormalTestCaseBackfill ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-500/20">
+                              <CheckCircle2 className="w-3 h-3" />
+                              {defect.linkedFormalTestCaseId || t('kpiPlatform.leadingLaggingView.backfilled', 'Backfilled')}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] text-rose-600 dark:text-rose-400 font-semibold bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-500/20">
+                              <AlertTriangle className="w-3 h-3" />
+                              {t('kpiPlatform.leadingLaggingView.backfillPending', 'Pending Backfill')}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}

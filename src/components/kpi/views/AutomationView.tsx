@@ -219,34 +219,45 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
       {/* Test Automation Burnout & Predictive Velocity Forecast: Scope 1 on top of Scope 2 */}
       {testAutomationForecast && (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
-            <div>
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')} {isCompareMode ? `— ${scopeALabel}` : ''}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
-                className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+          <div className="pb-2 border-b border-slate-200 dark:border-slate-800 space-y-1.5">
+            {isCompareMode && (
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                title={scopeALabel}
               >
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>{t('kpiPlatform.automationView.explainForecast', 'Explain Forecast')}</span>
-              </button>
-              <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
-                testAutomationForecast.isVelocityHealthy 
-                  ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-                  : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
-              }`}>
-                {testAutomationForecast.isVelocityHealthy 
-                  ? `● ${t('kpiPlatform.automationView.onSchedule', 'On Schedule')}` 
-                  : `▲ ${t('kpiPlatform.automationView.paceWarning', 'Pace Warning')}`}
-              </span>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
+              </div>
+            )}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                  {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
+                  className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                  title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  <span>{t('kpiPlatform.automationView.explainForecast', 'Explain Forecast')}</span>
+                </button>
+                <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
+                  testAutomationForecast.isVelocityHealthy 
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                    : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                }`}>
+                  {testAutomationForecast.isVelocityHealthy 
+                    ? `● ${t('kpiPlatform.automationView.onSchedule', 'On Schedule')}` 
+                    : `▲ ${t('kpiPlatform.automationView.paceWarning', 'Pace Warning')}`}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -433,23 +444,31 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
 
       {/* Flaky Test Quarantine Table: Scope 1 */}
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsList.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')}) {isCompareMode ? `— ${scopeALabel}` : ''}</span>
-            <button
-              type="button"
-              onClick={() => setSelectedJustification(KPIJustificationService.getFlakyTestsJustification(flakyTestsList, automationHealth.totalReruns))}
-              className="p-1 rounded-full text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Click for Flaky Tests quarantine policy and rerun audit"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] font-mono text-slate-400">
-              {t('kpiPlatform.automationView.totalPipelineReruns')}: <strong className="text-slate-700 dark:text-slate-200">{automationHealth.totalReruns}</strong>
-            </span>
+        <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+          {isCompareMode && (
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help" title={scopeALabel}>
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsList.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')})</span>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getFlakyTestsJustification(flakyTestsList, automationHealth.totalReruns))}
+                className="p-1 rounded-full text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Click for Flaky Tests quarantine policy and rerun audit"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-mono text-slate-400">
+                {t('kpiPlatform.automationView.totalPipelineReruns')}: <strong className="text-slate-700 dark:text-slate-200">{automationHealth.totalReruns}</strong>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -489,22 +508,28 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
 
       {/* Flaky Test Quarantine Table: Scope 2 Stacked Below */}
       {isCompareMode && flakyTestsListB.length > 0 && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-bold text-sm font-['Outfit']">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsListB.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')}) — {scopeBLabel}</span>
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help" title={scopeBLabel}>
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] font-mono text-slate-400">
-                Pipeline Reruns: <strong className="text-purple-700 dark:text-purple-300">{automationHealthB?.totalReruns ?? 0}</strong>
-              </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsListB.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')})</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] font-mono text-slate-400">
+                  Pipeline Reruns: <strong className="text-slate-700 dark:text-slate-200">{automationHealthB?.totalReruns ?? 0}</strong>
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-purple-50/50 dark:bg-purple-950/40 font-mono text-purple-700 dark:text-purple-300 uppercase text-[10px]">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
                 <tr>
                   <th className="p-2.5 rounded-l-lg">{t('kpiPlatform.automationView.tableCaseId')}</th>
                   <th className="p-2.5">{t('kpiPlatform.qualityView.tableTitle')}</th>
@@ -517,16 +542,16 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                 {flakyTestsListB.slice(0, 5).map(test => (
-                  <tr key={test.id} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20">
-                    <td className="p-2.5 font-mono font-bold text-purple-600 dark:text-purple-400">{test.caseId}</td>
+                  <tr key={test.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                    <td className="p-2.5 font-mono font-bold text-cyan-600 dark:text-cyan-400">{test.caseId}</td>
                     <td className="p-2.5 text-slate-900 dark:text-white truncate max-w-xs">{test.title}</td>
                     <td className="p-2.5 font-mono text-slate-600 dark:text-slate-300">{test.suiteType}</td>
                     <td className="p-2.5 text-slate-600 dark:text-slate-300">{test.component}</td>
-                    <td className="p-2.5 font-mono text-purple-600 dark:text-purple-400 font-bold">{test.rerunCount} reruns</td>
+                    <td className="p-2.5 font-mono text-amber-600 dark:text-amber-400 font-bold">{test.rerunCount} reruns</td>
                     <td className="p-2.5 font-mono text-slate-500">{test.durationSeconds}s</td>
                     <td className="p-2.5">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-400">
-                        Flaky / Rerun
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400">
+                        {t('kpiPlatform.statusFlakyRerun', 'Flaky / Rerun')}
                       </span>
                     </td>
                   </tr>

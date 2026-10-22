@@ -221,27 +221,38 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
 
       {/* Engineer Assignments & Completion Ratios Table: Scope 1 */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div>
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.productivityView.ledgerTitle')} {isCompareMode ? `— ${scopeALabel}` : ''}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.productivityView.ledgerSubtitle')}
-              </p>
-            </div>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getQaThroughputLedgerJustification(productivityMetrics))}
-              title="Explain QA Engineer Assignment & Throughput Metrics"
-              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+          {isCompareMode && (
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+              title={scopeALabel}
             >
-              <HelpCircle className="w-4 h-4" />
-            </button>
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel}</span>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <div>
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                  {t('kpiPlatform.productivityView.ledgerTitle')}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.productivityView.ledgerSubtitle')}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedJustification(KPIJustificationService.getQaThroughputLedgerJustification(productivityMetrics))}
+                title="Explain QA Engineer Assignment & Throughput Metrics"
+                className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            </div>
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+              {t('kpiPlatform.productivityView.capacityLimit')}
+            </span>
           </div>
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
-            {t('kpiPlatform.productivityView.capacityLimit')}
-          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -311,27 +322,33 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
 
       {/* Engineer Assignments & Completion Ratios Table: Scope 2 Stacked Below */}
       {isCompareMode && productivityMetricsB.length > 0 && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-purple-100 dark:border-purple-800">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+              title={scopeBLabel}
+            >
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel}</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h4 className="text-base font-bold font-['Outfit'] text-purple-900 dark:text-purple-200">
-                  {t('kpiPlatform.productivityView.ledgerTitle')} — {scopeBLabel}
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                  {t('kpiPlatform.productivityView.ledgerTitle')}
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   {t('kpiPlatform.productivityView.ledgerSubtitle')}
                 </p>
               </div>
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                {t('kpiPlatform.productivityView.capacityLimit')}
+              </span>
             </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
-              Team Throughput
-            </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-purple-50/50 dark:bg-purple-950/40 font-mono text-purple-700 dark:text-purple-300 uppercase text-[10px]">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
                 <tr>
                   <th className="p-3 rounded-l-lg">{t('kpiPlatform.productivityView.tableEngineer')}</th>
                   <th className="p-3">{t('kpiPlatform.productivityView.tableAssigned')}</th>
@@ -344,7 +361,7 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                 {productivityMetricsB.map(eng => (
-                  <tr key={eng.personName} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20">
+                  <tr key={eng.personName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                     <td className="p-3 text-slate-900 dark:text-white font-semibold flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px]">
                         {eng.personName.charAt(0)}
@@ -354,14 +371,14 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
                     <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">
                       {eng.assignedTests}
                     </td>
-                    <td className="p-3 font-mono text-purple-600 dark:text-purple-400 font-bold">
+                    <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                       {eng.completedTests}
                     </td>
                     <td className="p-3 font-mono">
                       <div className="flex items-center gap-2">
                         <div className="w-16 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                           <div 
-                            className="bg-purple-500 h-full rounded-full" 
+                            className="bg-emerald-500 h-full rounded-full" 
                             style={{ width: `${Math.min(100, eng.completionRate)}%` }} 
                           />
                         </div>
@@ -382,7 +399,7 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
                           {t('kpiPlatform.overCommitted', 'Over-Committed')}
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
                           {t('kpiPlatform.statusBalancedLoad', 'Balanced Load')}
                         </span>
                       )}

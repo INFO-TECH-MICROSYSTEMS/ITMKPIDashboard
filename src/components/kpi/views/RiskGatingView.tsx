@@ -163,27 +163,38 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
 
       {/* Component Risk Assessment Matrix: Scope 1 */}
       <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div>
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.riskView.matrixTitle')} {isCompareMode ? `— ${scopeALabel}` : ''}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
-              </p>
-            </div>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getComponentRiskMatrixJustification(componentRisks))}
-              title="Explain Component Risk & Dependency Gating Matrix"
-              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+          {isCompareMode && (
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+              title={scopeALabel}
             >
-              <HelpCircle className="w-4 h-4" />
-            </button>
+              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+              <span className="truncate">{scopeALabel}</span>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <div>
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                  {t('kpiPlatform.riskView.matrixTitle')}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedJustification(KPIJustificationService.getComponentRiskMatrixJustification(componentRisks))}
+                title="Explain Component Risk & Dependency Gating Matrix"
+                className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            </div>
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+              {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
+            </span>
           </div>
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
-            {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
-          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -268,27 +279,33 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
 
       {/* Component Risk Assessment Matrix: Scope 2 Stacked Below */}
       {isCompareMode && componentRisksB && componentRisksB.length > 0 && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-purple-100 dark:border-purple-800">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
+            <div 
+              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+              title={scopeBLabel}
+            >
+              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+              <span className="truncate">{scopeBLabel}</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h4 className="text-base font-bold font-['Outfit'] text-purple-900 dark:text-purple-200">
-                  {t('kpiPlatform.riskView.matrixTitle')} — {scopeBLabel}
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                  {t('kpiPlatform.riskView.matrixTitle')}
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
                 </p>
               </div>
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
+              </span>
             </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
-              Vulnerability Ranking
-            </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-purple-50/50 dark:bg-purple-950/40 font-mono text-purple-700 dark:text-purple-300 uppercase text-[10px]">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 font-mono text-slate-500 dark:text-slate-400 uppercase text-[10px]">
                 <tr>
                   <th className="p-3 rounded-l-lg">{t('kpiPlatform.riskView.tableModule')}</th>
                   <th className="p-3">{t('kpiPlatform.riskView.tableFailureRate')}</th>
@@ -304,7 +321,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
                 {componentRisksB.map((comp) => (
-                  <tr key={comp.component} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20">
+                  <tr key={comp.component} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                     <td className="p-3 text-slate-900 dark:text-white font-semibold">
                       {comp.component}
                     </td>
@@ -327,7 +344,7 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                       <div className="flex items-center gap-2">
                         <div className="w-16 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                           <div 
-                            className="bg-purple-500 h-full rounded-full" 
+                            className="bg-cyan-500 h-full rounded-full" 
                             style={{ width: `${comp.testCoveragePercent}%` }} 
                           />
                         </div>
@@ -371,21 +388,32 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Blocked Items */}
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-rose-500" />
-              <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItems.length}) {isCompareMode ? `— ${scopeALabel}` : ''}</span>
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
-              <button
-                type="button"
-                onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItems))}
-                className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                title="Click for Blocked Development Items clarification and policy audit"
+          <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1">
+            {isCompareMode && (
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                title={scopeALabel}
               >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </button>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                <XCircle className="w-4 h-4 text-rose-500" />
+                <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItems.length})</span>
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItems))}
+                  className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for Blocked Development Items clarification and policy audit"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -415,21 +443,32 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
 
         {/* High Dependency Depth */}
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-purple-500" />
-              <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItems.length}) {isCompareMode ? `— ${scopeALabel}` : ''}</span>
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
-              <button
-                type="button"
-                onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
-                className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                title="Click for High Dependency Depth clarification and coupling audit"
+          <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1">
+            {isCompareMode && (
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                title={scopeALabel}
               >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </button>
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-500" />
+                <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItems.length})</span>
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItems))}
+                  className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for High Dependency Depth clarification and coupling audit"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -452,21 +491,38 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
       {isCompareMode && (blockedItemsB.length > 0 || highDependencyItemsB.length > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           {/* Scope 2 Blocked Items */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold font-['Outfit'] text-purple-900 dark:text-purple-200 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-rose-500" />
-                <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItemsB.length}) — {scopeBLabel}</span>
-              </span>
-              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Stalled</span>
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1">
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                title={scopeBLabel}
+              >
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-rose-500" />
+                  <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItemsB.length})</span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+              </div>
             </div>
 
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
               {blockedItemsB.slice(0, 4).map(item => (
-                <div key={item.id} className="p-2.5 rounded-xl bg-purple-50/30 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/50 text-xs">
+                <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                   <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
-                    <span className="text-purple-600 dark:text-purple-400">{item.id}</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold border border-rose-300 text-rose-600">
+                    <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border shadow-2xs ${
+                      item.severity === 'P1-Blocker'
+                        ? 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800/40'
+                        : item.severity === 'P2-Critical'
+                        ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800/40'
+                        : item.severity === 'P3-Major'
+                        ? 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200 dark:border-cyan-800/40'
+                        : 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+                    }`}>
                       {item.severity}
                     </span>
                   </div>
@@ -478,24 +534,33 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
           </div>
 
           {/* Scope 2 High Dependency Depth */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold font-['Outfit'] text-purple-900 dark:text-purple-200 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-purple-500" />
-                <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItemsB.length}) — {scopeBLabel}</span>
-              </span>
-              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400">Coupling</span>
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1">
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                title={scopeBLabel}
+              >
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-purple-500" />
+                  <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItemsB.length})</span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+              </div>
             </div>
 
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
               {highDependencyItemsB.slice(0, 4).map(item => (
-                <div key={item.id} className="p-2.5 rounded-xl bg-purple-50/30 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/50 text-xs">
+                <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                   <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
-                    <span className="text-purple-600 dark:text-purple-400">{item.id}</span>
-                    <span className="text-purple-600 dark:text-purple-400">Depth: {item.dependencyDepth}</span>
+                    <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
+                    <span className="text-purple-600 dark:text-purple-400">{t('kpiPlatform.riskView.depthLevel')}: {item.dependencyDepth}</span>
                   </div>
                   <div className="text-slate-600 dark:text-slate-300 truncate mt-0.5">{item.title}</div>
-                  <div className="text-[10px] font-mono text-slate-400 mt-1">Cross-Module Blast Radius</div>
+                  <div className="text-[10px] font-mono text-slate-400 mt-1">{t('kpiPlatform.riskView.crossTeamTesting')}</div>
                 </div>
               ))}
             </div>
