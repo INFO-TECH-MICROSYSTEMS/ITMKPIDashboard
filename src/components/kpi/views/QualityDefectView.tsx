@@ -229,42 +229,45 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
         />
       </div>
 
-      {/* Aging of Items Pending Testing: Single Scope or Vertically Stacked (Scope 1 on Top of Scope 2) */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div>
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.qualityView.agingProfileTitle')}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.qualityView.agingProfileSubtitle')}
-              </p>
+      {/* Items Pending Testing Aging Profile: Scope 1 on top of Scope 2 */}
+      <div className="space-y-4">
+        {/* Scope 1 Aging Card */}
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+            {isCompareMode && (
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                title={scopeALabel}
+              >
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                <span className="truncate">{scopeALabel}</span>
+              </div>
+            )}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div>
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.qualityView.agingProfileTitle')}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.qualityView.agingProfileSubtitle')}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, 'all'))}
+                  title="Explain Aging Profile Metric"
+                  className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                {t('kpiPlatform.qualityView.totalInQueue')}: {totalAgingItems} {t('kpiPlatform.qualityView.itemsCount')}
+              </span>
             </div>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBuckets, 'all'))}
-              title="Explain Aging Profile Metric"
-              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
           </div>
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
-            {t('kpiPlatform.qualityView.totalInQueue')}: {totalAgingItems} {t('kpiPlatform.qualityView.itemsCount')}
-          </span>
-        </div>
 
-        {/* Scope 1 Aging Buckets */}
-        <div className="space-y-2">
-          {isCompareMode && (
-            <div 
-              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
-              title={scopeALabel}
-            >
-              <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-              <span className="truncate">{scopeALabel} ({totalAgingItems} items)</span>
-            </div>
-          )}
+          {/* Scope 1 Aging Buckets */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {/* < 7 Days */}
             <div 
@@ -380,19 +383,35 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           </div>
         </div>
 
-        {/* Scope 2 Aging Buckets Stacked Below Scope 1 */}
+        {/* Scope 2 Aging Card Stacked Below Scope 1 */}
         {isCompareMode && agingBucketsB && (
-          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <div 
-              className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
-              title={scopeBLabel}
-            >
-              <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-              <span className="truncate">{scopeBLabel} ({totalAgingItemsB} items)</span>
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div 
+                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                title={scopeBLabel}
+              >
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">{scopeBLabel}</span>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.qualityView.agingProfileTitle')}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.qualityView.agingProfileSubtitle')}
+                  </p>
+                </div>
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                  {t('kpiPlatform.qualityView.totalInQueue')}: {totalAgingItemsB} {t('kpiPlatform.qualityView.itemsCount')}
+                </span>
+              </div>
             </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {/* Scope 2: < 7 Days */}
-              <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/30">
+              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30">
                 <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
                   {t('kpiPlatform.qualityView.under7Days')}
                 </span>
@@ -413,7 +432,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 7 - 14 Days */}
-              <div className="p-4 rounded-xl bg-cyan-50/50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-500/30">
+              <div className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30">
                 <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
                   {t('kpiPlatform.qualityView.days7To14')}
                 </span>
@@ -434,7 +453,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 14 - 21 Days */}
-              <div className="p-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30">
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30">
                 <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
                   {t('kpiPlatform.qualityView.days14To21')}
                 </span>
@@ -455,7 +474,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 21+ Days */}
-              <div className="p-4 rounded-xl bg-rose-50/50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-500/30">
+              <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30">
                 <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
                   {t('kpiPlatform.qualityView.days21Plus')}
                 </span>
@@ -478,7 +497,6 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           </div>
         )}
       </div>
-
       {/* Two Column Layout: Defect Trend Area Chart + Severity Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Trend Curve: Defect Discovery vs Burnout */}
@@ -515,78 +533,55 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
           )}
         </div>
 
-        {/* Severity Distribution */}
-        <div className="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.qualityView.severityTitle')}
-              </h4>
-              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-2xs ${
-                severityCounts.blockerP1 === 0 && severityCounts.criticalP2 <= 5
-                  ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
-                  : severityCounts.blockerP1 === 0
-                  ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
-                  : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
-              }`}>
-                {severityCounts.blockerP1 === 0 
-                  ? (severityCounts.criticalP2 <= 5 ? t('kpiPlatform.statusOptimal', 'Controlled') : t('kpiPlatform.statusWarning', 'P2 Watch'))
-                  : `${severityCounts.blockerP1} ${t('kpiPlatform.qualityView.blockersActive', 'Blockers')}`}
-              </span>
-            </div>
-            <button
-              onClick={() => setSelectedJustification(KPIJustificationService.getDefectSeverityJustification(severityCounts))}
-              title="Explain Defect Severity Breakdown"
-              className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:bg-slate-800 transition-colors"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Scope 1 Severity Distribution */}
-          <div className="space-y-3">
-            {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-                <span className="truncate">{scopeALabel}</span>
-              </span>
-            )}
-            {[
-              { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCounts.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
-              { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCounts.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
-              { label: t('kpiPlatform.qualityView.p3Major'), count: severityCounts.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
-              { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCounts.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
-            ].map(sev => {
-              const total = severityCounts.blockerP1 + severityCounts.criticalP2 + severityCounts.majorP3 + severityCounts.minorP4;
-              const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';
-              return (
-                <div key={sev.label} className="space-y-1">
-                  <div className="flex justify-between text-xs font-mono">
-                    <span className="text-slate-700 dark:text-slate-300 font-medium">{sev.label}</span>
-                    <span className={`font-bold ${sev.text}`}>{sev.count} ({pct}%)</span>
-                  </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div className={`${sev.color} h-full rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                  </div>
+        {/* Severity Distribution: Scope 1 on top of Scope 2 */}
+        <div className="lg:col-span-4 space-y-4">
+          {/* Scope 1 Severity Card */}
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+              {isCompareMode && (
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                  title={scopeALabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="truncate">{scopeALabel}</span>
                 </div>
-              );
-            })}
-          </div>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.qualityView.severityTitle')}
+                  </h4>
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-2xs ${
+                    severityCounts.blockerP1 === 0 && severityCounts.criticalP2 <= 5
+                      ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
+                      : severityCounts.blockerP1 === 0
+                      ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
+                      : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
+                  }`}>
+                    {severityCounts.blockerP1 === 0 
+                      ? (severityCounts.criticalP2 <= 5 ? t('kpiPlatform.statusOptimal', 'Controlled') : t('kpiPlatform.statusWarning', 'P2 Watch'))
+                      : `${severityCounts.blockerP1} ${t('kpiPlatform.qualityView.blockersActive', 'Blockers')}`}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedJustification(KPIJustificationService.getDefectSeverityJustification(severityCounts))}
+                  title="Explain Defect Severity Breakdown"
+                  className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:bg-slate-800 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
 
-          {/* Scope 2 Severity Distribution Stacked Below */}
-          {isCompareMode && severityCountsB && (
-            <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
-                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                <span className="truncate">{scopeBLabel}</span>
-              </span>
+            <div className="space-y-3">
               {[
-                { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
-                { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCountsB.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
-                { label: t('kpiPlatform.qualityView.p3Major'), count: severityCountsB.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
-                { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCountsB.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
+                { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCounts.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
+                { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCounts.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
+                { label: t('kpiPlatform.qualityView.p3Major'), count: severityCounts.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
+                { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCounts.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
               ].map(sev => {
-                const total = severityCountsB.blockerP1 + severityCountsB.criticalP2 + severityCountsB.majorP3 + severityCountsB.minorP4;
+                const total = severityCounts.blockerP1 + severityCounts.criticalP2 + severityCounts.majorP3 + severityCounts.minorP4;
                 const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';
                 return (
                   <div key={sev.label} className="space-y-1">
@@ -600,6 +595,62 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Scope 2 Severity Card Stacked Below Scope 1 */}
+          {isCompareMode && severityCountsB && (
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                  title={scopeBLabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="truncate">{scopeBLabel}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                      {t('kpiPlatform.qualityView.severityTitle')}
+                    </h4>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-2xs ${
+                      severityCountsB.blockerP1 === 0 && severityCountsB.criticalP2 <= 5
+                        ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800'
+                        : severityCountsB.blockerP1 === 0
+                        ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800'
+                        : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
+                    }`}>
+                      {severityCountsB.blockerP1 === 0 
+                        ? (severityCountsB.criticalP2 <= 5 ? t('kpiPlatform.statusOptimal', 'Controlled') : t('kpiPlatform.statusWarning', 'P2 Watch'))
+                        : `${severityCountsB.blockerP1} ${t('kpiPlatform.qualityView.blockersActive', 'Blockers')}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  { label: t('kpiPlatform.qualityView.p1Blocker'), count: severityCountsB.blockerP1, color: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400' },
+                  { label: t('kpiPlatform.qualityView.p2Critical'), count: severityCountsB.criticalP2, color: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' },
+                  { label: t('kpiPlatform.qualityView.p3Major'), count: severityCountsB.majorP3, color: 'bg-cyan-500', text: 'text-cyan-600 dark:text-cyan-400' },
+                  { label: t('kpiPlatform.qualityView.p4Minor'), count: severityCountsB.minorP4, color: 'bg-slate-400', text: 'text-slate-600 dark:text-slate-400' }
+                ].map(sev => {
+                  const total = severityCountsB.blockerP1 + severityCountsB.criticalP2 + severityCountsB.majorP3 + severityCountsB.minorP4;
+                  const pct = total > 0 ? ((sev.count / total) * 100).toFixed(0) : '0';
+                  return (
+                    <div key={sev.label} className="space-y-1">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-slate-700 dark:text-slate-300 font-medium">{sev.label}</span>
+                        <span className={`font-bold ${sev.text}`}>{sev.count} ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div className={`${sev.color} h-full rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

@@ -402,60 +402,39 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
 
       {/* Accessibility & Performance Audit Details: Scope 1 on top of Scope 2 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Accessibility Card */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-cyan-500" />
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
-              </h4>
+        {/* Accessibility Card: Scope 1 on top of Scope 2 */}
+        <div className="space-y-4">
+          {/* Scope 1 A11y Card */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+              {isCompareMode && (
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                  title={scopeALabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="truncate">{scopeALabel}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-cyan-500" />
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
+                  </h4>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getA11yAuditCardJustification(scorecard))}
+                  className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for WCAG 2.2 AA Accessibility Audit clarification"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setSelectedJustification(KPIJustificationService.getA11yAuditCardJustification(scorecard))}
-              className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Click for WCAG 2.2 AA Accessibility Audit clarification"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-          </div>
 
-          {/* Primary A11y */}
-          <div className="space-y-2 text-xs">
-            {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-                <span className="truncate">{scopeALabel}</span>
-              </span>
-            )}
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.colorContrast', 'Color Contrast Ratios (AA & AAA)')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.colorContrastPass', '100% Pass (7:1 High Contrast)')}</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.keyboardNav', 'Keyboard Navigation & Focus Traps')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.zeroTraps', '0 Traps Detected')}</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
-              <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                {scorecard.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
-              </span>
-            </div>
-          </div>
-
-          {/* Comparative A11y Stacked Below */}
-          {isCompareMode && scorecardB && (
-            <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
-                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                <span className="truncate">{scopeBLabel}</span>
-              </span>
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.colorContrast', 'Color Contrast Ratios (AA & AAA)')}</span>
                 <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.colorContrastPass', '100% Pass (7:1 High Contrast)')}</span>
@@ -466,89 +445,156 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
-                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
+                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
                 <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                  {scorecardB.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
+                  {scorecard.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
                 </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Scope 2 A11y Card Stacked Below */}
+          {isCompareMode && scorecardB && (
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                  title={scopeBLabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="truncate">{scopeBLabel}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-5 h-5 text-purple-500" />
+                    <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                      {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.colorContrast', 'Color Contrast Ratios (AA & AAA)')}</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.colorContrastPass', '100% Pass (7:1 High Contrast)')}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.keyboardNav', 'Keyboard Navigation & Focus Traps')}</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{t('kpiPlatform.a11yAudit.zeroTraps', '0 Traps Detected')}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.screenReader', 'Screen Reader ARIA Compatibility')}</span>
+                  <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.accessibilityScore}% {t('kpiPlatform.a11yAudit.suitePassRate', 'Suite Pass Rate')}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.a11yAudit.auditStatus', 'Audit Status')}</span>
+                  <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
+                    {scorecardB.accessibilityScore >= 95 ? t('kpiPlatform.a11yAudit.certifiedPublicSector', 'Certified for Public Sector') : t('kpiPlatform.a11yAudit.conditionalPass', 'Conditional Pass')}
+                  </span>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Performance Benchmarks Card */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-purple-500" />
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
-              </h4>
+        {/* Performance Benchmarks Card: Scope 1 on top of Scope 2 */}
+        <div className="space-y-4">
+          {/* Scope 1 Perf Card */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+              {isCompareMode && (
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                  title={scopeALabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="truncate">{scopeALabel}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-purple-500" />
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
+                  </h4>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getPerfAuditCardJustification(scorecard))}
+                  className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for SaaS Performance & Reliability Benchmarks clarification"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setSelectedJustification(KPIJustificationService.getPerfAuditCardJustification(scorecard))}
-              className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Click for SaaS Performance & Reliability Benchmarks clarification"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-          </div>
 
-          {/* Primary Perf */}
-          <div className="space-y-2 text-xs">
-            {isCompareMode && (
-              <span className="text-[11px] font-mono font-bold text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5 cursor-help" title={scopeALabel}>
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-                <span className="truncate">{scopeALabel}</span>
-              </span>
-            )}
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceErrorRate}%</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                {scorecard.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
-              </span>
-            </div>
-          </div>
-
-          {/* Comparative Perf Stacked Below */}
-          {isCompareMode && scorecardB && (
-            <div className="space-y-2 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-mono font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1.5 cursor-help" title={scopeBLabel}>
-                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                <span className="truncate">{scopeBLabel}</span>
-              </span>
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
-                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+                <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecard.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceErrorRate}%</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecard.performanceErrorRate}%</span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>
                 <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                  {scorecardB.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
+                  {scorecard.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
                 </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Scope 2 Perf Card Stacked Below */}
+          {isCompareMode && scorecardB && (
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                  title={scopeBLabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="truncate">{scopeBLabel}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-purple-500" />
+                    <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                      {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p95Response', 'P95 Response Time Benchmark')}</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceP95Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 180 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.p99Spike', 'P99 Spike Latency Benchmark')}</span>
+                  <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{scorecardB.performanceP99Ms} {t('kpiPlatform.msUnit', 'ms')} (&lt; 450 {t('kpiPlatform.perfAudit.msTarget', 'ms target')})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.httpErrorRate', 'HTTP 5xx Server Error Rate')}</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{scorecardB.performanceErrorRate}%</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-600 dark:text-slate-400">{t('kpiPlatform.perfAudit.infraStress', 'Infrastructure Stress Level')}</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    {scorecardB.performanceErrorRate > 1.0 ? t('kpiPlatform.perfAudit.elevatedLoadWarning', 'Elevated Load Warning') : t('kpiPlatform.perfAudit.underCpuCapacity', 'Under 40% CPU Capacity')}
+                  </span>
+                </div>
               </div>
             </div>
           )}
