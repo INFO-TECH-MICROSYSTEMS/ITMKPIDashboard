@@ -363,7 +363,7 @@ export const ProductivityView: React.FC<ProductivityViewProps> = ({
                 {productivityMetricsB.map(eng => (
                   <tr key={eng.personName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                     <td className="p-3 text-slate-900 dark:text-white font-semibold flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-[10px]">
                         {eng.personName.charAt(0)}
                       </div>
                       <span>{eng.personName}</span>
