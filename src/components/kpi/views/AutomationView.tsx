@@ -218,111 +218,194 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
 
       {/* Test Automation Burnout & Predictive Velocity Forecast: Scope 1 on top of Scope 2 */}
       {testAutomationForecast && (
-        <div className="space-y-4">
-          <div className="pb-2 border-b border-slate-200 dark:border-slate-800 space-y-1.5">
-            {isCompareMode && (
-              <div 
-                className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
-                title={scopeALabel}
-              >
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
-                <span className="truncate">{scopeALabel}</span>
-              </div>
-            )}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                  {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')}
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
-                  className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                  title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+        <div className="space-y-6">
+          {/* Scope 1: Full Forecast Section */}
+          <div className="space-y-4">
+            <div className="pb-2 border-b border-slate-200 dark:border-slate-800 space-y-1.5">
+              {isCompareMode && (
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider cursor-help"
+                  title={scopeALabel}
                 >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  <span>{t('kpiPlatform.automationView.explainForecast', 'Explain Forecast')}</span>
-                </button>
-                <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
-                  testAutomationForecast.isVelocityHealthy 
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-                    : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
-                }`}>
-                  {testAutomationForecast.isVelocityHealthy 
-                    ? `● ${t('kpiPlatform.automationView.onSchedule', 'On Schedule')}` 
-                    : `▲ ${t('kpiPlatform.automationView.paceWarning', 'Pace Warning')}`}
-                </span>
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="truncate">{scopeALabel}</span>
+                </div>
+              )}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                    {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
+                    className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    <span>{t('kpiPlatform.automationView.explainForecast', 'Explain Forecast')}</span>
+                  </button>
+                  <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
+                    testAutomationForecast.isVelocityHealthy 
+                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                      : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                  }`}>
+                    {testAutomationForecast.isVelocityHealthy 
+                      ? `● ${t('kpiPlatform.automationView.onSchedule', 'On Schedule')}` 
+                      : `▲ ${t('kpiPlatform.automationView.paceWarning', 'Pace Warning')}`}
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* Scope 1 Quick Velocity KPI Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.automationView.dailyVelocity', 'Daily Automation Velocity')}
+                </div>
+                <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
+                  {testAutomationForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/{t('kpiPlatform.daysUnit', 'day')}</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.automationView.manualRemaining', 'Manual Tests Remaining')}
+                </div>
+                <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
+                  {testAutomationForecast.manualTestsRemaining.toLocaleString()} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.testsCount', 'tests')}</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.automationView.projectedRunway', 'Projected Automation Runway')}
+                </div>
+                <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
+                  {testAutomationForecast.daysToAllAutomated} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.daysUnit', 'days')}</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  {t('kpiPlatform.automationView.estimatedAllAutomated', 'Projected 100% Automated')}
+                </div>
+                <div className="text-lg font-bold font-['Outfit'] text-emerald-600 dark:text-emerald-400 mt-1">
+                  {testAutomationForecast.estimatedAllAutomatedDate}
+                </div>
+              </div>
+            </div>
+
+            {/* Area Trend & Burnout Chart: Scope 1 */}
+            <AreaTrendChart
+              data={testAutomationForecast.historyAndForecast}
+              title={t('kpiPlatform.automationView.burnoutTitle')}
+              scopeLabel={isCompareMode ? scopeALabel : undefined}
+              scopeType="primary"
+              series1Name={t('kpiPlatform.automationView.totalTestsSeries', 'Total Tests')}
+              series2Name={t('kpiPlatform.automationView.automatedTestsSeries', 'Automated Tests')}
+              series3Name={t('kpiPlatform.automationView.manualTestsSeries', 'Manual Tests')}
+              series1Color="#f43f5e"
+              series2Color="#10b981"
+              series3Color="#f59e0b"
+              projectionLineColor="#06b6d4"
+              series3ProjectionLineColor="#fbbf24"
+              forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecast.estimatedAllAutomatedDate}`}
+              forecastStatus={testAutomationForecast.isVelocityHealthy ? 'emerald' : 'amber'}
+              onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
+              height={185}
+            />
           </div>
 
-          {/* Scope 1 Quick Velocity KPI Badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.automationView.dailyVelocity', 'Daily Automation Velocity')}
-              </div>
-              <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
-                {testAutomationForecast.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/{t('kpiPlatform.daysUnit', 'day')}</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.automationView.manualRemaining', 'Manual Tests Remaining')}
-              </div>
-              <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
-                {testAutomationForecast.manualTestsRemaining.toLocaleString()} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.testsCount', 'tests')}</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.automationView.projectedRunway', 'Projected Automation Runway')}
-              </div>
-              <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
-                {testAutomationForecast.daysToAllAutomated} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.daysUnit', 'days')}</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.automationView.estimatedAllAutomated', 'Projected 100% Automated')}
-              </div>
-              <div className="text-lg font-bold font-['Outfit'] text-emerald-600 dark:text-emerald-400 mt-1">
-                {testAutomationForecast.estimatedAllAutomatedDate}
-              </div>
-            </div>
-          </div>
-
-          {/* Area Trend & Burnout Chart: Scope 1 */}
-          <AreaTrendChart
-            data={testAutomationForecast.historyAndForecast}
-            title={t('kpiPlatform.automationView.burnoutTitle')}
-            scopeLabel={isCompareMode ? scopeALabel : undefined}
-            scopeType="primary"
-            series1Name={t('kpiPlatform.automationView.totalTestsSeries', 'Total Tests')}
-            series2Name={t('kpiPlatform.automationView.automatedTestsSeries', 'Automated Tests')}
-            series3Name={t('kpiPlatform.automationView.manualTestsSeries', 'Manual Tests')}
-            series1Color="#f43f5e"
-            series2Color="#10b981"
-            series3Color="#f59e0b"
-            projectionLineColor="#06b6d4"
-            series3ProjectionLineColor="#fbbf24"
-            forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecast.estimatedAllAutomatedDate}`}
-            forecastStatus={testAutomationForecast.isVelocityHealthy ? 'emerald' : 'amber'}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecast))}
-            height={185}
-          />
-
-          {/* Scope 2 Forecast Stacked Directly Below Scope 1 */}
+          {/* Scope 2: Full Forecast Section Stacked Below */}
           {isCompareMode && testAutomationForecastB && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="pb-2 border-b border-slate-200 dark:border-slate-800 space-y-1.5">
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
+                  title={scopeBLabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="truncate">{scopeBLabel}</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+                      {t('kpiPlatform.automationView.burnoutTitle', 'Test Automation Burnout & Predictive Velocity Forecast')}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {t('kpiPlatform.automationView.burnoutSubtitle', 'Total tests, automated tests, and remaining manual tests over time with forecast projection')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecastB))}
+                      className="px-2.5 py-1 text-xs font-mono font-bold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      title="Click to view full mathematical formula, velocity runway, and architectural audit breakdown"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                      <span>{t('kpiPlatform.automationView.explainForecast', 'Explain Forecast')}</span>
+                    </button>
+                    <span className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-full border ${
+                      testAutomationForecastB.isVelocityHealthy 
+                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                        : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                    }`}>
+                      {testAutomationForecastB.isVelocityHealthy 
+                        ? `● ${t('kpiPlatform.automationView.onSchedule', 'On Schedule')}` 
+                        : `▲ ${t('kpiPlatform.automationView.paceWarning', 'Pace Warning')}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scope 2 Quick Velocity KPI Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.automationView.dailyVelocity', 'Daily Automation Velocity')}
+                  </div>
+                  <div className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
+                    {testAutomationForecastB.currentDailyVelocity.toLocaleString()} <span className="text-xs font-normal text-slate-500">tests/{t('kpiPlatform.daysUnit', 'day')}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.automationView.manualRemaining', 'Manual Tests Remaining')}
+                  </div>
+                  <div className="text-lg font-bold font-['Outfit'] text-amber-600 dark:text-amber-400 mt-1">
+                    {testAutomationForecastB.manualTestsRemaining.toLocaleString()} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.testsCount', 'tests')}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.automationView.projectedRunway', 'Projected Automation Runway')}
+                  </div>
+                  <div className="text-lg font-bold font-['Outfit'] text-cyan-600 dark:text-cyan-400 mt-1">
+                    {testAutomationForecastB.daysToAllAutomated} <span className="text-xs font-normal text-slate-500">{t('kpiPlatform.daysUnit', 'days')}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.automationView.estimatedAllAutomated', 'Projected 100% Automated')}
+                  </div>
+                  <div className="text-lg font-bold font-['Outfit'] text-emerald-600 dark:text-emerald-400 mt-1">
+                    {testAutomationForecastB.estimatedAllAutomatedDate}
+                  </div>
+                </div>
+              </div>
+
+              {/* Area Trend & Burnout Chart: Scope 2 */}
               <AreaTrendChart
                 data={testAutomationForecastB.historyAndForecast}
                 title={t('kpiPlatform.automationView.burnoutTitle')}
@@ -336,8 +419,9 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                 series3Color="#f59e0b"
                 projectionLineColor="#06b6d4"
                 series3ProjectionLineColor="#fbbf24"
-                forecastBadge={`Target 100% Automated: ${testAutomationForecastB.estimatedAllAutomatedDate}`}
+                forecastBadge={`${t('kpiPlatform.automationView.targetAllAutomatedPrefix', 'Target 100% Automated')}: ${testAutomationForecastB.estimatedAllAutomatedDate}`}
                 forecastStatus={testAutomationForecastB.isVelocityHealthy ? 'emerald' : 'amber'}
+                onJustify={() => setSelectedJustification(KPIJustificationService.getTestAutomationBurnoutForecastJustification(testAutomationForecastB))}
                 height={185}
               />
             </div>
