@@ -432,9 +432,10 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
           </div>
         </div>
       ) : (
-        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-          <div className="flex flex-wrap items-center gap-2 pr-16">
-            <span className="font-bold text-slate-900 dark:text-white">
+        <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-2">
+          {/* Top Line: Title + Forecast Badge */}
+          <div className="flex items-center gap-2 pr-16 min-w-0">
+            <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
               {title}
             </span>
             {forecastBadge && (
@@ -442,45 +443,44 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                 <button
                   type="button"
                   onClick={onJustify}
-                  className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs ${activeForecastTheme}`}
+                  className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border hover:scale-105 transition-transform flex items-center gap-1 cursor-pointer shadow-2xs shrink-0 ${activeForecastTheme}`}
                   title="Click to view explanation, formulas, and audit clarification"
                 >
                   <span>{forecastBadge}</span>
                   <HelpCircle className="w-3 h-3 opacity-70" />
                 </button>
               ) : (
-                <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs ${activeForecastTheme}`}>
+                <span className={`px-2.5 py-0.5 text-xs font-mono font-bold rounded-full border shadow-2xs shrink-0 ${activeForecastTheme}`}>
                   {forecastBadge}
                 </span>
               )
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
-                <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
-              </div>
-              {series2Name && (
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
-                  <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
-                </div>
-              )}
-              {series3Name && (
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
-                  <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
-                </div>
-              )}
-              {hasProjection && (
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
-                  <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
-                </div>
-              )}
+          {/* Bottom Line: Series Legend Items */}
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
+              <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
             </div>
+            {series2Name && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
+              </div>
+            )}
+            {series3Name && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
+              </div>
+            )}
+            {hasProjection && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+                <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -862,8 +862,8 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
           onRemove={onRemove}
         />
 
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center min-w-0 pr-16">
+        <div className="flex items-start justify-between gap-2 mb-2 pr-14">
+          <div className="flex items-center min-w-0 flex-1">
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>

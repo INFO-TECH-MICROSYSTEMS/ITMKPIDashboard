@@ -563,21 +563,17 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
     { date: '2026-10-12', label: 'Day 12', value1: 58, value2: 56, value3: 2 }
   ];
   return (
-    <div className="bg-white dark:bg-[#0c1021] rounded-2xl border border-slate-200 dark:border-cyan-500/20 shadow-xs p-4 pt-8 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
-        onRemove={onRemove}
-      />
-      <AreaTrendChart
-        data={data}
-        title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
-        series1Name="Discovered Defects"
-        series2Name="Resolved / Burned Out"
-        series1Color="#f43f5e"
-        series2Color="#10b981"
-        height={170}
-      />
-    </div>
+    <AreaTrendChart
+      data={data}
+      title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
+      series1Name="Discovered Defects"
+      series2Name="Resolved / Burned Out"
+      series1Color="#f43f5e"
+      series2Color="#10b981"
+      height={170}
+      onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
+      onRemove={onRemove}
+    />
   );
 };
 
