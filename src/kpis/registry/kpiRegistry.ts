@@ -15,20 +15,36 @@ import type {
   NearMissAnalyticsSummary,
   AgingBuckets,
   DefectSeverityCounts,
-  TrendPoint
+  TrendPoint,
+  TestExecutionBurnoutForecast,
+  TestAutomationBurnoutForecast,
+  PersonProductivityMetric,
+  SquadProductivitySummary,
+  LeadingLaggingMetricsSummary,
+  JiraWorkItem,
+  TestRailExecution
 } from '../../types/kpiPlatform';
 
 export interface CalculatedMetricsDeck {
   executiveScorecard: ReleaseQualityScorecard;
   testDistributionAll: TestStatusDistribution;
+  testDistributionAutomated?: TestStatusDistribution;
+  testDistributionManual?: TestStatusDistribution;
   severityCounts?: DefectSeverityCounts;
   agingBuckets?: AgingBuckets;
   defectTrends?: TrendPoint[];
   defectBurnoutTrend?: TrendPoint[];
+  testBurnoutForecast?: TestExecutionBurnoutForecast;
+  testAutomationForecast?: TestAutomationBurnoutForecast;
   mttrMttd?: QualityDiagnosticsSummary;
   componentRisks?: ComponentRiskMetric[];
+  productivityMetrics?: PersonProductivityMetric[];
+  squadSummary?: SquadProductivitySummary;
   automationHealth?: AutomationHealthSummary;
+  leadingLaggingMetrics?: LeadingLaggingMetricsSummary;
   nearMissAnalytics?: NearMissAnalyticsSummary;
+  jiraItems?: JiraWorkItem[];
+  testRailExecutions?: TestRailExecution[];
 }
 
 export type KPICategoryFamily = 
@@ -516,6 +532,179 @@ export const KPI_REGISTRY: KPIWidgetDescriptor[] = [
     description: 'Estimated financial impact averted through proactive QA gating.',
     defaultColSpan: 1,
     iconName: 'DollarSign'
+  },
+
+  // --- COMPLEX OPERATIONAL & ANALYTICAL WIDGETS ---
+  {
+    id: 'executive-test-suite-snapshot',
+    family: 'executive',
+    title: 'Enterprise Test Suite Execution Snapshot',
+    subtitle: 'Consolidated QA Execution Health (Automated + Manual)',
+    description: 'Stacked distribution bar tracking passed, failed, blocked, and unattempted tests.',
+    defaultColSpan: 4,
+    iconName: 'Layers'
+  },
+  {
+    id: 'executive-test-burnout-forecast',
+    family: 'executive',
+    title: 'Test Execution Burnout & Predictive Velocity Forecast',
+    subtitle: 'Velocity Runway & Forecast Projection Chart',
+    description: 'Predictive burnout trajectory model with projected completion dates.',
+    defaultColSpan: 4,
+    iconName: 'Activity'
+  },
+  {
+    id: 'quality-aging-profile',
+    family: 'quality',
+    title: 'Items Pending Testing Aging Profile',
+    subtitle: 'Backlog Latency Queues (< 7d, 7-14d, 14-21d, 21+d)',
+    description: 'Distribution of work items pending verification categorized by latency buckets.',
+    defaultColSpan: 4,
+    iconName: 'Clock'
+  },
+  {
+    id: 'quality-defect-severity-breakdown',
+    family: 'quality',
+    title: 'Defect Severity Breakdown',
+    subtitle: 'P1 Blocker, P2 Critical, P3 Major, P4 Minor Distribution',
+    description: 'Visual breakdown of open defects segmented by impact tier.',
+    defaultColSpan: 2,
+    iconName: 'AlertOctagon'
+  },
+  {
+    id: 'quality-active-gating-defects-table',
+    family: 'quality',
+    title: 'Active Release Gating Defects Ledger',
+    subtitle: 'Items Requiring Formal Quality Sign-off',
+    description: 'Detailed defect table listing blocking bugs that stall release gate criteria.',
+    defaultColSpan: 4,
+    iconName: 'AlertTriangle'
+  },
+  {
+    id: 'risk-component-matrix',
+    family: 'risk',
+    title: 'Component Risk & Dependency Gating Matrix',
+    subtitle: 'Ranked by Vulnerability Across Modules',
+    description: 'Complete cross-service risk table evaluating failure rates, complexity, and coverage.',
+    defaultColSpan: 4,
+    iconName: 'Cpu'
+  },
+  {
+    id: 'risk-blocked-development-items',
+    family: 'risk',
+    title: 'Blocked Development Items',
+    subtitle: 'Stalled Sprints & Impediment Queue',
+    description: 'List of developmental stories blocked by cross-team dependencies.',
+    defaultColSpan: 2,
+    iconName: 'AlertCircle'
+  },
+  {
+    id: 'risk-high-dependency-depth-list',
+    family: 'risk',
+    title: 'High Dependency Depth Items',
+    subtitle: 'Coupling Risk Level ≥ 4',
+    description: 'Modules with architectural coupling exceeding blast radius thresholds.',
+    defaultColSpan: 2,
+    iconName: 'Layers'
+  },
+  {
+    id: 'automation-burnout-velocity-forecast',
+    family: 'automation',
+    title: 'Test Automation Burnout & Predictive Velocity Forecast',
+    subtitle: 'Multi-Line Forecast Projection & Daily Runway',
+    description: 'Burnout trajectory comparing total tests, automated tests, and remaining manual suites.',
+    defaultColSpan: 4,
+    iconName: 'Activity'
+  },
+  {
+    id: 'automation-execution-split-bars',
+    family: 'automation',
+    title: 'Automated vs Manual Exploratory Execution',
+    subtitle: 'Split Distribution Comparison (81% vs 19%)',
+    description: 'Paired progress bars comparing execution outcomes between automated and manual testing.',
+    defaultColSpan: 4,
+    iconName: 'Layers'
+  },
+  {
+    id: 'automation-flaky-tests-table',
+    family: 'automation',
+    title: 'Flaky Automated Tests Identified',
+    subtitle: 'Quarantine & Pipeline Rerun Ledger',
+    description: 'Table of non-deterministic automated tests with rerun frequencies and durations.',
+    defaultColSpan: 4,
+    iconName: 'AlertTriangle'
+  },
+  {
+    id: 'productivity-engineer-ledger-table',
+    family: 'productivity',
+    title: 'QA Engineer Test Assignment & Throughput Ledger',
+    subtitle: 'Capacity Limit & Individual Squad Velocity',
+    description: 'Engineering ledger tracking individual test completion, delayed items, and burnout status.',
+    defaultColSpan: 4,
+    iconName: 'Users'
+  },
+  {
+    id: 'governance-enterprise-slas-matrix',
+    family: 'governance',
+    title: 'Enterprise Quality Service Level Agreements (SLAs)',
+    subtitle: 'Triage, Regression, Creation, and Resolution SLA Grid',
+    description: 'Comprehensive grid measuring SLA compliance against contractual targets.',
+    defaultColSpan: 4,
+    iconName: 'ShieldCheck'
+  },
+  {
+    id: 'governance-accessibility-audit-panel',
+    family: 'governance',
+    title: 'Accessibility (WCAG 2.2 AA) Audit Breakdown',
+    subtitle: 'Contrast, Keyboards, and Screen Reader Conformance',
+    description: 'Detailed audit ledger breaking down WCAG digital accessibility compliance standards.',
+    defaultColSpan: 2,
+    iconName: 'Compass'
+  },
+  {
+    id: 'governance-benchmarks-panel',
+    family: 'governance',
+    title: 'SaaS Performance & Reliability Benchmarks',
+    subtitle: 'P95/P99 Spike Latency & HTTP 5xx Error Rates',
+    description: 'Operational benchmarks evaluating system stress levels and runtime latency under load.',
+    defaultColSpan: 2,
+    iconName: 'Zap'
+  },
+  {
+    id: 'leading-indicators-panel',
+    family: 'leadingLagging',
+    title: 'Leading Indicators (Predictive & In-Flight)',
+    subtitle: 'Signals Measured Before Release Gating',
+    description: 'Shift-left telemetry tracking PR quality gate compliance, coupling ratio, and coverage.',
+    defaultColSpan: 4,
+    iconName: 'Compass'
+  },
+  {
+    id: 'lagging-indicators-panel',
+    family: 'leadingLagging',
+    title: 'Lagging Indicators (Realized Outcomes & Stability)',
+    subtitle: 'Historical Metrics Validating Quality Rigor',
+    description: 'Post-hoc metrics tracking customer defect leakage, DORA CFR, MTTR, and CoPQ.',
+    defaultColSpan: 4,
+    iconName: 'Activity'
+  },
+  {
+    id: 'defect-discovery-origin-breakdown',
+    family: 'leadingLagging',
+    title: 'Defect Discovery Origin Breakdown',
+    subtitle: 'Formal Scripted vs Exploratory vs Customer Escapes',
+    description: 'Origin analysis attributing defect detection to TestRail, CI/CD, bug bashes, or APARs.',
+    defaultColSpan: 2,
+    iconName: 'Layers'
+  },
+  {
+    id: 'non-formal-intercepted-defects-table',
+    family: 'leadingLagging',
+    title: 'Major Defects Intercepted via Non-Formal Testing',
+    subtitle: 'High-Severity Bugs Prevented from Production Escape',
+    description: 'Table of exploratory interceptions with avoided outage dollar valuations.',
+    defaultColSpan: 4,
+    iconName: 'AlertTriangle'
   }
 ];
 

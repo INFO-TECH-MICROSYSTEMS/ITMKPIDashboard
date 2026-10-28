@@ -48,7 +48,9 @@ export const CustomCategoryPage: React.FC = () => {
     metrics,
     metricsB,
     jiraItems,
-    testRailExecutions
+    jiraItemsB,
+    testRailExecutions,
+    testRailExecutionsB
   } = useKPIDataContext();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -64,30 +66,48 @@ export const CustomCategoryPage: React.FC = () => {
     return {
       executiveScorecard: metrics.executiveScorecard,
       testDistributionAll: metrics.testDistributionAll,
+      testDistributionAutomated: metrics.testDistributionAutomated,
+      testDistributionManual: metrics.testDistributionManual,
       agingBuckets: metrics.agingBuckets,
       severityCounts: metrics.severityCounts,
       defectTrends: metrics.defectTrends,
+      testBurnoutForecast: metrics.testBurnoutForecast,
+      testAutomationForecast: metrics.testAutomationForecast,
       mttrMttd: metrics.mttrMttd,
       componentRisks: metrics.componentRisks,
+      productivityMetrics: metrics.productivityMetrics,
+      squadSummary: metrics.squadSummary,
       automationHealth: metrics.automationHealth,
-      nearMissAnalytics: metrics.nearMissAnalytics
+      leadingLaggingMetrics: metrics.leadingLaggingMetrics,
+      nearMissAnalytics: metrics.nearMissAnalytics,
+      jiraItems,
+      testRailExecutions
     };
-  }, [metrics]);
+  }, [metrics, jiraItems, testRailExecutions]);
 
   const metricsDeckB = useMemo(() => {
     if (!metricsB) return undefined;
     return {
       executiveScorecard: metricsB.executiveScorecard,
       testDistributionAll: metricsB.testDistributionAll,
+      testDistributionAutomated: metricsB.testDistributionAutomated,
+      testDistributionManual: metricsB.testDistributionManual,
       agingBuckets: metricsB.agingBuckets,
       severityCounts: metricsB.severityCounts,
       defectTrends: metricsB.defectTrends,
+      testBurnoutForecast: metricsB.testBurnoutForecast,
+      testAutomationForecast: metricsB.testAutomationForecast,
       mttrMttd: metricsB.mttrMttd,
       componentRisks: metricsB.componentRisks,
+      productivityMetrics: metricsB.productivityMetrics,
+      squadSummary: metricsB.squadSummary,
       automationHealth: metricsB.automationHealth,
-      nearMissAnalytics: metricsB.nearMissAnalytics
+      leadingLaggingMetrics: metricsB.leadingLaggingMetrics,
+      nearMissAnalytics: metricsB.nearMissAnalytics,
+      jiraItems: jiraItemsB,
+      testRailExecutions: testRailExecutionsB
     };
-  }, [metricsB]);
+  }, [metricsB, jiraItemsB, testRailExecutionsB]);
 
   const activeJustification: KPIJustification | null = useMemo(() => {
     if (!selectedJustifyMetric) return null;

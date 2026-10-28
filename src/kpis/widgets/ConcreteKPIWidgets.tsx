@@ -16,6 +16,27 @@ import { MetricCard, GaugeMeter, AreaTrendChart, KPIActionToolbar } from '../../
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 import type { KPIWidgetRenderProps } from '../registry/kpiRegistry';
 
+// Import newly created domain widget components
+import { ExecutiveTestSuiteSnapshotKPI } from './executive/ExecutiveTestSuiteSnapshotKPI';
+import { ExecutiveTestBurnoutForecastKPI } from './executive/ExecutiveTestBurnoutForecastKPI';
+import { QualityAgingProfileKPI } from './quality/QualityAgingProfileKPI';
+import { QualityDefectSeverityBreakdownKPI } from './quality/QualityDefectSeverityBreakdownKPI';
+import { QualityActiveGatingDefectsTableKPI } from './quality/QualityActiveGatingDefectsTableKPI';
+import { RiskComponentMatrixKPI } from './risk/RiskComponentMatrixKPI';
+import { RiskBlockedDevelopmentItemsKPI } from './risk/RiskBlockedDevelopmentItemsKPI';
+import { RiskHighDependencyDepthKPI as RiskHighDependencyDepthListKPI } from './risk/RiskHighDependencyDepthKPI';
+import { AutomationBurnoutVelocityForecastKPI } from './automation/AutomationBurnoutVelocityForecastKPI';
+import { AutomationExecutionSplitBarsKPI } from './automation/AutomationExecutionSplitBarsKPI';
+import { AutomationFlakyTestsTableKPI } from './automation/AutomationFlakyTestsTableKPI';
+import { ProductivityEngineerLedgerTableKPI } from './productivity/ProductivityEngineerLedgerTableKPI';
+import { GovernanceEnterpriseSlasMatrixKPI } from './governance/GovernanceEnterpriseSlasMatrixKPI';
+import { GovernanceAccessibilityAuditPanelKPI } from './governance/GovernanceAccessibilityAuditPanelKPI';
+import { GovernanceBenchmarksPanelKPI } from './governance/GovernanceBenchmarksPanelKPI';
+import { LeadingIndicatorsPanelKPI } from './leadingLagging/LeadingIndicatorsPanelKPI';
+import { LaggingIndicatorsPanelKPI } from './leadingLagging/LaggingIndicatorsPanelKPI';
+import { DefectDiscoveryOriginBreakdownKPI } from './leadingLagging/DefectDiscoveryOriginBreakdownKPI';
+import { NonFormalInterceptedDefectsTableKPI } from './leadingLagging/NonFormalInterceptedDefectsTableKPI';
+
 // =========================================================================
 // EXECUTIVE & SENIOR LEADERSHIP SCORECARD KPIS
 // =========================================================================
@@ -1179,5 +1200,26 @@ export const KPI_COMPONENT_RESOLVER: Record<string, React.FC<KPIWidgetRenderProp
   'leading-health-index': LeadingHealthIndexKPI,
   'lagging-outcome-stability': LaggingOutcomeStabilityKPI,
   'near-misses-intercepted': NearMissesInterceptedKPI,
-  'avoided-outage-loss': AvoidedOutageLossKPI
+  'avoided-outage-loss': AvoidedOutageLossKPI,
+
+  // Complex Operational & Analytical Widgets
+  'executive-test-suite-snapshot': ExecutiveTestSuiteSnapshotKPI,
+  'executive-test-burnout-forecast': ExecutiveTestBurnoutForecastKPI,
+  'quality-aging-profile': QualityAgingProfileKPI,
+  'quality-defect-severity-breakdown': QualityDefectSeverityBreakdownKPI,
+  'quality-active-gating-defects-table': QualityActiveGatingDefectsTableKPI,
+  'risk-component-matrix': RiskComponentMatrixKPI,
+  'risk-blocked-development-items': RiskBlockedDevelopmentItemsKPI,
+  'risk-high-dependency-depth-list': RiskHighDependencyDepthListKPI,
+  'automation-burnout-velocity-forecast': AutomationBurnoutVelocityForecastKPI,
+  'automation-execution-split-bars': AutomationExecutionSplitBarsKPI,
+  'automation-flaky-tests-table': AutomationFlakyTestsTableKPI,
+  'productivity-engineer-ledger-table': ProductivityEngineerLedgerTableKPI,
+  'governance-enterprise-slas-matrix': GovernanceEnterpriseSlasMatrixKPI,
+  'governance-accessibility-audit-panel': GovernanceAccessibilityAuditPanelKPI,
+  'governance-benchmarks-panel': GovernanceBenchmarksPanelKPI,
+  'leading-indicators-panel': LeadingIndicatorsPanelKPI,
+  'lagging-indicators-panel': LaggingIndicatorsPanelKPI,
+  'defect-discovery-origin-breakdown': DefectDiscoveryOriginBreakdownKPI,
+  'non-formal-intercepted-defects-table': NonFormalInterceptedDefectsTableKPI
 };
