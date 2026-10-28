@@ -48,12 +48,23 @@ export const AddKPIModal: React.FC<AddKPIModalProps> = ({
     return matchesSearch && matchesFamily;
   });
 
+  const availableFilteredKPIs = filteredKPIs.filter(kpi => !existingKpiIds.includes(kpi.id));
+
   const toggleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(prev => prev.filter(item => item !== id));
     } else {
       setSelectedIds(prev => [...prev, id]);
     }
+  };
+
+  const handleSelectAll = () => {
+    const newIds = new Set([...selectedIds, ...availableFilteredKPIs.map(k => k.id)]);
+    setSelectedIds(Array.from(newIds));
+  };
+
+  const handleClearAll = () => {
+    setSelectedIds([]);
   };
 
   const handleConfirm = () => {
@@ -91,34 +102,61 @@ export const AddKPIModal: React.FC<AddKPIModalProps> = ({
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="p-4 bg-slate-50/70 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative w-full sm:flex-1">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by metric name, domain or formula..."
-              className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-[#070913] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500"
-            />
+        <div className="p-4 bg-slate-50/70 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/80 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative w-full sm:flex-1">
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by metric name, domain or formula..."
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-[#070913] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <select
+                value={selectedFamily}
+                onChange={e => setSelectedFamily(e.target.value)}
+                className="w-full sm:w-auto py-2 px-3 text-xs rounded-xl bg-white dark:bg-[#070913] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500"
+              >
+                <option value="all">All Domains ({KPI_REGISTRY.length})</option>
+                <option value="executive">Executive Scorecard</option>
+                <option value="quality">Quality & Defects</option>
+                <option value="risk">Risk & Gates</option>
+                <option value="automation">Automation ROI</option>
+                <option value="productivity">Productivity</option>
+                <option value="governance">Governance & SLAs</option>
+                <option value="leadingLagging">Near Misses</option>
+              </select>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <select
-              value={selectedFamily}
-              onChange={e => setSelectedFamily(e.target.value)}
-              className="w-full sm:w-auto py-2 px-3 text-xs rounded-xl bg-white dark:bg-[#070913] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500"
-            >
-              <option value="all">All Domains ({KPI_REGISTRY.length})</option>
-              <option value="executive">Executive Scorecard</option>
-              <option value="quality">Quality & Defects</option>
-              <option value="risk">Risk & Gates</option>
-              <option value="automation">Automation ROI</option>
-              <option value="productivity">Productivity</option>
-              <option value="governance">Governance & SLAs</option>
-              <option value="leadingLagging">Near Misses</option>
-            </select>
+          {/* Quick Selection Actions: Select All / Clear All */}
+          <div className="flex items-center justify-between pt-1 text-xs font-mono">
+            <span className="text-slate-500 dark:text-slate-400">
+              Showing {filteredKPIs.length} KPIs ({availableFilteredKPIs.length} available to add)
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSelectAll}
+                disabled={availableFilteredKPIs.length === 0}
+                className="px-2.5 py-1 rounded-lg border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 bg-cyan-50/50 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 font-semibold disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                Select All
+              </button>
+              <button
+                type="button"
+                onClick={handleClearAll}
+                disabled={selectedIds.length === 0}
+                className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                Clear All
+              </button>
+            </div>
           </div>
         </div>
 
