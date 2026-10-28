@@ -1015,12 +1015,14 @@ export const KPI_COMPONENT_RESOLVER: Record<string, React.FC<KPIWidgetRenderProp
 
   // Risk
   'risk-no-unit-tests': RiskNoUnitTestsKPI,
+  'risk-untested-commits-card': RiskNoUnitTestsKPI, // Alias for initial default watchlist
   'risk-no-api-tests': RiskNoApiTestsKPI,
   'risk-high-dependency-depth': RiskHighDependencyDepthKPI,
   'risk-high-execution-tests': RiskHighExecutionTestsKPI,
 
   // Automation
   'automation-suite-pass-rate': AutomationSuitePassRateKPI,
+  'automation-pass-rate-gauge': AutomationSuitePassRateKPI, // Alias for initial default watchlist
   'automation-flaky-index': AutomationFlakyIndexKPI,
   'automation-pipeline-runtime': AutomationPipelineRuntimeKPI,
   'automation-hours-saved-roi': AutomationHoursSavedRoiKPI,
@@ -1039,6 +1041,7 @@ export const KPI_COMPONENT_RESOLVER: Record<string, React.FC<KPIWidgetRenderProp
 
   // Governance
   'governance-sla-adherence': GovernanceSlaAdherenceKPI,
+  'governance-sla-gauge': GovernanceSlaAdherenceKPI, // Alias for initial default watchlist
   'governance-wcag-accessibility': GovernanceWcagAccessibilityKPI,
   'governance-latency-p95': GovernanceLatencyP95KPI,
   'governance-csat': GovernanceCsatKPI,

@@ -41,9 +41,9 @@ export const INITIAL_DEFAULT_CATEGORY: UserCustomCategory = {
     'executive-readiness-gauge',
     'executive-blocker-card',
     'quality-defect-burnout-chart',
-    'automation-pass-rate-gauge',
-    'risk-untested-commits-card',
-    'governance-sla-gauge'
+    'automation-suite-pass-rate',
+    'risk-no-unit-tests',
+    'governance-sla-adherence'
   ],
   orderIndex: 0,
   createdAt: new Date().toISOString(),
