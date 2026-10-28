@@ -272,7 +272,11 @@ export const CustomCategoryPage: React.FC = () => {
             {category.kpiIds.map((kpiId, index) => {
               const Component = KPI_COMPONENT_RESOLVER[kpiId];
               const descriptor = KPI_REGISTRY_MAP.get(kpiId);
-              const colSpan = descriptor?.defaultColSpan === 2 ? 'md:col-span-2 lg:col-span-2' : '';
+              const colSpan = descriptor?.defaultColSpan === 4 
+                ? 'col-span-1 md:col-span-2 lg:col-span-4' 
+                : descriptor?.defaultColSpan === 2 
+                ? 'col-span-1 md:col-span-2 lg:col-span-2' 
+                : 'col-span-1';
 
               if (!Component) {
                 return (

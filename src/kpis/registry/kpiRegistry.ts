@@ -46,7 +46,7 @@ export interface KPIWidgetDescriptor {
   title: string;
   subtitle: string;
   description: string;
-  defaultColSpan: 1 | 2 | 3;
+  defaultColSpan: 1 | 2 | 3 | 4;
   iconName: string;
 }
 
@@ -67,10 +67,10 @@ export const KPI_REGISTRY: KPIWidgetDescriptor[] = [
   {
     id: 'executive-readiness-gauge',
     family: 'executive',
-    title: 'Release Quality Index',
-    subtitle: 'Composite score across testing gates',
-    description: 'Composite enterprise score synthesized from defect density, automated regression, and security gates.',
-    defaultColSpan: 1,
+    title: 'Pre-Release Quality & Risk Assessment',
+    subtitle: 'Release Quality Index & Executive Evaluation',
+    description: 'Composite enterprise hero banner evaluating test coverage, regression cycle velocity, gating defects, and customer escape rate.',
+    defaultColSpan: 4,
     iconName: 'ShieldCheck'
   },
   {
