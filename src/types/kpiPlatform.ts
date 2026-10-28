@@ -426,3 +426,33 @@ export interface KPIJustification {
   }>;
   recommendedAction: string;
 }
+
+// ==========================================
+// 8. USER ACCOUNTS & CUSTOM KPI CATEGORIES
+// ==========================================
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  email: string;
+  password?: string; // Stored securely in Dexie DB
+  avatarUrl?: string;
+  role?: string;
+  department?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserCustomCategory {
+  id: string;
+  userId: string;
+  title: string;
+  badge?: string;
+  description?: string;
+  iconName: string;
+  kpiIds: string[]; // Ordered list of selected KPI widget IDs
+  orderIndex: number;
+  createdAt: string;
+  updatedAt: string;
+}
+

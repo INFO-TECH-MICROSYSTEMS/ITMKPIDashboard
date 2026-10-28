@@ -20,7 +20,9 @@ import type {
   GitHubPullRequest, 
   GitHubCommit, 
   DataSourceConfig, 
-  SyncAuditLog 
+  SyncAuditLog,
+  UserAccount,
+  UserCustomCategory
 } from '../types/kpiPlatform';
 
 export class KPIDatabase extends Dexie {
@@ -30,6 +32,8 @@ export class KPIDatabase extends Dexie {
   githubCommits!: Table<GitHubCommit, string>;
   dataSourceConfigs!: Table<DataSourceConfig, string>;
   syncAuditLogs!: Table<SyncAuditLog, string>;
+  users!: Table<UserAccount, string>;
+  userCustomCategories!: Table<UserCustomCategory, string>;
 
   constructor() {
     super('ITM_QualityEngineering_DB');
@@ -45,6 +49,11 @@ export class KPIDatabase extends Dexie {
 
     this.version(2).stores({
       jiraWorkItems: 'id, product, component, sprint, releaseVersion, status, severity, discoveryMethod, isGatingDefect, isRegressionDefect, isCustomerDefect, createdAt',
+    });
+
+    this.version(3).stores({
+      users: 'id, email, name',
+      userCustomCategories: 'id, userId, title, orderIndex'
     });
   }
 }
