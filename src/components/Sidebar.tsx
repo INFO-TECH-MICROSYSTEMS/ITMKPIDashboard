@@ -6,16 +6,19 @@
  * via any medium, is strictly prohibited.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, ChevronLeft, ChevronRight, Sun, Moon,
   MapPin, Phone, Mail, X, ShieldCheck, Activity,
-  AlertTriangle, Cpu, TrendingUp, Gauge, Compass
+  AlertTriangle, Cpu, TrendingUp, Gauge, Compass,
+  Plus, Sparkles, Layers
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
+import { useUser } from '../context/UserContext';
+import { CreateCategoryModal } from './kpi/CreateCategoryModal';
 
 const iconMap: Record<string, React.ReactNode> = {
   ShieldCheck: <ShieldCheck className="w-4 h-4 shrink-0" />,
@@ -24,7 +27,9 @@ const iconMap: Record<string, React.ReactNode> = {
   Cpu: <Cpu className="w-4 h-4 shrink-0" />,
   TrendingUp: <TrendingUp className="w-4 h-4 shrink-0" />,
   Gauge: <Gauge className="w-4 h-4 shrink-0" />,
-  Compass: <Compass className="w-4 h-4 shrink-0" />
+  Compass: <Compass className="w-4 h-4 shrink-0" />,
+  Sparkles: <Sparkles className="w-4 h-4 shrink-0" />,
+  Layers: <Layers className="w-4 h-4 shrink-0" />
 };
 
 interface SidebarProps {
@@ -43,6 +48,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
+  const { customCategories } = useUser();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isHomeActive = location.pathname === '/';
 
@@ -160,14 +167,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
           </Link>
 
-          {/* Section Divider & Header */}
+          {/* Section Divider & Header: Built-in Categories */}
           <div className="pt-3 pb-1.5 px-3">
             <div className={`text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 ${isCollapsed ? 'lg:text-center lg:px-0' : ''}`}>
-              {isCollapsed ? 'KPIs' : 'KPI Categories'}
+              {isCollapsed ? 'Standard' : 'Standard Categories'}
             </div>
           </div>
 
-          {/* Individual Category Pages */}
+          {/* Individual Built-in Category Pages */}
           {KPI_CATEGORIES.map(category => {
             const isCatActive = location.pathname === category.path;
             const categoryName = t(`kpiPlatform.categories.${category.id}`, category.name);
@@ -192,6 +199,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="truncate leading-tight">{categoryName}</span>
                   <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 truncate mt-0.5">
                     {badgeText}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+
+          {/* User Custom KPI Categories Section */}
+          <div className="pt-4 pb-1 px-3 flex items-center justify-between">
+            <div className={`text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 ${isCollapsed ? 'lg:text-center lg:px-0' : ''}`}>
+              {isCollapsed ? 'Custom' : 'My Custom Categories'}
+            </div>
+            {!isCollapsed && (
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                title="Create New Custom KPI Category"
+                className="p-1 rounded text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950/60 transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* List of Custom Categories */}
+          {customCategories.map(cat => {
+            const customPath = `/custom/${cat.id}`;
+            const isCatActive = location.pathname === customPath;
+
+            return (
+              <Link
+                key={cat.id}
+                to={customPath}
+                onClick={() => setIsMobileOpen(false)}
+                title={isCollapsed ? cat.title : undefined}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                  isCatActive
+                    ? 'text-cyan-700 bg-cyan-50/80 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/50 dark:border-cyan-500/40 shadow-sm font-semibold'
+                    : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
+                } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
+              >
+                <span className={`${isCatActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  {iconMap[cat.iconName] || <Sparkles className="w-4 h-4 shrink-0" />}
+                </span>
+                <div className={`flex flex-col min-w-0 flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
+                  <span className="truncate leading-tight">{cat.title}</span>
+                  <span className="text-[9px] font-mono text-cyan-600 dark:text-cyan-400 truncate mt-0.5">
+                    {cat.kpiIds.length} KPI{cat.kpiIds.length !== 1 ? 's' : ''}
                   </span>
                 </div>
               </Link>
@@ -269,6 +323,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         </div>
       </aside>
+
+      {/* Create Custom Category Modal */}
+      <CreateCategoryModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </>
   );
 };

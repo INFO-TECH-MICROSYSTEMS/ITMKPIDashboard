@@ -6,12 +6,14 @@
  * via any medium, is strictly prohibited.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Phone, Mail, Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
+import { useUser } from '../context/UserContext';
+import { UserProfileModal } from './profile/UserProfileModal';
 
 interface TopHeaderProps {
   onMenuClick: () => void;
@@ -20,6 +22,8 @@ interface TopHeaderProps {
 export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
+  const { currentUser } = useUser();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 transition-colors duration-300 backdrop-blur-xl border-b border-slate-200/80 bg-white/90 text-slate-900 shadow-sm dark:border-cyan-500/20 dark:bg-[#070913]/90 dark:text-slate-100">
@@ -83,8 +87,28 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
             </div>
           </div>
 
-          {/* Right Action Icons (Both Mobile & Desktop): Language Selector, Theme Toggle */}
+          {/* Right Action Icons (Both Mobile & Desktop): User Account, Language Selector, Theme Toggle */}
           <div className="flex items-center space-x-2 sm:space-x-2.5">
+            {/* User Profile Pill */}
+            <button
+              type="button"
+              onClick={() => setIsProfileOpen(true)}
+              title="User Account & Profile (Database Connected)"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 bg-slate-50 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer group"
+            >
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-600 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shadow-xs">
+                {currentUser?.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'SW'}
+              </div>
+              <div className="hidden md:flex flex-col text-left leading-none">
+                <span className="text-xs font-semibold group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  {currentUser?.name || 'Sudarsha W.'}
+                </span>
+                <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500">
+                  {currentUser?.email || 'sudarsha.wijenayake@gmail.com'}
+                </span>
+              </div>
+            </button>
+
             {/* Language Selector Dropdown with Flags */}
             <LanguageSelector />
 
@@ -102,6 +126,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
 
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </header>
   );
 };
