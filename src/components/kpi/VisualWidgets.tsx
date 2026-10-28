@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, X } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 import type { IBaseMetricWidgetProps, IMetricCardContract } from './contracts/MetricContract';
@@ -37,7 +37,8 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
   subtitle,
   size = 180,
   grade,
-  onJustify
+  onJustify,
+  onRemove
 }) => {
   const { t } = useTranslation();
   const strokeWidth = 14;
@@ -51,7 +52,20 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
   else if (score < 90) strokeColor = '#06b6d4'; // Cyan
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 relative group">
+    <div className={`flex flex-col items-center justify-center p-4 relative group ${onRemove ? 'relative' : ''}`}>
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          title="Remove KPI from this category"
+          className="absolute top-2 right-2 p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all opacity-80 group-hover:opacity-100 z-10 cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
       <div className="relative" style={{ width: size, height: size }}>
         <svg className="transform -rotate-90" width={size} height={size}>
           {/* Background circle */}
@@ -162,7 +176,8 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   series3ProjectionLineColor = '#fbbf24', // Amber dashed (Remaining Burnout Forecast)
   forecastBadge,
   forecastStatus = 'cyan',
-  onJustify
+  onJustify,
+  onRemove
 }) => {
   const { t, i18n } = useTranslation();
   if (!data || data.length === 0) return null;
@@ -359,6 +374,19 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             <span className="font-bold text-slate-900 dark:text-white">
               {title}
             </span>
+            {onRemove && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove();
+                }}
+                title="Remove KPI from this category"
+                className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all cursor-pointer ml-1"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
             {forecastBadge && (
               onJustify ? (
                 <button
@@ -772,7 +800,8 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   compareStatusColor,
   compareOnJustify,
   delta,
-  deltaPositive
+  deltaPositive,
+  onRemove
 }) => {
   const { t } = useTranslation();
   const themeA = KPI_STATUS_THEMES[statusColor];
@@ -783,9 +812,22 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   // Standard Single-Scope View
   if (!isComparing) {
     return (
-      <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+      <div className={`group/card relative p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            title="Remove KPI from this category"
+            className="absolute top-2.5 right-2.5 p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all opacity-80 group-hover/card:opacity-100 z-10 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1.5 min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0 pr-4">
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>

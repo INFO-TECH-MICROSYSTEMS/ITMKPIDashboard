@@ -13,39 +13,22 @@ import type {
   ComponentRiskMetric,
   AutomationHealthSummary,
   NearMissAnalyticsSummary,
+  AgingBuckets,
+  DefectSeverityCounts,
   TrendPoint
 } from '../../types/kpiPlatform';
 
 export interface CalculatedMetricsDeck {
   executiveScorecard: ReleaseQualityScorecard;
   testDistributionAll: TestStatusDistribution;
-  severityCounts?: { p1Blockers: number; p2Critical: number; p3Major: number; p4Minor: number };
-  agingBuckets?: { zeroToThreeDays: number; fourToSevenDays: number; eightToFourteenDays: number; fifteenPlusDays: number };
+  severityCounts?: DefectSeverityCounts;
+  agingBuckets?: AgingBuckets;
   defectTrends?: TrendPoint[];
   defectBurnoutTrend?: TrendPoint[];
   mttrMttd?: QualityDiagnosticsSummary;
   componentRisks?: ComponentRiskMetric[];
   automationHealth?: AutomationHealthSummary;
   nearMissAnalytics?: NearMissAnalyticsSummary;
-  blockerDefectsCount?: number;
-  leadTimeHours?: number;
-  sprintChurnRate?: number;
-  meanTimeToResolutionHours?: number;
-  defectReopenRate?: number;
-  untestedCommitsCount?: number;
-  hotspotModulesCount?: number;
-  automationPassRate?: number;
-  flakyTestCount?: number;
-  ciRuntimeMinutes?: number;
-  completedStoryPoints?: number;
-  dailyExecutionRate?: number;
-  slaAdherencePercent?: number;
-  accessibilityScore?: number;
-  escapePreventionRatio?: number;
-  totalAvoidedOutageCost?: number;
-  totalAvoidedDowntimeHours?: number;
-  releaseReadinessScore?: number;
-  readinessGrade?: string;
 }
 
 export type KPICategoryFamily = 
@@ -71,30 +54,21 @@ export interface KPIWidgetRenderProps {
   metrics: CalculatedMetricsDeck;
   metricsB?: CalculatedMetricsDeck;
   isCompareMode?: boolean;
-  isEditable?: boolean;
   onRemove?: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  onMoveLeft?: () => void;
-  onMoveRight?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
-  canMoveLeft?: boolean;
-  canMoveRight?: boolean;
   onJustifyMetric?: (metricKey: string) => void;
 }
 
 /**
- * KPI_REGISTRY: Master catalog of all modular KPI widgets in the platform.
- * Allows users to choose any metric across the entire engineering suite for their custom categories.
+ * KPI_REGISTRY: Master catalog of ALL 45+ existing KPI widgets across the platform.
+ * Exact 1:1 match with existing category views.
  */
 export const KPI_REGISTRY: KPIWidgetDescriptor[] = [
   // --- EXECUTIVE SCORECARD ---
   {
     id: 'executive-readiness-gauge',
     family: 'executive',
-    title: 'Release Readiness Score',
-    subtitle: 'Overall Delivery Quality & Gate Posture',
+    title: 'Release Quality Index',
+    subtitle: 'Composite score across testing gates',
     description: 'Composite enterprise score synthesized from defect density, automated regression, and security gates.',
     defaultColSpan: 1,
     iconName: 'ShieldCheck'
@@ -102,167 +76,446 @@ export const KPI_REGISTRY: KPIWidgetDescriptor[] = [
   {
     id: 'executive-blocker-card',
     family: 'executive',
-    title: 'Gating & Blocker Defects',
-    subtitle: 'P1/P2 Active Release Blockers',
-    description: 'Count of active blocker bugs stalling production deployment branches.',
+    title: 'Blocking / Gating Defects',
+    subtitle: 'Active P1/P2 Release Blockers',
+    description: 'Active blocking bugs that stall release gate criteria.',
     defaultColSpan: 1,
-    iconName: 'AlertTriangle'
+    iconName: 'AlertOctagon'
   },
   {
-    id: 'executive-dora-lead-time',
+    id: 'executive-leakage-card',
     family: 'executive',
-    title: 'Lead Time for Changes',
-    subtitle: 'DORA Velocity & Pipeline Cycle Time',
-    description: 'Average hours elapsed between initial code commit and validated production staging.',
+    title: 'Defect Leakage (Customer APARs)',
+    subtitle: 'Customer Escape Rate',
+    description: 'Defects escaping into customer-facing production staging.',
     defaultColSpan: 1,
     iconName: 'TrendingUp'
   },
   {
-    id: 'executive-delivery-health-card',
+    id: 'executive-regression-cycle',
     family: 'executive',
-    title: 'Sprint Scope Volatility',
-    subtitle: 'Mid-Sprint Churn & Injection Rate',
-    description: 'Percentage of story point modifications committed after sprint commitment lockdown.',
-    defaultColSpan: 1,
-    iconName: 'Activity'
-  },
-
-  // --- QUALITY & DEFECTS ---
-  {
-    id: 'quality-defect-burnout-chart',
-    family: 'quality',
-    title: 'Defect Burnout & Discovery Trend',
-    subtitle: 'Found vs Resolved Bug Convergence',
-    description: 'Multi-day velocity tracking incoming defect discovery versus remediation resolution velocity.',
-    defaultColSpan: 2,
-    iconName: 'Activity'
-  },
-  {
-    id: 'quality-mttr-card',
-    family: 'quality',
-    title: 'Mean Time to Resolution (MTTR)',
-    subtitle: 'Average Bug Fix Turnaround',
-    description: 'Hours elapsed from defect triage confirmation until engineer merges verified fix.',
+    title: 'Regression Cycle Time',
+    subtitle: 'End-to-End Suite Turnaround',
+    description: 'Turnaround duration in days for complete regression cycles.',
     defaultColSpan: 1,
     iconName: 'Clock'
+  },
+  {
+    id: 'executive-latency-p95',
+    family: 'executive',
+    title: 'P95 Latency Benchmark',
+    subtitle: 'Under Load SLA Threshold',
+    description: 'P95 latency benchmark across primary microservices under concurrent load.',
+    defaultColSpan: 1,
+    iconName: 'Zap'
+  },
+  {
+    id: 'executive-copq-card',
+    family: 'executive',
+    title: 'Cost of Poor Quality (CoPQ)',
+    subtitle: 'Direct Rework and Bug Triage Overhead',
+    description: 'Calculated financial rework cost from defect handling and rollbacks.',
+    defaultColSpan: 1,
+    iconName: 'DollarSign'
+  },
+  {
+    id: 'executive-cfr-card',
+    family: 'executive',
+    title: 'Change Failure Rate (DORA)',
+    subtitle: 'Percentage of Hotfixes and Rollbacks',
+    description: 'DORA stability metric: proportion of deployments requiring emergency fixes.',
+    defaultColSpan: 1,
+    iconName: 'AlertOctagon'
+  },
+  {
+    id: 'executive-mttr-restore',
+    family: 'executive',
+    title: 'Mean Time to Restore (MTTR)',
+    subtitle: 'DORA Outage Recovery Velocity',
+    description: 'Average hours elapsed to restore production service after an outage.',
+    defaultColSpan: 1,
+    iconName: 'Clock'
+  },
+  {
+    id: 'executive-sprint-predictability',
+    family: 'executive',
+    title: 'Sprint Predictability Index',
+    subtitle: 'Committed vs Delivered Story Points',
+    description: 'Ratio of completed story points against initial sprint commitment.',
+    defaultColSpan: 1,
+    iconName: 'CheckCircle2'
+  },
+  {
+    id: 'executive-feature-lead-time',
+    family: 'executive',
+    title: 'Feature Lead Time (Commit-to-GA)',
+    subtitle: 'DORA Delivery Velocity',
+    description: 'Days elapsed from initial commit to General Availability release.',
+    defaultColSpan: 1,
+    iconName: 'Clock'
+  },
+  {
+    id: 'executive-security-vulns',
+    family: 'executive',
+    title: 'Security Gate Vulnerabilities',
+    subtitle: 'Static and Dynamic CVE Blockers',
+    description: 'Unresolved critical or major security vulnerabilities in pre-release scan.',
+    defaultColSpan: 1,
+    iconName: 'AlertOctagon'
+  },
+  {
+    id: 'executive-contract-uptime',
+    family: 'executive',
+    title: 'Contractual SLA Uptime',
+    subtitle: 'Enterprise Service Availability',
+    description: 'Calculated service uptime against contractual four-nines tier commitment.',
+    defaultColSpan: 1,
+    iconName: 'CheckCircle2'
+  },
+  {
+    id: 'executive-wcag-compliance',
+    family: 'executive',
+    title: 'WCAG 2.2 AA Compliance',
+    subtitle: 'Accessibility & Usability Score',
+    description: 'Compliance score across screen readers, color contrast, and keyboard navigation.',
+    defaultColSpan: 1,
+    iconName: 'Compass'
+  },
+
+  // --- QUALITY & DEFECT DIAGNOSTICS ---
+  {
+    id: 'quality-mttr-resolve',
+    family: 'quality',
+    title: 'Mean Time to Resolve (MTTR)',
+    subtitle: 'Defect Resolution Turnaround',
+    description: 'Hours to triage, patch, and verify reported defects.',
+    defaultColSpan: 1,
+    iconName: 'Clock'
+  },
+  {
+    id: 'quality-mttd-detect',
+    family: 'quality',
+    title: 'Mean Time to Detect (MTTD)',
+    subtitle: 'Defect Identification Lag',
+    description: 'Hours between code introduction and defect triage log.',
+    defaultColSpan: 1,
+    iconName: 'Zap'
   },
   {
     id: 'quality-reopen-rate-card',
     family: 'quality',
     title: 'Defect Reopen Rate',
-    subtitle: 'Fix Quality & Re-verification Failure',
-    description: 'Proportion of resolved bugs that failed verification and were transitioned back to Open.',
+    subtitle: 'Failed QA Verification',
+    description: 'Percentage of closed defects reopened due to incomplete remediation.',
     defaultColSpan: 1,
     iconName: 'RefreshCw'
   },
-
-  // --- RISK & GATING ---
   {
-    id: 'risk-untested-commits-card',
-    family: 'risk',
-    title: 'Untested Code Commits',
-    subtitle: 'Gaps in Continuous Integration Runs',
-    description: 'Number of mainline code merges deployed without corresponding unit or API test executions.',
+    id: 'quality-customer-apars',
+    family: 'quality',
+    title: 'Customer Escalations (APARs)',
+    subtitle: 'High Impact Production Escalations',
+    description: 'Total escalated issues reported by enterprise customers.',
     defaultColSpan: 1,
     iconName: 'AlertTriangle'
   },
   {
-    id: 'risk-hotspot-files-card',
-    family: 'risk',
-    title: 'High Complexity Hotspots',
-    subtitle: 'Code Files With Frequent Bug Regressions',
-    description: 'Repository source modules exhibiting both high churn rates and multiple defect reports.',
+    id: 'quality-defect-density',
+    family: 'quality',
+    title: 'Defect Density per KLOC',
+    subtitle: 'Architectural Defect Frequency',
+    description: 'Number of bugs per 1,000 lines of executable code.',
     defaultColSpan: 1,
     iconName: 'Cpu'
+  },
+  {
+    id: 'quality-first-time-fix-rate',
+    family: 'quality',
+    title: 'First-Time Fix Rate (FTFR)',
+    subtitle: 'Remediation Quality',
+    description: 'Defects verified and resolved on first attempt without reopen cycles.',
+    defaultColSpan: 1,
+    iconName: 'CheckCircle2'
+  },
+  {
+    id: 'quality-net-intake-velocity',
+    family: 'quality',
+    title: 'Net Defect Intake Velocity',
+    subtitle: 'Discovery vs Resolution Trajectory',
+    description: 'Net difference between incoming bugs and resolved defects.',
+    defaultColSpan: 1,
+    iconName: 'Activity'
+  },
+  {
+    id: 'quality-defect-burnout-chart',
+    family: 'quality',
+    title: 'Defect Discovery Rate vs. Defect Resolution Burnout',
+    subtitle: '14-Day Velocity Trend',
+    description: 'Timeline comparison between incoming discovery and verified resolution velocity.',
+    defaultColSpan: 2,
+    iconName: 'Activity'
   },
 
-  // --- AUTOMATION ROI ---
+  // --- RISK ASSESSMENT & QUALITY GATES ---
   {
-    id: 'automation-pass-rate-gauge',
-    family: 'automation',
-    title: 'Automated Suite Pass Rate',
-    subtitle: 'Continuous Integration Test Reliability',
-    description: 'Percentage of automated end-to-end and regression test executions passing cleanly on CI.',
+    id: 'risk-no-unit-tests',
+    family: 'risk',
+    title: 'Items With No Unit Tests',
+    subtitle: 'Coverage Blindspots',
+    description: 'Production code changes merged without automated unit tests.',
     defaultColSpan: 1,
-    iconName: 'Gauge'
+    iconName: 'AlertOctagon'
   },
   {
-    id: 'automation-flaky-tests-card',
-    family: 'automation',
-    title: 'Flaky Test Cases Detected',
-    subtitle: 'Non-Deterministic Failure Rate',
-    description: 'Tests that intermittently toggle between pass and fail without underlying code alterations.',
+    id: 'risk-no-api-tests',
+    family: 'risk',
+    title: 'Items With No API Tests',
+    subtitle: 'Contract & Endpoint Vulnerabilities',
+    description: 'Services and APIs missing contract or functional validation.',
+    defaultColSpan: 1,
+    iconName: 'AlertTriangle'
+  },
+  {
+    id: 'risk-high-dependency-depth',
+    family: 'risk',
+    title: 'High Dependency Depth (Depth ≥ 4)',
+    subtitle: 'Blast Radius Risk',
+    description: 'Modules with deep coupling that amplify failure blast radius.',
     defaultColSpan: 1,
     iconName: 'Cpu'
   },
   {
-    id: 'automation-runtime-card',
-    family: 'automation',
-    title: 'CI Test Execution Runtime',
-    subtitle: 'Pipeline Duration & Feedback Loop',
-    description: 'P95 execution time of full automated regression suite in minutes.',
+    id: 'risk-high-execution-tests',
+    family: 'risk',
+    title: 'High Execution Time Tests (>300s)',
+    subtitle: 'Pipeline Bottlenecks',
+    description: 'Individual test cases consuming excessive CI duration.',
     defaultColSpan: 1,
     iconName: 'Clock'
   },
 
-  // --- PRODUCTIVITY & CAPACITY ---
+  // --- AUTOMATION ROI & PIPELINE HEALTH ---
   {
-    id: 'productivity-velocity-card',
+    id: 'automation-suite-pass-rate',
+    family: 'automation',
+    title: 'Automated Test Suite Pass Rate',
+    subtitle: 'CI Regression Reliability',
+    description: 'Percentage of automated tests passing cleanly on CI runs.',
+    defaultColSpan: 1,
+    iconName: 'CheckCircle2'
+  },
+  {
+    id: 'automation-flaky-index',
+    family: 'automation',
+    title: 'Flaky Test Detection Index',
+    subtitle: 'Intermittent Failure Ratio',
+    description: 'Intermittent tests exhibiting non-deterministic behavior.',
+    defaultColSpan: 1,
+    iconName: 'AlertTriangle'
+  },
+  {
+    id: 'automation-pipeline-runtime',
+    family: 'automation',
+    title: 'CI/CD Pipeline Runtime',
+    subtitle: 'Regression Cycle Turnaround',
+    description: 'Total duration required to execute full automated test suite.',
+    defaultColSpan: 1,
+    iconName: 'Clock'
+  },
+  {
+    id: 'automation-hours-saved-roi',
+    family: 'automation',
+    title: 'Manual Hours Saved (ROI)',
+    subtitle: 'Engineering FTE Equivalency',
+    description: 'Human testing hours saved through automated CI suites.',
+    defaultColSpan: 1,
+    iconName: 'Zap'
+  },
+  {
+    id: 'automation-compute-cost',
+    family: 'automation',
+    title: 'CI/CD Runner Compute Cost',
+    subtitle: 'Cloud FinOps Operational Cost',
+    description: 'Compute infrastructure expense incurred by CI/CD execution.',
+    defaultColSpan: 1,
+    iconName: 'Cpu'
+  },
+  {
+    id: 'automation-mtbf',
+    family: 'automation',
+    title: 'Mean Time Between Flakes (MTBF)',
+    subtitle: 'Pipeline Stability Index',
+    description: 'Operating hours between non-deterministic test failures.',
+    defaultColSpan: 1,
+    iconName: 'Clock'
+  },
+  {
+    id: 'automation-defect-catch-ratio',
+    family: 'automation',
+    title: 'Automation Defect Catch Ratio',
+    subtitle: 'Shift-Left Effectiveness',
+    description: 'Ratio of defects caught in automated pipelines vs manual testing.',
+    defaultColSpan: 1,
+    iconName: 'ShieldCheck'
+  },
+
+  // --- SQUAD PRODUCTIVITY & VELOCITY ---
+  {
+    id: 'productivity-test-completion-rate',
     family: 'productivity',
-    title: 'Sprint Story Points Delivered',
-    subtitle: 'Squad Execution Velocity',
-    description: 'Total completed and QA-verified story points within the selected sprint window.',
+    title: 'Avg QA Test Completion Rate',
+    subtitle: 'Execution Velocity',
+    description: 'Percentage of assigned test executions completed within sprint.',
     defaultColSpan: 1,
     iconName: 'TrendingUp'
   },
   {
-    id: 'productivity-test-execution-rate',
+    id: 'productivity-overcommitted',
     family: 'productivity',
-    title: 'Daily Test Execution Rate',
-    subtitle: 'Quality Assurance Velocity',
-    description: 'Number of manual and exploratory test cases validated per engineer per working day.',
+    title: 'Over-Committed Engineers',
+    subtitle: 'Workload Balance & Burnout Risk',
+    description: 'Team members assigned work exceeding sustainable capacity.',
     defaultColSpan: 1,
-    iconName: 'Activity'
+    iconName: 'Users'
+  },
+  {
+    id: 'productivity-story-completion',
+    family: 'productivity',
+    title: 'Sprint Story Completion Rate',
+    subtitle: 'Sprint Delivery Ratio',
+    description: 'User stories verified and marked Done against commitments.',
+    defaultColSpan: 1,
+    iconName: 'CheckCircle2'
+  },
+  {
+    id: 'productivity-active-specialists',
+    family: 'productivity',
+    title: 'Active QA Specialists',
+    subtitle: 'Dedicated Squad Headcount',
+    description: 'Staffed QA engineers contributing to active release sprints.',
+    defaultColSpan: 1,
+    iconName: 'Users'
+  },
+  {
+    id: 'productivity-flow-efficiency',
+    family: 'productivity',
+    title: 'Flow Efficiency (Active vs Idle)',
+    subtitle: 'Cycle Time Flow Metric',
+    description: 'Proportion of cycle time spent in active progress vs waiting.',
+    defaultColSpan: 1,
+    iconName: 'TrendingUp'
+  },
+  {
+    id: 'productivity-spillover-rate',
+    family: 'productivity',
+    title: 'Sprint Spillover Rate',
+    subtitle: 'Incomplete Sprint Scope',
+    description: 'Story points rolled over to subsequent sprints.',
+    defaultColSpan: 1,
+    iconName: 'AlertTriangle'
+  },
+  {
+    id: 'productivity-dev-to-qa-ratio',
+    family: 'productivity',
+    title: 'Dev-to-QA Ratio',
+    subtitle: 'Staffing Ratio Benchmark',
+    description: 'Proportion of development engineers to QA specialists.',
+    defaultColSpan: 1,
+    iconName: 'Users'
   },
 
   // --- GOVERNANCE & SLAS ---
   {
-    id: 'governance-sla-gauge',
+    id: 'governance-sla-adherence',
     family: 'governance',
-    title: 'P1/P2 SLA Adherence',
-    subtitle: 'Critical Bug Remediation Compliance',
-    description: 'Compliance percentage against enterprise contractual resolution timeframes.',
+    title: 'Overall SLA Adherence',
+    subtitle: 'Contractual Quality Standards',
+    description: 'Adherence against contractual defect turnaround and testing SLAs.',
     defaultColSpan: 1,
     iconName: 'ShieldCheck'
   },
   {
-    id: 'governance-accessibility-card',
+    id: 'governance-wcag-accessibility',
     family: 'governance',
-    title: 'WCAG 2.2 AA Accessibility Compliance',
-    subtitle: 'Digital Inclusion & Usability Score',
-    description: 'Audit pass rate verifying color contrast, screen reader aria attributes, and keyboard navigation.',
+    title: 'WCAG 2.2 AA Accessibility',
+    subtitle: 'Digital Usability Standard',
+    description: 'Automated compliance audit checking accessibility conformance.',
     defaultColSpan: 1,
     iconName: 'Compass'
   },
-
-  // --- LEADING / LAGGING & NEAR MISSES ---
   {
-    id: 'leading-escape-prevention-gauge',
+    id: 'governance-latency-p95',
+    family: 'governance',
+    title: 'Performance P95 Latency',
+    subtitle: 'Runtime Latency Performance',
+    description: 'P95 response latency SLA compliance under benchmark load.',
+    defaultColSpan: 1,
+    iconName: 'Zap'
+  },
+  {
+    id: 'governance-csat',
+    family: 'governance',
+    title: 'Stakeholder Satisfaction (CSAT)',
+    subtitle: 'Customer & Leadership Score',
+    description: 'Direct stakeholder satisfaction score on delivered quality.',
+    defaultColSpan: 1,
+    iconName: 'Award'
+  },
+  {
+    id: 'governance-sla-penalties',
+    family: 'governance',
+    title: 'Contract SLA Penalties',
+    subtitle: 'Financial Penalties Incurred',
+    description: 'Financial damages or penalty credits incurred for breached SLAs.',
+    defaultColSpan: 1,
+    iconName: 'DollarSign'
+  },
+  {
+    id: 'governance-traceability',
+    family: 'governance',
+    title: 'Audit Trail Traceability',
+    subtitle: 'Requirements to Test Execution',
+    description: 'Percentage of user stories with full bi-directional traceability.',
+    defaultColSpan: 1,
+    iconName: 'ShieldCheck'
+  },
+
+  // --- LEADING, LAGGING & NEAR MISSES ---
+  {
+    id: 'leading-health-index',
     family: 'leadingLagging',
-    title: 'Escape Prevention Ratio',
-    subtitle: 'Pre-Production Interception Rate',
-    description: 'Percentage of critical near-miss defects intercepted during pre-production verification.',
+    title: 'Leading Health Index',
+    subtitle: 'Predictive Quality Forecast',
+    description: 'Composite score synthesizing pre-release leading quality signals.',
     defaultColSpan: 1,
     iconName: 'ShieldCheck'
   },
   {
-    id: 'leading-avoided-cost-card',
+    id: 'lagging-outcome-stability',
     family: 'leadingLagging',
-    title: 'Estimated Averted Outage Cost',
-    subtitle: 'Financial ROI of Proactive Quality Interception',
-    description: 'Calculated savings based on averted production downtime hours and business impact.',
+    title: 'Lagging Outcome Stability',
+    subtitle: 'Post-Deployment Stability',
+    description: 'Historical production stability score across released versions.',
     defaultColSpan: 1,
-    iconName: 'TrendingUp'
+    iconName: 'Activity'
+  },
+  {
+    id: 'near-misses-intercepted',
+    family: 'leadingLagging',
+    title: 'Near Misses Intercepted',
+    subtitle: 'Escape Prevention Ratio',
+    description: 'Percentage of critical regressions caught before production.',
+    defaultColSpan: 1,
+    iconName: 'ShieldCheck'
+  },
+  {
+    id: 'avoided-outage-loss',
+    family: 'leadingLagging',
+    title: 'Avoided Outage Loss',
+    subtitle: 'Financial Impact Averted',
+    description: 'Estimated financial impact averted through proactive QA gating.',
+    defaultColSpan: 1,
+    iconName: 'DollarSign'
   }
 ];
 

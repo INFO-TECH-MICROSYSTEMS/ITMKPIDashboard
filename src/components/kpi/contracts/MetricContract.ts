@@ -67,6 +67,14 @@ export interface IBaseMetricWidgetProps {
    * Accessibility title / tooltip for the clarification trigger.
    */
   clarificationLabel?: string;
+  /**
+   * Close / Remove handler for editable/custom category views.
+   */
+  onRemove?: () => void;
+  /**
+   * Drag handle or drag start handler for drag-and-drop reordering.
+   */
+  isDraggable?: boolean;
 }
 
 /**

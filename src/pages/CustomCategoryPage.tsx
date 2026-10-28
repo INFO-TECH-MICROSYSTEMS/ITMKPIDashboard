@@ -9,7 +9,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
-  Plus, Trash2, ArrowLeft, Save, 
+  Plus, Trash2, ArrowLeft, 
   Layers, CheckCircle2, ChevronRight, AlertCircle
 } from 'lucide-react';
 import { useUser } from '../context/UserContext';
@@ -28,9 +28,9 @@ export const CustomCategoryPage: React.FC = () => {
   const { 
     customCategories, 
     deleteCategory, 
-    moveKPI, 
     removeKPIFromCategory, 
-    addKPIsToCategory
+    addKPIsToCategory,
+    reorderKPIs
   } = useUser();
 
   const {
@@ -48,43 +48,29 @@ export const CustomCategoryPage: React.FC = () => {
     metrics,
     metricsB,
     jiraItems,
-    testRailExecutions,
-    jiraItemsB,
-    testRailExecutionsB
+    testRailExecutions
   } = useKPIDataContext();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedJustifyMetric, setSelectedJustifyMetric] = useState<string | null>(null);
-  const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
+  
+  // HTML5 Drag and Drop State
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const category = customCategories.find(c => c.id === categoryId);
 
-  // Synthesize metrics deck for concrete widgets
   const metricsDeck = useMemo(() => {
     return {
       executiveScorecard: metrics.executiveScorecard,
       testDistributionAll: metrics.testDistributionAll,
-      releaseReadinessScore: metrics.executiveScorecard?.overallScore,
-      readinessGrade: metrics.executiveScorecard?.releaseReadyGrade,
-      blockerDefectsCount: metrics.executiveScorecard?.gatingDefectCount,
-      leadTimeHours: metrics.executiveScorecard?.featureLeadTimeDays ? metrics.executiveScorecard.featureLeadTimeDays * 24 : 42.4,
-      sprintChurnRate: 14.2,
-      meanTimeToResolutionHours: metrics.mttrMttd?.avgMttrHours || 18.5,
-      defectReopenRate: metrics.mttrMttd?.reopenRate || 4.8,
-      untestedCommitsCount: 2,
-      hotspotModulesCount: 4,
-      automationPassRate: metrics.automationHealth?.automationRatioPercent || 92.5,
-      flakyTestCount: metrics.automationHealth?.flakyCount || 3,
-      ciRuntimeMinutes: metrics.automationHealth?.avgPipelineMins || 14.5,
-      completedStoryPoints: 142,
-      dailyExecutionRate: 28.4,
-      slaAdherencePercent: metrics.executiveScorecard?.slaAdherenceRate || 96.8,
-      accessibilityScore: metrics.executiveScorecard?.accessibilityScore || 98.4,
-      escapePreventionRatio: metrics.nearMissAnalytics?.escapePreventionRatio || 94.6,
-      totalAvoidedOutageCost: metrics.nearMissAnalytics?.totalAvoidedOutageCost || 184500,
-      totalAvoidedDowntimeHours: metrics.nearMissAnalytics?.totalAvoidedDowntimeHours || 12,
-      defectBurnoutTrend: metrics.defectTrends
+      agingBuckets: metrics.agingBuckets,
+      severityCounts: metrics.severityCounts,
+      defectTrends: metrics.defectTrends,
+      mttrMttd: metrics.mttrMttd,
+      componentRisks: metrics.componentRisks,
+      automationHealth: metrics.automationHealth,
+      nearMissAnalytics: metrics.nearMissAnalytics
     };
   }, [metrics]);
 
@@ -93,26 +79,13 @@ export const CustomCategoryPage: React.FC = () => {
     return {
       executiveScorecard: metricsB.executiveScorecard,
       testDistributionAll: metricsB.testDistributionAll,
-      releaseReadinessScore: metricsB.executiveScorecard?.overallScore,
-      readinessGrade: metricsB.executiveScorecard?.releaseReadyGrade,
-      blockerDefectsCount: metricsB.executiveScorecard?.gatingDefectCount,
-      leadTimeHours: metricsB.executiveScorecard?.featureLeadTimeDays ? metricsB.executiveScorecard.featureLeadTimeDays * 24 : 44.0,
-      sprintChurnRate: 15.0,
-      meanTimeToResolutionHours: metricsB.mttrMttd?.avgMttrHours,
-      defectReopenRate: metricsB.mttrMttd?.reopenRate,
-      untestedCommitsCount: 3,
-      hotspotModulesCount: 5,
-      automationPassRate: metricsB.automationHealth?.automationRatioPercent,
-      flakyTestCount: metricsB.automationHealth?.flakyCount,
-      ciRuntimeMinutes: metricsB.automationHealth?.avgPipelineMins,
-      completedStoryPoints: 130,
-      dailyExecutionRate: 26.0,
-      slaAdherencePercent: metricsB.executiveScorecard?.slaAdherenceRate,
-      accessibilityScore: metricsB.executiveScorecard?.accessibilityScore,
-      escapePreventionRatio: metricsB.nearMissAnalytics?.escapePreventionRatio,
-      totalAvoidedOutageCost: metricsB.nearMissAnalytics?.totalAvoidedOutageCost,
-      totalAvoidedDowntimeHours: metricsB.nearMissAnalytics?.totalAvoidedDowntimeHours,
-      defectBurnoutTrend: metricsB.defectTrends
+      agingBuckets: metricsB.agingBuckets,
+      severityCounts: metricsB.severityCounts,
+      defectTrends: metricsB.defectTrends,
+      mttrMttd: metricsB.mttrMttd,
+      componentRisks: metricsB.componentRisks,
+      automationHealth: metricsB.automationHealth,
+      nearMissAnalytics: metricsB.nearMissAnalytics
     };
   }, [metricsB]);
 
@@ -156,16 +129,29 @@ export const CustomCategoryPage: React.FC = () => {
     await removeKPIFromCategory(categoryId, kpiId);
   };
 
-  const handleMove = async (kpiId: string, direction: 'up' | 'down' | 'left' | 'right') => {
-    if (!categoryId) return;
-    await moveKPI(categoryId, kpiId, direction, 2);
-    setHasUnsavedOrder(true);
+  // Drag and Drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleSaveLayout = () => {
-    setHasUnsavedOrder(false);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex || !categoryId) return;
+
+    const list = [...category.kpiIds];
+    const [moved] = list.splice(draggedIndex, 1);
+    list.splice(targetIndex, 0, moved);
+
+    await reorderKPIs(categoryId, list);
+    setDraggedIndex(null);
     setSaveToast(true);
-    setTimeout(() => setSaveToast(false), 2000);
+    setTimeout(() => setSaveToast(false), 1800);
   };
 
   const handleDeleteCategory = async () => {
@@ -220,19 +206,6 @@ export const CustomCategoryPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={handleSaveLayout}
-              className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-                hasUnsavedOrder
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm animate-pulse'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-cyan-400'
-              }`}
-            >
-              <Save className="w-3.5 h-3.5" />
-              <span>{hasUnsavedOrder ? 'Save Layout Order' : 'Saved to DB'}</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setIsAddModalOpen(true)}
               className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-md transition-all cursor-pointer"
             >
@@ -268,13 +241,13 @@ export const CustomCategoryPage: React.FC = () => {
           onFilterChangeB={updateFilterB}
           onResetFiltersB={resetFiltersB}
           onSwapScopes={swapScopes}
-          totalFilteredJiraB={jiraItemsB.length}
-          totalFilteredTestsB={testRailExecutionsB.length}
+          totalFilteredJiraB={0}
+          totalFilteredTestsB={0}
           releaseWindowB={releaseWindowB}
         />
       </div>
 
-      {/* Main KPI Canvas / Grid */}
+      {/* Main KPI Canvas / Grid with Smooth Drag & Drop */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {category.kpiIds.length === 0 ? (
           <div className="p-12 text-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40">
@@ -295,11 +268,11 @@ export const CustomCategoryPage: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {category.kpiIds.map((kpiId, index) => {
               const Component = KPI_COMPONENT_RESOLVER[kpiId];
               const descriptor = KPI_REGISTRY_MAP.get(kpiId);
-              const colSpan = descriptor?.defaultColSpan === 2 ? 'md:col-span-2' : '';
+              const colSpan = descriptor?.defaultColSpan === 2 ? 'md:col-span-2 lg:col-span-2' : '';
 
               if (!Component) {
                 return (
@@ -310,21 +283,19 @@ export const CustomCategoryPage: React.FC = () => {
               }
 
               return (
-                <div key={kpiId} className={`${colSpan} transition-all duration-300`}>
+                <div 
+                  key={kpiId} 
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  className={`${colSpan} group/drag relative transition-all duration-200 cursor-grab active:cursor-grabbing hover:scale-[1.01]`}
+                >
                   <Component
                     metrics={metricsDeck}
                     metricsB={metricsDeckB}
                     isCompareMode={isCompareMode}
-                    isEditable={true}
                     onRemove={() => handleRemoveKPI(kpiId)}
-                    onMoveLeft={() => handleMove(kpiId, 'left')}
-                    onMoveRight={() => handleMove(kpiId, 'right')}
-                    onMoveUp={() => handleMove(kpiId, 'up')}
-                    onMoveDown={() => handleMove(kpiId, 'down')}
-                    canMoveLeft={index > 0}
-                    canMoveRight={index < category.kpiIds.length - 1}
-                    canMoveUp={index >= 2}
-                    canMoveDown={index + 2 < category.kpiIds.length}
                     onJustifyMetric={(metricKey) => setSelectedJustifyMetric(metricKey)}
                   />
                 </div>
