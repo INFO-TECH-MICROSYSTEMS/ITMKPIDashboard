@@ -14,10 +14,77 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { HelpCircle, X } from 'lucide-react';
+import { HelpCircle, X, Maximize2, Minimize2 } from 'lucide-react';
 import type { TrendPoint, TestStatusDistribution } from '../../types/kpiPlatform';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 import type { IBaseMetricWidgetProps, IMetricCardContract } from './contracts/MetricContract';
+
+/**
+ * Common KPI Top-Right Action Panel
+ * Aligns the question mark (?) and close (X) button cleanly at the top-right above the card content,
+ * ready for future maximize / restore controls.
+ */
+export const KPIActionToolbar: React.FC<{
+  onJustify?: () => void;
+  clarificationLabel?: string;
+  onRemove?: () => void;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
+}> = ({
+  onJustify,
+  clarificationLabel = 'Click for KPI justification and audit details',
+  onRemove,
+  onMaximize,
+  isMaximized
+}) => {
+  if (!onJustify && !onRemove && !onMaximize) return null;
+
+  return (
+    <div className="flex items-center gap-1 shrink-0 z-10">
+      {onMaximize && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMaximize();
+          }}
+          title={isMaximized ? 'Restore widget' : 'Maximize widget'}
+          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+        </button>
+      )}
+
+      {onJustify && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onJustify();
+          }}
+          className="p-1 rounded-lg text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          title={clarificationLabel}
+        >
+          <HelpCircle className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          title="Remove KPI from this category"
+          className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
+  );
+};
 
 // ==========================================
 // 1. CIRCULAR GAUGE METER (Implements IBaseMetricWidgetProps)
@@ -374,19 +441,6 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
             <span className="font-bold text-slate-900 dark:text-white">
               {title}
             </span>
-            {onRemove && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemove();
-                }}
-                title="Remove KPI from this category"
-                className="p-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all cursor-pointer ml-1"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
             {forecastBadge && (
               onJustify ? (
                 <button
@@ -404,40 +458,39 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                 </span>
               )
             )}
-            {onJustify && (
-              <button
-                type="button"
-                onClick={onJustify}
-                className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                title="Click to view metric clarification & audit modal"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
-              <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
+
+          <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series1Color }} />
+                <span className="text-slate-600 dark:text-slate-300">{series1Name}</span>
+              </div>
+              {series2Name && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
+                  <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
+                </div>
+              )}
+              {series3Name && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
+                  <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
+                </div>
+              )}
+              {hasProjection && (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
+                  <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
+                </div>
+              )}
             </div>
-            {series2Name && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series2Color }} />
-                <span className="text-slate-600 dark:text-slate-300">{series2Name}</span>
-              </div>
-            )}
-            {series3Name && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: series3Color }} />
-                <span className="text-slate-600 dark:text-slate-300">{series3Name}</span>
-              </div>
-            )}
-            {hasProjection && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-0.5 border-t-2 border-dashed" style={{ borderColor: projectionLineColor }} />
-                <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{t('kpiPlatform.visualWidgets.projectedForecast', 'Projected Forecast')}</span>
-              </div>
-            )}
+
+            {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
+            <KPIActionToolbar
+              onJustify={onJustify}
+              onRemove={onRemove}
+            />
           </div>
         </div>
       )}
@@ -813,33 +866,21 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   if (!isComparing) {
     return (
       <div className={`group/card relative p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
-        {onRemove && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-            title="Remove KPI from this category"
-            className="absolute top-2.5 right-2.5 p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all opacity-80 group-hover/card:opacity-100 z-10 cursor-pointer"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        )}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1.5 min-w-0 pr-4">
+          <div className="flex items-center min-w-0 pr-2">
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>
-            <button
-              onClick={onJustify}
-              className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
-              title="Click for KPI justification and audit details"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
           </div>
-          {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
+
+          {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
+            <KPIActionToolbar
+              onJustify={onJustify}
+              onRemove={onRemove}
+            />
+          </div>
         </div>
 
         <div className="flex items-baseline justify-between gap-2 my-1">

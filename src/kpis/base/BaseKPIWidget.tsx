@@ -7,10 +7,7 @@
  */
 
 import React from 'react';
-import { 
-  X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, 
-  HelpCircle 
-} from 'lucide-react';
+import { X, HelpCircle, Maximize2, Minimize2 } from 'lucide-react';
 
 export interface BaseKPIWidgetProps {
   id?: string;
@@ -22,14 +19,8 @@ export interface BaseKPIWidgetProps {
   // Custom Category Interactive Controls
   isEditable?: boolean;
   onRemove?: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  onMoveLeft?: () => void;
-  onMoveRight?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
-  canMoveLeft?: boolean;
-  canMoveRight?: boolean;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
 
   // Visual & Children
   className?: string;
@@ -38,25 +29,91 @@ export interface BaseKPIWidgetProps {
 }
 
 /**
- * BaseKPIWidget: The foundational container class/component in the KPI hierarchy.
- * Enforces unified styling, header action symmetry, help justification triggers,
- * and positional controls (Up, Down, Left, Right) and deletion (Close button).
+ * KPIButtonPanel: Standardized top-right action toolbar for all KPI widgets.
+ * Aligns the question mark (?) justification trigger and close (X) button cleanly,
+ * and provides ready extension points for maximize/restore buttons.
+ */
+export const KPIButtonPanel: React.FC<{
+  onJustify?: () => void;
+  clarificationLabel?: string;
+  onRemove?: () => void;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
+  extraActions?: React.ReactNode;
+}> = ({
+  onJustify,
+  clarificationLabel = 'View formula & justification',
+  onRemove,
+  onMaximize,
+  isMaximized,
+  extraActions
+}) => {
+  if (!onJustify && !onRemove && !onMaximize && !extraActions) return null;
+
+  return (
+    <div className="flex items-center gap-1 shrink-0 z-10">
+      {extraActions}
+
+      {/* Maximize / Restore Toggle */}
+      {onMaximize && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMaximize();
+          }}
+          title={isMaximized ? 'Restore widget' : 'Maximize widget'}
+          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+        </button>
+      )}
+
+      {/* Question mark (?) justification trigger */}
+      {onJustify && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onJustify();
+          }}
+          title={clarificationLabel}
+          className="p-1 rounded-lg text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <HelpCircle className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      {/* Close / Remove (X) button */}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          title="Remove KPI from this category"
+          className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+/**
+ * BaseKPIWidget: The super parent class/component in the KPI hierarchy.
+ * Enforces unified styling, title layout, and standardized top-right KPIButtonPanel.
  */
 export const BaseKPIWidget: React.FC<BaseKPIWidgetProps> = ({
   title,
   subtitle,
   onJustify,
-  clarificationLabel = 'View formula & justification',
-  isEditable = false,
+  clarificationLabel,
   onRemove,
-  onMoveUp,
-  onMoveDown,
-  onMoveLeft,
-  onMoveRight,
-  canMoveUp = true,
-  canMoveDown = true,
-  canMoveLeft = true,
-  canMoveRight = true,
+  onMaximize,
+  isMaximized,
   className = '',
   headerAction,
   children
@@ -65,103 +122,32 @@ export const BaseKPIWidget: React.FC<BaseKPIWidgetProps> = ({
     <div 
       className={`group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0c1021] border border-slate-200/90 dark:border-cyan-500/20 shadow-xs hover:shadow-md hover:border-cyan-500/50 dark:hover:border-cyan-400/50 transition-all duration-200 ${className}`}
     >
-      {/* Top Header Row with Commonality Actions */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      {/* Top Header Row with Title and Top-Right Action Button Panel */}
+      <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 truncate font-['Outfit']">
-              {title}
-            </h3>
-            {onJustify && (
-              <button
-                type="button"
-                onClick={onJustify}
-                title={clarificationLabel}
-                className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+          <h3 className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
+            {title}
+          </h3>
           {subtitle && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 font-mono">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5 font-mono">
               {subtitle}
             </p>
           )}
         </div>
 
-        {/* Action Controls & Positional Buttons */}
-        <div className="flex items-center gap-1 shrink-0">
-          {headerAction}
-
-          {isEditable && (
-            <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/80">
-              {/* Left / Right directional movement */}
-              {onMoveLeft && (
-                <button
-                  type="button"
-                  onClick={onMoveLeft}
-                  disabled={!canMoveLeft}
-                  title="Move KPI Left"
-                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-              )}
-              {onMoveRight && (
-                <button
-                  type="button"
-                  onClick={onMoveRight}
-                  disabled={!canMoveRight}
-                  title="Move KPI Right"
-                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              {/* Up / Down directional movement */}
-              {onMoveUp && (
-                <button
-                  type="button"
-                  onClick={onMoveUp}
-                  disabled={!canMoveUp}
-                  title="Move KPI Up"
-                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                >
-                  <ChevronUp className="w-3.5 h-3.5" />
-                </button>
-              )}
-              {onMoveDown && (
-                <button
-                  type="button"
-                  onClick={onMoveDown}
-                  disabled={!canMoveDown}
-                  title="Move KPI Down"
-                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                >
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              {/* Close / Remove button */}
-              {onRemove && (
-                <button
-                  type="button"
-                  onClick={onRemove}
-                  title="Remove KPI from this category"
-                  className="p-1 ml-1 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        {/* Top-Right Action Button Panel: [?] then [X] */}
+        <KPIButtonPanel
+          onJustify={onJustify}
+          clarificationLabel={clarificationLabel}
+          onRemove={onRemove}
+          onMaximize={onMaximize}
+          isMaximized={isMaximized}
+          extraActions={headerAction}
+        />
       </div>
 
       {/* Main Content Body */}
-      <div className="flex-1 flex flex-col justify-center">
+      <div className="flex-1 flex flex-col justify-between">
         {children}
       </div>
     </div>

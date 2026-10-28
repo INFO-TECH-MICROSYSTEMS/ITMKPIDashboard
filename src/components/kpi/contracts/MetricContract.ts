@@ -72,9 +72,10 @@ export interface IBaseMetricWidgetProps {
    */
   onRemove?: () => void;
   /**
-   * Drag handle or drag start handler for drag-and-drop reordering.
+   * Maximize / Restore handler for expand-to-fullscreen dialogs.
    */
-  isDraggable?: boolean;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
 }
 
 /**
