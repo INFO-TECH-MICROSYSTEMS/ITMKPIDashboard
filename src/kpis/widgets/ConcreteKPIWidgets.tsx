@@ -10,9 +10,9 @@ import React from 'react';
 import { 
   AlertTriangle, TrendingUp, Activity, 
   Clock, RefreshCw, Cpu, Compass, ShieldCheck,
-  AlertOctagon, CheckCircle2, Zap, DollarSign, Users, Award, X
+  AlertOctagon, CheckCircle2, Zap, DollarSign, Users, Award
 } from 'lucide-react';
-import { MetricCard, GaugeMeter, AreaTrendChart } from '../../components/kpi/VisualWidgets';
+import { MetricCard, GaugeMeter, AreaTrendChart, KPIActionToolbar } from '../../components/kpi/VisualWidgets';
 import { KPI_STATUS_THEMES } from '../../constants/kpiConstants';
 import type { KPIWidgetRenderProps } from '../registry/kpiRegistry';
 
@@ -46,19 +46,10 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({ met
 
   return (
     <div className={`p-6 sm:p-8 rounded-3xl border relative overflow-hidden transition-all duration-300 ${currentThemeA.card}`}>
-      {onRemove && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          title="Remove KPI from this category"
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-all z-20 cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      )}
+      <KPIActionToolbar
+        onJustify={() => onJustifyMetric?.('releaseQualityIndex')}
+        onRemove={onRemove}
+      />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Dial Meter */}
@@ -572,7 +563,11 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
     { date: '2026-10-12', label: 'Day 12', value1: 58, value2: 56, value3: 2 }
   ];
   return (
-    <div className="bg-white dark:bg-[#0c1021] rounded-2xl border border-slate-200 dark:border-cyan-500/20 shadow-xs p-4 relative">
+    <div className="bg-white dark:bg-[#0c1021] rounded-2xl border border-slate-200 dark:border-cyan-500/20 shadow-xs p-4 pt-8 relative">
+      <KPIActionToolbar
+        onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
+        onRemove={onRemove}
+      />
       <AreaTrendChart
         data={data}
         title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
@@ -581,8 +576,6 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
         series1Color="#f43f5e"
         series2Color="#10b981"
         height={170}
-        onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
-        onRemove={onRemove}
       />
     </div>
   );

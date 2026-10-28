@@ -40,7 +40,7 @@ export const KPIActionToolbar: React.FC<{
   if (!onJustify && !onRemove && !onMaximize) return null;
 
   return (
-    <div className="flex items-center gap-1 shrink-0 z-10">
+    <div className="absolute top-2.5 right-2.5 flex items-center gap-1 z-30">
       {onMaximize && (
         <button
           type="button"
@@ -49,7 +49,7 @@ export const KPIActionToolbar: React.FC<{
             onMaximize();
           }}
           title={isMaximized ? 'Restore widget' : 'Maximize widget'}
-          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         >
           {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
         </button>
@@ -62,7 +62,7 @@ export const KPIActionToolbar: React.FC<{
             e.stopPropagation();
             onJustify();
           }}
-          className="p-1 rounded-lg text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           title={clarificationLabel}
         >
           <HelpCircle className="w-3.5 h-3.5" />
@@ -77,7 +77,7 @@ export const KPIActionToolbar: React.FC<{
             onRemove();
           }}
           title="Remove KPI from this category"
-          className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+          className="p-1 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -360,13 +360,19 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   const activeForecastTheme = forecastThemeClasses[forecastStatus] || forecastThemeClasses.cyan;
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono">
+    <div className={`p-4 sm:p-5 ${(onJustify || onRemove) ? 'pt-8' : ''} rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono relative`}>
+      {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
+      <KPIActionToolbar
+        onJustify={onJustify}
+        onRemove={onRemove}
+      />
+
       {/* Two-Line Header when scopeLabel is provided */}
       {scopeLabel ? (
         <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-1.5">
           {/* Line 1: Scope indicator dot + scope label */}
           <div 
-            className={`flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider cursor-help ${
+            className={`flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider cursor-help pr-16 ${
               scopeType === 'secondary' ? 'text-purple-700 dark:text-purple-400' : 'text-cyan-700 dark:text-cyan-400'
             }`}
             title={scopeLabel}
@@ -377,7 +383,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
 
           {/* Line 2: Metric Title, Forecast Badge, Audit Help button, and Series Legends */}
           <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
-            <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 min-w-0 pr-16">
               <span className="font-bold text-slate-900 dark:text-white">
                 {title}
               </span>
@@ -397,16 +403,6 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                     {forecastBadge}
                   </span>
                 )
-              )}
-              {onJustify && (
-                <button
-                  type="button"
-                  onClick={onJustify}
-                  className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                  title="Click to view metric clarification & audit modal"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                </button>
               )}
             </div>
             <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
@@ -437,7 +433,7 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
         </div>
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 pr-16">
             <span className="font-bold text-slate-900 dark:text-white">
               {title}
             </span>
@@ -485,12 +481,6 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
-            <KPIActionToolbar
-              onJustify={onJustify}
-              onRemove={onRemove}
-            />
           </div>
         </div>
       )}
@@ -865,21 +855,22 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   // Standard Single-Scope View
   if (!isComparing) {
     return (
-      <div className={`group/card relative p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+      <div className={`group/card relative p-4 sm:p-5 pt-8 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+        {/* Top-Right Button Panel: [?] then [X] (Window/Mac Style, Absolute Top-Right Above Content) */}
+        <KPIActionToolbar
+          onJustify={onJustify}
+          onRemove={onRemove}
+        />
+
         <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center min-w-0 pr-2">
+          <div className="flex items-center min-w-0 pr-16">
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>
           </div>
 
-          {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center shrink-0">
             {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
-            <KPIActionToolbar
-              onJustify={onJustify}
-              onRemove={onRemove}
-            />
           </div>
         </div>
 
