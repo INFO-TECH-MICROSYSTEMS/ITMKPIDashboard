@@ -305,9 +305,19 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               <span className="truncate">{scopeBLabel}</span>
             </div>
             <div className="flex items-center justify-between">
-              <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.governanceView.slaMatrixTitle')}
-              </h4>
+              <div className="flex items-center gap-2">
+                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                  {t('kpiPlatform.governanceView.slaMatrixTitle')}
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getSlaAdherenceJustification(scorecardB))}
+                  className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for Enterprise Quality SLA Governance justification"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
               <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
                 SLA Audit
               </span>
@@ -380,10 +390,15 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
               return (
                 <div 
                   key={sla.id} 
-                  className={`p-4 rounded-xl border transition-all space-y-2 ${slaTheme.card}`}
+                  onClick={() => setSelectedJustification(KPIJustificationService.getSlaBreakdownItemJustification(sla.name, sla.rate, sla.target, sla.desc, statusLabel, statusColor))}
+                  className={`p-4 rounded-xl border transition-all space-y-2 cursor-pointer hover:scale-[1.02] ${slaTheme.card}`}
+                  title={t('kpiPlatform.governanceView.viewJustification', 'Click for SLA justification and compliance audit')}
                 >
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit'] truncate">{sla.name}</span>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white font-['Outfit'] truncate">{sla.name}</span>
+                      <HelpCircle className="w-3.5 h-3.5 text-slate-400 shrink-0 opacity-70" />
+                    </div>
                     <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 shrink-0 ${slaTheme.badge}`}>
                       <span>{statusLabel}</span>
                     </span>
@@ -474,6 +489,14 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                       {t('kpiPlatform.a11yAudit.title', 'Accessibility (WCAG 2.2 AA) Audit')}
                     </h4>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJustification(KPIJustificationService.getA11yAuditCardJustification(scorecardB))}
+                    className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Click for WCAG 2.2 AA Accessibility Audit clarification"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -573,6 +596,14 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                       {t('kpiPlatform.perfAudit.title', 'SaaS Performance & Reliability Benchmarks')}
                     </h4>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJustification(KPIJustificationService.getPerfAuditCardJustification(scorecardB))}
+                    className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Click for SaaS Performance & Reliability Benchmarks clarification"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 

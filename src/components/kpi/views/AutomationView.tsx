@@ -487,13 +487,25 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                     <Cpu className="w-4 h-4 text-purple-500" />
                     <span>{t('kpiPlatform.automationView.automatedExecution')}</span>
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
-                    {automationHealthB?.automationRatioPercent ?? 0}% {t('kpiPlatform.automationView.ofSuite')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
+                      {automationHealthB?.automationRatioPercent ?? 0}% {t('kpiPlatform.automationView.ofSuite')}
+                    </span>
+                    <button
+                      onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistributionB, 'Automated'))}
+                      title="Explain Automated Execution Breakdown"
+                      className="p-1 rounded text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <StackedProgressBar distribution={automatedDistributionB} />
+              <StackedProgressBar 
+                distribution={automatedDistributionB} 
+                onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(automatedDistributionB, 'Automated'))}
+              />
             </div>
           )}
         </div>
@@ -554,13 +566,25 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
                     <RefreshCw className="w-4 h-4 text-purple-500" />
                     <span>{t('kpiPlatform.automationView.manualExecution')}</span>
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
-                    {100 - (automationHealthB?.automationRatioPercent ?? 0)}% {t('kpiPlatform.automationView.ofSuite')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
+                      {100 - (automationHealthB?.automationRatioPercent ?? 0)}% {t('kpiPlatform.automationView.ofSuite')}
+                    </span>
+                    <button
+                      onClick={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistributionB, 'Manual'))}
+                      title="Explain Manual Execution Breakdown"
+                      className="p-1 rounded text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <StackedProgressBar distribution={manualDistributionB} />
+              <StackedProgressBar 
+                distribution={manualDistributionB} 
+                onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(manualDistributionB, 'Manual'))}
+              />
             </div>
           )}
         </div>
@@ -642,6 +666,14 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
               <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-sm font-['Outfit']">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{t('kpiPlatform.automationView.flakyTableTitle')} ({flakyTestsListB.length} {t('kpiPlatform.automationView.casesRequiringQuarantine')})</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getFlakyTestsJustification(flakyTestsListB, automationHealthB?.totalReruns ?? 0))}
+                  className="p-1 rounded-full text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for Flaky Tests quarantine policy and rerun audit"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-mono text-slate-400">

@@ -396,12 +396,21 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                    {t('kpiPlatform.qualityView.agingProfileTitle')}
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {t('kpiPlatform.qualityView.agingProfileSubtitle')}
-                  </p>
+                  <div>
+                    <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                      {t('kpiPlatform.qualityView.agingProfileTitle')}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {t('kpiPlatform.qualityView.agingProfileSubtitle')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBucketsB, 'all'))}
+                    title="Explain Aging Profile Metric"
+                    className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                  </button>
                 </div>
                 <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
                   {t('kpiPlatform.qualityView.totalInQueue')}: {totalAgingItemsB} {t('kpiPlatform.qualityView.itemsCount')}
@@ -411,10 +420,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {/* Scope 2: < 7 Days */}
-              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30">
-                <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
-                  {t('kpiPlatform.qualityView.under7Days')}
-                </span>
+              <div 
+                onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBucketsB, 'under7'))}
+                className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+                title="Click for metric clarification"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
+                    {t('kpiPlatform.qualityView.under7Days')}
+                  </span>
+                  <HelpCircle className="w-3.5 h-3.5 text-emerald-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                 <div className="flex items-baseline justify-between mt-2">
                   <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-700 dark:text-emerald-400">
                     {agingBucketsB.pending7Days}
@@ -432,10 +448,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 7 - 14 Days */}
-              <div className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30">
-                <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
-                  {t('kpiPlatform.qualityView.days7To14')}
-                </span>
+              <div 
+                onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBucketsB, '7to14'))}
+                className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+                title="Click for metric clarification"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
+                    {t('kpiPlatform.qualityView.days7To14')}
+                  </span>
+                  <HelpCircle className="w-3.5 h-3.5 text-cyan-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                 <div className="flex items-baseline justify-between mt-2">
                   <span className="text-2xl sm:text-3xl font-black font-mono text-cyan-700 dark:text-cyan-400">
                     {agingBucketsB.pending7To14Days}
@@ -453,10 +476,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 14 - 21 Days */}
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30">
-                <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
-                  {t('kpiPlatform.qualityView.days14To21')}
-                </span>
+              <div 
+                onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBucketsB, '14to21'))}
+                className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+                title="Click for metric clarification"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
+                    {t('kpiPlatform.qualityView.days14To21')}
+                  </span>
+                  <HelpCircle className="w-3.5 h-3.5 text-amber-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                 <div className="flex items-baseline justify-between mt-2">
                   <span className="text-2xl sm:text-3xl font-black font-mono text-amber-700 dark:text-amber-400">
                     {agingBucketsB.pending14To21Days}
@@ -474,10 +504,17 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               </div>
 
               {/* Scope 2: 21+ Days */}
-              <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30">
-                <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
-                  {t('kpiPlatform.qualityView.days21Plus')}
-                </span>
+              <div 
+                onClick={() => setSelectedJustification(KPIJustificationService.getAgingProfileJustification(agingBucketsB, '21plus'))}
+                className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 cursor-pointer hover:shadow-md transition-shadow group"
+                title="Click for metric clarification"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
+                    {t('kpiPlatform.qualityView.days21Plus')}
+                  </span>
+                  <HelpCircle className="w-3.5 h-3.5 text-rose-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                 <div className="flex items-baseline justify-between mt-2">
                   <span className="text-2xl sm:text-3xl font-black font-mono text-rose-700 dark:text-rose-400">
                     {agingBucketsB.pending21PlusDays}
@@ -626,6 +663,13 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
                         : `${severityCountsB.blockerP1} ${t('kpiPlatform.qualityView.blockersActive', 'Blockers')}`}
                     </span>
                   </div>
+                  <button
+                    onClick={() => setSelectedJustification(KPIJustificationService.getDefectSeverityJustification(severityCountsB))}
+                    title="Explain Defect Severity Breakdown"
+                    className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -751,6 +795,14 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{t('kpiPlatform.qualityView.gatingDefectsTitle')} ({gatingDefectsListB.length} {t('kpiPlatform.qualityView.requireSignoff')})</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJustification(KPIJustificationService.getGatingDefectsTableJustification(gatingDefectsListB))}
+                  className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Click for Gating Defects policy and sign-off justification"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </div>

@@ -289,13 +289,22 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
               <span className="truncate">{scopeBLabel}</span>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                  {t('kpiPlatform.riskView.matrixTitle')}
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
-                </p>
+              <div className="flex items-center gap-2">
+                <div>
+                  <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
+                    {t('kpiPlatform.riskView.matrixTitle')}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('kpiPlatform.riskView.matrixSubtitle', 'Evaluated across test execution failure rates, open gating defects, and unit test omissions.')}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedJustification(KPIJustificationService.getComponentRiskMatrixJustification(componentRisksB))}
+                  title="Explain Component Risk & Dependency Gating Matrix"
+                  className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
               </div>
               <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
                 {t('kpiPlatform.riskView.rankedByVulnerability', 'Ranked by Vulnerability')}
@@ -505,7 +514,17 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                   <XCircle className="w-4 h-4 text-rose-500" />
                   <span>{t('kpiPlatform.riskView.blockedDevItems')} ({blockedItemsB.length})</span>
                 </span>
-                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.stalledInSprint')}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJustification(KPIJustificationService.getBlockedDevItemsJustification(blockedItemsB))}
+                    className="p-1 rounded-full text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Click for Blocked Development Items clarification and policy audit"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -548,7 +567,17 @@ export const RiskGatingView: React.FC<RiskGatingViewProps> = ({
                   <Layers className="w-4 h-4 text-purple-500" />
                   <span>{t('kpiPlatform.riskView.highDepthItems')} ({highDependencyItemsB.length})</span>
                 </span>
-                <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-slate-400">{t('kpiPlatform.riskView.couplingRisk')}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJustification(KPIJustificationService.getHighDependencyDepthJustification(highDependencyItemsB))}
+                    className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Click for High Dependency Depth clarification and coupling audit"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
 
