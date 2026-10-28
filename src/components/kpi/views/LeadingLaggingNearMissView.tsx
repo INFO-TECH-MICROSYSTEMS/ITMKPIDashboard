@@ -152,34 +152,103 @@ export const LeadingLaggingNearMissView: React.FC<LeadingLaggingNearMissViewProp
       </div>
 
       {/* Correlation Insight Banner */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-cyan-900/10 via-blue-900/10 to-indigo-900/10 dark:from-cyan-950/40 dark:via-blue-950/40 dark:to-indigo-950/40 border border-cyan-200/60 dark:border-cyan-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-xl bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 shrink-0">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
-              {t('kpiPlatform.leadingLaggingView.correlationAnalysisTitle', 'Predictive Correlation Telemetry')} {isCompareMode ? `(${scopeALabel})` : ''}
+      {!isCompareMode ? (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-cyan-900/10 via-blue-900/10 to-indigo-900/10 dark:from-cyan-950/40 dark:via-blue-950/40 dark:to-indigo-950/40 border border-cyan-200/60 dark:border-cyan-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2.5 rounded-xl bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 shrink-0">
+              <Sparkles className="w-5 h-5" />
             </div>
-            <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5">
-              {leadingLaggingMetrics.correlationInsight}
-            </p>
-            {isCompareMode && leadingLaggingMetricsB && (
-              <p className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300 mt-1 border-t border-purple-200/40 dark:border-purple-800/40 pt-1">
-                <strong>{scopeBLabel}:</strong> {leadingLaggingMetricsB.correlationInsight}
+            <div>
+              <div className="text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
+                {t('kpiPlatform.leadingLaggingView.correlationAnalysisTitle', 'Predictive Correlation Telemetry')}
+              </div>
+              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5">
+                {leadingLaggingMetrics.correlationInsight}
               </p>
-            )}
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetrics))}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs shrink-0 cursor-pointer"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>{t('kpiPlatform.leadingLaggingView.viewCorrelationModel', 'Audit Correlation Model')}</span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetrics))}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs shrink-0 cursor-pointer"
-        >
-          <HelpCircle className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-          <span>{t('kpiPlatform.leadingLaggingView.viewCorrelationModel', 'Audit Correlation Model')}</span>
-        </button>
-      </div>
+      ) : (
+        <div className="space-y-3">
+          {/* Scope 1 Correlation Banner */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-cyan-900/10 via-blue-900/10 to-indigo-900/10 dark:from-cyan-950/40 dark:via-blue-950/40 dark:to-indigo-950/40 border border-cyan-200/60 dark:border-cyan-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="p-2.5 rounded-xl bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                {/* Line 1: Scope Information */}
+                <div 
+                  className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider mb-1 cursor-help"
+                  title={scopeALabel}
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
+                  <span className="truncate">{scopeALabel}</span>
+                </div>
+                {/* Line 2: Title */}
+                <div className="text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
+                  {t('kpiPlatform.leadingLaggingView.correlationAnalysisTitle', 'Predictive Correlation Telemetry')}
+                </div>
+                <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5">
+                  {leadingLaggingMetrics.correlationInsight}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetrics))}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs shrink-0 cursor-pointer"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+              <span>{t('kpiPlatform.leadingLaggingView.viewCorrelationModel', 'Audit Correlation Model')}</span>
+            </button>
+          </div>
+
+          {/* Scope 2 Correlation Banner Stacked Below */}
+          {leadingLaggingMetricsB && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-900/10 via-fuchsia-900/10 to-indigo-900/10 dark:from-purple-950/40 dark:via-fuchsia-950/40 dark:to-indigo-950/40 border border-purple-200/60 dark:border-purple-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-400 shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  {/* Line 1: Scope Information */}
+                  <div 
+                    className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-1 cursor-help"
+                    title={scopeBLabel}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                    <span className="truncate">{scopeBLabel}</span>
+                  </div>
+                  {/* Line 2: Title */}
+                  <div className="text-xs font-mono uppercase tracking-wider font-bold text-purple-600 dark:text-purple-400">
+                    {t('kpiPlatform.leadingLaggingView.correlationAnalysisTitle', 'Predictive Correlation Telemetry')}
+                  </div>
+                  <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5">
+                    {leadingLaggingMetricsB.correlationInsight}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedJustification(KPIJustificationService.getLeadingLaggingJustification(leadingLaggingMetricsB))}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs shrink-0 cursor-pointer"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>{t('kpiPlatform.leadingLaggingView.viewCorrelationModel', 'Audit Correlation Model')}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Two Column Layout: Leading Indicators vs Lagging Indicators Matrix */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

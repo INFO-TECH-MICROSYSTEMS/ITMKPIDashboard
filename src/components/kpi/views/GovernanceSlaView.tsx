@@ -328,63 +328,63 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
             {[
               {
                 id: 'defectTriage',
-                name: 'Defect Triage SLA (P1 < 4h, P2 < 24h)',
+                name: t('kpiPlatform.slaItems.defectTriageName', 'Defect Triage SLA (P1 < 4h, P2 < 24h)'),
                 rateNum: scorecardB.slaBreakdown.p1P2TriageRate,
                 targetNum: 95.0,
                 rate: `${scorecardB.slaBreakdown.p1P2TriageRate}%`,
                 target: '95.0%',
-                desc: 'Rapid initial triage and assessment for blocking and critical defects.'
+                desc: t('kpiPlatform.slaItems.defectTriageDesc', 'Rapid initial triage and assessment for blocking and critical defects.')
               },
               {
                 id: 'regressionExec',
-                name: 'Regression Execution SLA',
+                name: t('kpiPlatform.slaItems.regressionExecName', 'Regression Execution SLA'),
                 rateNum: scorecardB.slaBreakdown.regressionExecutionRate,
                 targetNum: 90.0,
                 rate: `${scorecardB.slaBreakdown.regressionExecutionRate}%`,
                 target: '90.0%',
-                desc: 'Execution of complete regression cycle within scheduled sprint window.'
+                desc: t('kpiPlatform.slaItems.regressionExecDesc', 'Execution of complete regression cycle within scheduled sprint window.')
               },
               {
                 id: 'testCreation',
-                name: 'Test Case Creation SLA',
+                name: t('kpiPlatform.slaItems.testCreationName', 'Test Case Creation SLA'),
                 rateNum: scorecardB.slaBreakdown.testPlanCreationRate,
                 targetNum: 90.0,
                 rate: `${scorecardB.slaBreakdown.testPlanCreationRate}%`,
                 target: '90.0%',
-                desc: 'Test plans authored and reviewed prior to development handoff.'
+                desc: t('kpiPlatform.slaItems.testCreationDesc', 'Test plans authored and reviewed prior to development handoff.')
               },
               {
                 id: 'dailyReport',
-                name: 'Daily QA Status Report SLA',
+                name: t('kpiPlatform.slaItems.dailyReportName', 'Daily QA Status Report SLA'),
                 rateNum: scorecardB.slaBreakdown.dailyReportRate,
                 targetNum: 98.0,
                 rate: `${scorecardB.slaBreakdown.dailyReportRate}%`,
                 target: '98.0%',
-                desc: 'Automated executive and squad reporting published every day at 17:00.'
+                desc: t('kpiPlatform.slaItems.dailyReportDesc', 'Automated executive and squad reporting published every day at 17:00.')
               },
               {
                 id: 'autoDelivery',
-                name: 'Automation Delivery SLA',
+                name: t('kpiPlatform.slaItems.autoDeliveryName', 'Automation Delivery SLA'),
                 rateNum: scorecardB.slaBreakdown.automationDeliveryRate,
                 targetNum: 85.0,
                 rate: `${scorecardB.slaBreakdown.automationDeliveryRate}%`,
                 target: '85.0%',
-                desc: 'In-sprint test automation completed within the same sprint as feature code.'
+                desc: t('kpiPlatform.slaItems.autoDeliveryDesc', 'In-sprint test automation completed within the same sprint as feature code.')
               },
               {
                 id: 'customerResolution',
-                name: 'Customer Defect Resolution SLA',
+                name: t('kpiPlatform.slaItems.customerResolutionName', 'Customer Defect Resolution SLA'),
                 rateNum: scorecardB.slaBreakdown.customerDefectResolutionRate,
                 targetNum: 90.0,
                 rate: `${scorecardB.slaBreakdown.customerDefectResolutionRate}%`,
                 target: '90.0%',
-                desc: 'Hotfix turnaround for high-impact customer APARs.'
+                desc: t('kpiPlatform.slaItems.customerResolutionDesc', 'Hotfix turnaround for high-impact customer APARs.')
               }
             ].map(sla => {
               const isOptimal = sla.rateNum >= sla.targetNum;
               const isWarning = !isOptimal && sla.rateNum >= sla.targetNum - 10;
               const statusColor = isOptimal ? 'emerald' : isWarning ? 'amber' : 'rose';
-              const statusLabel = isOptimal ? 'Compliant' : isWarning ? 'At Risk' : 'Breached';
+              const statusLabel = isOptimal ? t('kpiPlatform.statusCompliant', 'Compliant') : isWarning ? t('kpiPlatform.statusAtRisk', 'At Risk') : t('kpiPlatform.statusBreached', 'Breached');
               const slaTheme = KPI_STATUS_THEMES[statusColor];
 
               return (
@@ -405,8 +405,8 @@ export const GovernanceSlaView: React.FC<GovernanceSlaViewProps> = ({
                   </div>
                   <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">{sla.desc}</p>
                   <div className={`flex justify-between items-center pt-2 border-t text-xs font-mono ${slaTheme.footerBorder}`}>
-                    <span className="text-slate-500 dark:text-slate-400">Adherence: <strong className={slaTheme.value}>{sla.rate}</strong></span>
-                    <span className="text-slate-500 dark:text-slate-400">Target: {sla.target}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.adherenceLabel', 'Adherence')}: <strong className={slaTheme.value}>{sla.rate}</strong></span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('kpiPlatform.governanceView.targetSlaLabel', 'Target')}: {sla.target}</span>
                   </div>
                 </div>
               );

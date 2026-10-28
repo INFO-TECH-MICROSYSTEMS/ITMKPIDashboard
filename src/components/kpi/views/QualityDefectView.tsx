@@ -566,6 +566,7 @@ export const QualityDefectView: React.FC<QualityDefectViewProps> = ({
               height={240}
               forecastBadge={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? '● Burndown Active' : '▲ Net Intake Growth'}
               forecastStatus={mttrMttdB && mttrMttdB.netDefectIntakeVelocity <= 0 ? 'emerald' : 'amber'}
+              onJustify={() => setSelectedJustification(KPIJustificationService.getDefectTrendChartJustification(mttrMttdB?.netDefectIntakeVelocity ?? 0))}
             />
           )}
         </div>
