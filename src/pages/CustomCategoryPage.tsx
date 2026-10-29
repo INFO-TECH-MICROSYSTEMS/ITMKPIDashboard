@@ -184,10 +184,10 @@ export const CustomCategoryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-16">
+    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 animate-in fade-in duration-300 min-h-screen pb-16">
       {/* Top Breadcrumb & Title Bar */}
-      <div className="bg-white/60 dark:bg-[#070913]/60 backdrop-blur-md border-b border-slate-200/80 dark:border-cyan-500/20 px-4 sm:px-6 lg:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="pb-6 border-b border-slate-200 dark:border-cyan-500/20">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           
           <div>
             <div className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-slate-400 mb-1">
@@ -209,7 +209,7 @@ export const CustomCategoryPage: React.FC = () => {
               </span>
             </div>
             {category.description && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl mt-1">
                 {category.description}
               </p>
             )}
@@ -247,7 +247,7 @@ export const CustomCategoryPage: React.FC = () => {
       </div>
 
       {/* Global Filter Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5">
+      <div>
         <KPIFilterBar
           filters={filters}
           releaseWindow={releaseWindow}
@@ -268,7 +268,7 @@ export const CustomCategoryPage: React.FC = () => {
       </div>
 
       {/* Main KPI Canvas / Grid with Smooth Drag & Drop */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div>
         {category.kpiIds.length === 0 ? (
           <div className="p-12 text-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40">
             <Layers className="w-12 h-12 text-slate-400 mx-auto mb-3" />
