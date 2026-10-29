@@ -855,19 +855,33 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
   // Standard Single-Scope View
   if (!isComparing) {
     return (
-      <div className={`group/card relative p-4 sm:p-5 pt-8 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
-        {/* Top-Right Button Panel: [?] then [X] (Window/Mac Style, Absolute Top-Right Above Content) */}
-        <KPIActionToolbar
-          onJustify={onJustify}
-          onRemove={onRemove}
-        />
+      <div className={`group/card relative p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
+        {/* Top-Right Button Panel: [X] (or Maximize if configured) */}
+        {onRemove && (
+          <KPIActionToolbar
+            onRemove={onRemove}
+          />
+        )}
 
-        <div className="flex items-center justify-between gap-2 mb-2 pr-14">
+        <div className="flex items-center justify-between gap-2 mb-2 pr-6">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>
+            {onJustify && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onJustify();
+                }}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
