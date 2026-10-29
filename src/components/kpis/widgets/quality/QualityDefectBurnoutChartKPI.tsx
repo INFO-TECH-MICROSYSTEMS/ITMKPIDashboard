@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import { TrendingDown } from 'lucide-react';
 import { AreaTrendChart } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -21,6 +22,7 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
   return (
     <AreaTrendChart
       data={data}
+      icon={<TrendingDown className="w-4 h-4 text-emerald-500" />}
       title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
       series1Name="Discovered Defects"
       series2Name="Resolved / Burned Out"

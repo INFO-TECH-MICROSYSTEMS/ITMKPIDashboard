@@ -212,6 +212,7 @@ export const GaugeMeter: React.FC<GaugeMeterProps> = ({
 export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
   data: TrendPoint[];
   title: string;
+  icon?: React.ReactNode;
   scopeLabel?: string;
   scopeType?: 'primary' | 'secondary';
   series1Name: string;
@@ -230,6 +231,7 @@ export interface AreaTrendChartProps extends IBaseMetricWidgetProps {
 export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   data,
   title,
+  icon,
   scopeLabel,
   scopeType,
   series1Name,
@@ -360,12 +362,13 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
   const activeForecastTheme = forecastThemeClasses[forecastStatus] || forecastThemeClasses.cyan;
 
   return (
-    <div className={`p-4 sm:p-5 ${(onJustify || onRemove) ? 'pt-8' : ''} rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono relative`}>
-      {/* Top-Right Button Panel: [?] then [X] (positioned above title area, matching hero widget) */}
-      <KPIActionToolbar
-        onJustify={onJustify}
-        onRemove={onRemove}
-      />
+    <div className={`p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 font-mono relative`}>
+      {/* Top-Right Button Panel: [X] */}
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
       {/* Two-Line Header when scopeLabel is provided */}
       {scopeLabel ? (
@@ -384,9 +387,20 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
           {/* Line 2: Metric Title, Forecast Badge, Audit Help button, and Series Legends */}
           <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
             <div className="flex flex-wrap items-center gap-2 min-w-0 pr-16">
+              {icon && <div className="shrink-0 text-cyan-600 dark:text-cyan-400">{icon}</div>}
               <span className="font-bold text-slate-900 dark:text-white">
                 {title}
               </span>
+              {onJustify && (
+                <button
+                  type="button"
+                  onClick={onJustify}
+                  className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                  title="Click for KPI justification and audit details"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+              )}
               {forecastBadge && (
                 onJustify ? (
                   <button
@@ -435,9 +449,20 @@ export const AreaTrendChart: React.FC<AreaTrendChartProps> = ({
         <div className="pb-2 border-b border-slate-100 dark:border-slate-800 space-y-2">
           {/* Top Line: Title + Forecast Badge */}
           <div className="flex items-center gap-2 pr-16 min-w-0">
+            {icon && <div className="shrink-0 text-cyan-600 dark:text-cyan-400">{icon}</div>}
             <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
               {title}
             </span>
+            {onJustify && (
+              <button
+                type="button"
+                onClick={onJustify}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
             {forecastBadge && (
               onJustify ? (
                 <button

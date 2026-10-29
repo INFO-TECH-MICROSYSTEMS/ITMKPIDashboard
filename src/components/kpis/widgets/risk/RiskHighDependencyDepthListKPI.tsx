@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, HelpCircle } from 'lucide-react';
 import { KPIActionToolbar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -21,15 +21,26 @@ export const RiskHighDependencyDepthListKPI: React.FC<KPIWidgetRenderProps> = ({
 
   return (
     <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('highDependencyDepth')}
-        onRemove={onRemove}
-      />
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-16">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
         <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-          <Layers className="w-4 h-4 text-purple-500" />
+          <Layers className="w-4 h-4 text-purple-500 shrink-0" />
           <span>High Dependency Depth Items ({highDependencyItems.length})</span>
+          {onJustifyMetric && (
+            <button
+              type="button"
+              onClick={() => onJustifyMetric('highDependencyDepth')}
+              className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              title="Click for KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
         </span>
         <span className="text-[10px] font-mono text-slate-400">Coupling Risk</span>
       </div>
