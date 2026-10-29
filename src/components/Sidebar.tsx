@@ -7,18 +7,17 @@
  */
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { 
-  Home, ChevronLeft, ChevronRight, Sun, Moon,
-  MapPin, Phone, Mail, X, ShieldCheck, Activity,
-  AlertTriangle, Cpu, TrendingUp, Gauge, Compass,
-  Plus, Sparkles, Layers
+  Home, ShieldCheck, Activity, AlertTriangle, 
+  Cpu, TrendingUp, Gauge, Compass, Plus, Sparkles, Layers 
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { KPI_CATEGORIES } from '../constants/kpiConstants';
 import { useUser } from '../context/UserContext';
 import { CreateCategoryModal } from './kpi/CreateCategoryModal';
+import { NavHeader, NavItem, NavSectionHeader, NavFooter } from './navigation';
 
 const iconMap: Record<string, React.ReactNode> = {
   ShieldCheck: <ShieldCheck className="w-4 h-4 shrink-0" />,
@@ -32,13 +31,17 @@ const iconMap: Record<string, React.ReactNode> = {
   Layers: <Layers className="w-4 h-4 shrink-0" />
 };
 
-interface SidebarProps {
+export interface SidebarProps {
   isMobileOpen: boolean;
   setIsMobileOpen: (open: boolean) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+/**
+ * Sidebar: Fully Modular Navigation Panel composing NavHeader, NavItem,
+ * NavSectionHeader, and NavFooter submodules.
+ */
 export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen,
   setIsMobileOpen,
@@ -72,107 +75,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isCollapsed ? 'lg:w-20' : 'lg:w-72'
         }`}
       >
-        {/* Top Section: Logo & Toggle */}
-        <div className="flex flex-col shrink-0">
-          <div className="h-20 flex items-center justify-between px-3.5 border-b border-slate-200 dark:border-cyan-500/15">
-            {/* Logo and Brand Name */}
-            <Link 
-              to="/" 
-              className={`flex items-center gap-2.5 overflow-hidden transition-all duration-200 group ${
-                isCollapsed ? 'lg:justify-center lg:w-full' : ''
-              }`}
-              title="ITM KPI Dashboard"
-            >
-              <div className="relative overflow-hidden rounded-lg p-1 bg-gradient-to-br from-cyan-500/20 via-blue-600/10 to-purple-600/20 border border-cyan-500/30 group-hover:border-cyan-400 transition-all shrink-0">
-                <img 
-                  src={theme === 'dark' ? '/assets/itm-logo-dark.png' : '/assets/itm-logo-light.png'} 
-                  alt="ITM Logo" 
-                  className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
-              </div>
-
-              {/* Text shown when expanded or mobile */}
-              <div className={`flex flex-col min-w-0 transition-opacity duration-200 ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-                <span className="text-sm font-black tracking-wider text-slate-900 dark:text-slate-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors font-['Outfit'] truncate">
-                  ITM KPI
-                </span>
-                <span className="text-[10px] tracking-widest uppercase text-cyan-600 dark:text-cyan-400 font-semibold font-mono truncate">
-                  PLATFORM
-                </span>
-              </div>
-            </Link>
-
-            {/* Collapse toggle button on desktop */}
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(prev => !prev)}
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`hidden lg:flex items-center justify-center w-7 h-7 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 text-slate-600 hover:text-cyan-600 dark:text-slate-400 dark:hover:text-cyan-300 bg-slate-50 dark:bg-slate-900/80 transition-colors cursor-pointer shrink-0 ${
-                isCollapsed ? 'mt-2 mx-auto' : ''
-              }`}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="w-4 h-4" />
-              ) : (
-                <ChevronLeft className="w-4 h-4" />
-              )}
-            </button>
-
-            {/* Close button on mobile */}
-            <button
-              type="button"
-              onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300 cursor-pointer"
-              aria-label="Close menu"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Desktop Sub-toggle bar when collapsed */}
-          {isCollapsed && (
-            <div className="hidden lg:flex justify-center py-2 border-b border-slate-100 dark:border-slate-800/60">
-              <button
-                type="button"
-                onClick={() => setIsCollapsed(false)}
-                title="Expand navigation pane"
-                className="p-1 rounded-md text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/50 text-xs flex items-center gap-1 font-mono transition-colors"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Modular Header */}
+        <NavHeader
+          theme={theme}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          isMobileOpen={isMobileOpen}
+          setIsMobileOpen={setIsMobileOpen}
+        />
 
         {/* Middle Navigation Links (Scrollable) */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1 custom-scrollbar">
           {/* Home Landing Page Link */}
-          <Link
+          <NavItem
             to="/"
+            icon={<Home className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />}
+            label={t('nav.home', 'Home')}
+            isActive={isHomeActive}
+            isCollapsed={isCollapsed}
             onClick={() => setIsMobileOpen(false)}
-            title={isCollapsed ? t('nav.home', 'Home') : undefined}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              isHomeActive
-                ? 'text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/60 dark:border-cyan-500/40 shadow-sm font-semibold'
-                : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/60'
-            } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
-          >
-            <Home className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-            <span className={`truncate flex-1 ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-              {t('nav.home', 'Home')}
-            </span>
-          </Link>
+            className={isCollapsed ? 'lg:justify-center lg:px-2' : ''}
+          />
 
           {/* Section Divider & Header: Built-in Categories */}
-          <div className="pt-3 pb-1.5 px-3">
-            <div className={`text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 ${isCollapsed ? 'lg:text-center lg:px-0' : ''}`}>
-              {isCollapsed ? 'Standard' : 'Standard Categories'}
-            </div>
-          </div>
+          <NavSectionHeader
+            label={isCollapsed ? 'Standard' : 'Standard Categories'}
+            isCollapsed={isCollapsed}
+          />
 
           {/* Individual Built-in Category Pages */}
           {KPI_CATEGORIES.map(category => {
@@ -181,36 +110,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
             const badgeText = t(`kpiPlatform.categories.${category.id}Badge`, category.badge);
 
             return (
-              <Link
+              <NavItem
                 key={category.id}
                 to={category.path}
+                icon={iconMap[category.iconName]}
+                label={categoryName}
+                badge={badgeText}
+                isActive={isCatActive}
+                isCollapsed={isCollapsed}
                 onClick={() => setIsMobileOpen(false)}
-                title={isCollapsed ? categoryName : undefined}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                  isCatActive
-                    ? 'text-cyan-700 bg-cyan-50/80 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/50 dark:border-cyan-500/40 shadow-sm font-semibold'
-                    : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
-                } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
-              >
-                <span className={`${isCatActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                  {iconMap[category.iconName]}
-                </span>
-                <div className={`flex flex-col min-w-0 flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-                  <span className="truncate leading-tight">{categoryName}</span>
-                  <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 truncate mt-0.5">
-                    {badgeText}
-                  </span>
-                </div>
-              </Link>
+              />
             );
           })}
 
           {/* User Custom KPI Categories Section */}
-          <div className="pt-4 pb-1 px-3 flex items-center justify-between">
-            <div className={`text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 ${isCollapsed ? 'lg:text-center lg:px-0' : ''}`}>
-              {isCollapsed ? 'Custom' : 'My Custom Categories'}
-            </div>
-            {!isCollapsed && (
+          <NavSectionHeader
+            label={isCollapsed ? 'Custom' : 'My Custom Categories'}
+            isCollapsed={isCollapsed}
+            action={
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(true)}
@@ -219,8 +136,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
-            )}
-          </div>
+            }
+          />
 
           {/* List of Custom Categories */}
           {customCategories.map(cat => {
@@ -228,100 +145,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             const isCatActive = location.pathname === customPath;
 
             return (
-              <Link
+              <NavItem
                 key={cat.id}
                 to={customPath}
+                icon={iconMap[cat.iconName] || <Sparkles className="w-4 h-4 shrink-0" />}
+                label={cat.title}
+                badge={`${cat.kpiIds.length} KPI${cat.kpiIds.length !== 1 ? 's' : ''}`}
+                isActive={isCatActive}
+                isCollapsed={isCollapsed}
                 onClick={() => setIsMobileOpen(false)}
-                title={isCollapsed ? cat.title : undefined}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                  isCatActive
-                    ? 'text-cyan-700 bg-cyan-50/80 border border-cyan-200 dark:text-cyan-300 dark:bg-cyan-950/50 dark:border-cyan-500/40 shadow-sm font-semibold'
-                    : 'text-slate-700 hover:text-cyan-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-cyan-300 dark:hover:bg-slate-800/50'
-                } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
-              >
-                <span className={`${isCatActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                  {iconMap[cat.iconName] || <Sparkles className="w-4 h-4 shrink-0" />}
-                </span>
-                <div className={`flex flex-col min-w-0 flex-1 ${isCollapsed ? 'lg:hidden' : 'flex'}`}>
-                  <span className="truncate leading-tight">{cat.title}</span>
-                  <span className="text-[9px] font-mono text-cyan-600 dark:text-cyan-400 truncate mt-0.5">
-                    {cat.kpiIds.length} KPI{cat.kpiIds.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </Link>
+              />
             );
           })}
         </div>
 
-        {/* Bottom Section: Theme Toggle and HQ Contact Info */}
-        <div className="shrink-0 p-3 border-t border-slate-200 dark:border-cyan-500/15 bg-slate-50/50 dark:bg-slate-950/50 space-y-3">
-          {/* Theme Switcher Toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={t('header.toggleTheme', 'Toggle Dark/Light Mode')}
-            title={theme === 'dark' ? t('header.switchToLight', 'Switch to Light Mode') : t('header.switchToDark', 'Switch to Dark Mode')}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 text-slate-700 hover:text-cyan-700 dark:text-slate-300 dark:hover:text-cyan-300 bg-white dark:bg-slate-900 transition-colors cursor-pointer text-xs font-medium ${
-              isCollapsed ? 'lg:justify-center lg:px-0 lg:w-10 lg:h-10 lg:mx-auto' : ''
-            }`}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400 shrink-0" />
-            ) : (
-              <Moon className="w-4 h-4 text-indigo-500 shrink-0" />
-            )}
-            <span className={`truncate ${isCollapsed ? 'lg:hidden' : 'block'}`}>
-              {theme === 'dark' ? t('nav.lightMode', 'Light Mode') : t('nav.darkMode', 'Dark Mode')}
-            </span>
-          </button>
-
-          {/* Headquarters Info Details (Only in Expanded Mode) */}
-          <div className={`space-y-1.5 pt-1 text-[11px] text-slate-500 dark:text-slate-400 ${
-            isCollapsed ? 'lg:hidden' : 'block'
-          }`}>
-            <div className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-semibold font-mono">
-              <MapPin className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <span className="truncate">{t('nav.ottawaCanada', 'Ottawa, Canada (EST)')}</span>
-            </div>
-            
-            <a 
-              href="tel:+16132665285" 
-              className="flex items-center gap-1.5 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors truncate"
-            >
-              <Phone className="w-3 h-3 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <span className="font-medium">+1 613 266 5285</span>
-            </a>
-
-            <a 
-              href="mailto:info.tech.microsystems.ca@gmail.com" 
-              className="flex items-center gap-1.5 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors truncate"
-              title="info.tech.microsystems.ca@gmail.com"
-            >
-              <Mail className="w-3 h-3 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <span className="truncate">info.tech.microsystems.ca...</span>
-            </a>
-          </div>
-
-          {/* Bottom collapse / expand bar on desktop */}
-          <div className="hidden lg:block pt-1 border-t border-slate-200/60 dark:border-slate-800/60">
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(prev => !prev)}
-              aria-label={isCollapsed ? t('nav.expandSidebar', 'Expand sidebar') : t('nav.collapseSidebar', 'Collapse sidebar')}
-              className="w-full flex items-center justify-center gap-2 py-1.5 text-xs text-slate-500 hover:text-cyan-600 dark:text-slate-400 dark:hover:text-cyan-300 transition-colors cursor-pointer"
-            >
-              {isCollapsed ? (
-                <ChevronRight className="w-4 h-4" />
-              ) : (
-                <>
-                  <ChevronLeft className="w-4 h-4" />
-                  <span>{t('nav.collapseSidebar', 'Collapse sidebar')}</span>
-                </>
-              )}
-            </button>
-          </div>
-
-        </div>
+        {/* Modular Footer */}
+        <NavFooter
+          theme={theme}
+          toggleTheme={toggleTheme}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          themeToggleLabel={t('header.toggleTheme', 'Toggle Dark/Light Mode')}
+          hqLocationLabel={t('nav.ottawaCanada', 'Ottawa, Canada (EST)')}
+          collapseLabel={t('nav.collapseSidebar', 'Collapse sidebar')}
+        />
       </aside>
 
       {/* Create Custom Category Modal */}
@@ -332,4 +179,5 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
+
 export default Sidebar;

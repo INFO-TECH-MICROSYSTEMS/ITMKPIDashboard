@@ -6,21 +6,15 @@
  * via any medium, is strictly prohibited.
  */
 
-/**
- * Data Source Connector Configuration & Scheduling Modal
- * Allows entering account credentials, API keys, endpoints, and retrieval frequencies
- * for JIRA, TestRail, and GitHub.
- * Explicitly manages the "Atomic Wipe & Replace" ingestion policy.
- */
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  X, Check, RefreshCw, Key, Globe, Shield, Clock, 
-  Database, AlertCircle, Sparkles, Layers 
+  Check, RefreshCw, Key, Globe, Shield, Clock, 
+  Database, AlertCircle
 } from 'lucide-react';
-import type { DataSourceConfig, DataSourceType } from '../../types/kpiPlatform';
+import type { DataSourceConfig, DataSourceType, RetrievalFrequency } from '../../types/kpiPlatform';
 import { RETRIEVAL_FREQUENCY_OPTIONS } from '../../constants/kpiConstants';
+import { BaseModal } from '../common/modal/BaseModal';
 
 interface ConnectorConfigModalProps {
   isOpen: boolean;
@@ -32,6 +26,10 @@ interface ConnectorConfigModalProps {
   isSyncing: boolean;
 }
 
+/**
+ * ConnectorConfigModal: Concrete modal subclassing BaseModal.
+ * Configures enterprise ingestion policies, credentials, endpoints, and scheduled pipelines.
+ */
 export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
   isOpen,
   onClose,
@@ -52,8 +50,6 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  if (!isOpen) return null;
-
   const currentConfig = formState[selectedSource] || configs.find(c => c.id === selectedSource);
 
   const handleFieldChange = (field: keyof DataSourceConfig, value: any) => {
@@ -72,216 +68,173 @@ export const ConnectorConfigModal: React.FC<ConnectorConfigModalProps> = ({
     setTimeout(() => setSaveSuccess(false), 2500);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
-        className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-white dark:bg-[#0b0f1e] text-slate-900 dark:text-slate-100 rounded-3xl border border-slate-200 dark:border-cyan-500/30 shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
-              <Database className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold font-['Outfit'] text-slate-900 dark:text-white">
-                {t('kpiPlatform.connector.title')}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.connector.subtitle')}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+  const modalFooter = (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onResetSampleData()}
+          disabled={isSyncing}
+          className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-mono hover:bg-rose-100 transition-colors cursor-pointer disabled:opacity-50"
+        >
+          {t('kpiPlatform.connectorModal.resetDemoData', 'Reset to Factory Mock Data')}
+        </button>
+      </div>
 
-        {/* Modal Body: Tabs on left, Form on right */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
-          {/* Left App Tabs */}
-          <div className="w-full md:w-64 p-4 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/20 space-y-2 shrink-0">
-            <span className="text-[10px] font-mono uppercase font-bold text-slate-400 tracking-wider block px-2 mb-1">
-              {t('kpiPlatform.connector.miningTargets')}
-            </span>
-
-            {[
-              { id: 'jira', name: 'Atlassian JIRA', desc: 'Epics, Stories, Bugs, Sprints' },
-              { id: 'testrail', name: 'TestRail QA', desc: 'Test Suites, Runs, Executions' },
-              { id: 'github', name: 'GitHub Actions', desc: 'Commits, PRs, CI Runtimes' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSelectedSource(tab.id as DataSourceType)}
-                className={`w-full text-left p-3 rounded-xl transition-all cursor-pointer ${
-                  selectedSource === tab.id
-                    ? 'bg-cyan-500/15 border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 font-semibold'
-                    : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
-                }`}
-              >
-                <div className="text-sm font-['Outfit']">{tab.name}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{tab.desc}</div>
-              </button>
-            ))}
-
-            {/* Atomic Wipe & Replace Notice */}
-            <div className="mt-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 text-[11px] text-amber-800 dark:text-amber-300 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>{t('kpiPlatform.connector.wipeReplacePolicy')}</span>
-              </div>
-              <p className="leading-relaxed opacity-90">
-                {t('kpiPlatform.connector.wipeReplaceDesc')}
-              </p>
-            </div>
-          </div>
-
-          {/* Right Form Area */}
-          <div className="flex-1 p-6 space-y-5">
-            {currentConfig && (
-              <>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-base text-slate-900 dark:text-white font-['Outfit']">
-                      {currentConfig.name} {t('kpiPlatform.connector.dataSourceType')}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
-                      {t('kpiPlatform.connector.activeSync')}
-                    </span>
-                  </div>
-
-                  <label className="flex items-center gap-2 text-xs cursor-pointer font-mono">
-                    <input
-                      type="checkbox"
-                      checked={currentConfig.enabled}
-                      onChange={(e) => handleFieldChange('enabled', e.target.checked)}
-                      className="accent-cyan-600 rounded"
-                    />
-                    <span>{t('kpiPlatform.connector.activeSync')}</span>
-                  </label>
-                </div>
-
-                {/* API Endpoint */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    <Globe className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                    <span>{t('kpiPlatform.connector.apiEndpoint')}</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={currentConfig.endpointUrl}
-                    onChange={(e) => handleFieldChange('endpointUrl', e.target.value)}
-                    placeholder="https://jira.company.com/rest/api/3"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-
-                {/* Auth Credential / Token */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      <Key className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                      <span>{t('kpiPlatform.connector.secretToken')}</span>
-                    </label>
-                    <input
-                      type="password"
-                      value={currentConfig.apiTokenOrKey}
-                      onChange={(e) => handleFieldChange('apiTokenOrKey', e.target.value)}
-                      placeholder="••••••••••••••••••••••••••••••••"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                      <span>{t('kpiPlatform.connector.projectScope')}</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={currentConfig.projectOrOrgKey}
-                      onChange={(e) => handleFieldChange('projectOrOrgKey', e.target.value)}
-                      placeholder="e.g. ITM_CORE, ITM_BILLING"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Retrieval Frequency */}
-                <div className="space-y-2 pt-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    <Clock className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                    <span>{t('kpiPlatform.connector.retrievalSchedule')}</span>
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {RETRIEVAL_FREQUENCY_OPTIONS.map(opt => (
-                      <label
-                        key={opt.value}
-                        className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
-                          currentConfig.frequency === opt.value
-                            ? 'bg-cyan-50/60 dark:bg-cyan-950/40 border-cyan-400 text-slate-900 dark:text-white'
-                            : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="frequency"
-                          checked={currentConfig.frequency === opt.value}
-                          onChange={() => handleFieldChange('frequency', opt.value)}
-                          className="mt-0.5 accent-cyan-600"
-                        />
-                        <div>
-                          <div className="font-semibold">{opt.label}</div>
-                          <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">{opt.intervalDesc}</div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition-all shadow-sm cursor-pointer"
-                  >
-                    {saveSuccess ? <Check className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-                    <span>{saveSuccess ? t('kpiPlatform.connector.configSaved') : t('kpiPlatform.connector.saveConfig')}</span>
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onTriggerSync(selectedSource)}
-                      disabled={isSyncing}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                      <span>{isSyncing ? t('kpiPlatform.syncInProgress') : t('kpiPlatform.connector.triggerNow')}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={onResetSampleData}
-                      disabled={isSyncing}
-                      className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold text-xs border border-purple-200 dark:border-purple-500/30 transition-colors cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>{t('kpiPlatform.resetSample')}</span>
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="flex items-center gap-3">
+        {saveSuccess && (
+          <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+            <Check className="w-3.5 h-3.5" /> Saved!
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          {t('kpiPlatform.connectorModal.close', 'Close')}
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          className="px-4 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-md shadow-cyan-600/20 transition-all cursor-pointer"
+        >
+          {t('kpiPlatform.connectorModal.save', 'Save Configuration')}
+        </button>
       </div>
     </div>
+  );
+
+  return (
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="4xl"
+      icon={
+        <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+          <Database className="w-5 h-5" />
+        </div>
+      }
+      title={t('kpiPlatform.connectorModal.title', 'Data Connectors & Telemetry Ingestion')}
+      subtitle={t('kpiPlatform.connectorModal.subtitle', 'Enterprise REST API authentication, sync schedules, and automated atomic ingestion')}
+      footer={modalFooter}
+      bodyClassName="p-5 space-y-4"
+    >
+      {/* Source Selector Tabs */}
+      <div className="flex border-b border-slate-200 dark:border-slate-800 gap-2 pb-1">
+        {configs.map(cfg => (
+          <button
+            key={cfg.id}
+            onClick={() => setSelectedSource(cfg.id)}
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              selectedSource === cfg.id
+                ? 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <span>{cfg.name}</span>
+            <span className={`w-2 h-2 rounded-full ${cfg.enabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+          </button>
+        ))}
+      </div>
+
+      {currentConfig && (
+        <div className="space-y-4 pt-1">
+          {/* Active Status & Immediate Sync Trigger */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+            <div>
+              <span className="font-bold text-slate-900 dark:text-white">Enable Connector Sync</span>
+              <p className="text-[11px] text-slate-500 mt-0.5">Toggle active background data retrieval for this data source</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={currentConfig.enabled}
+                onChange={(e) => handleFieldChange('enabled', e.target.checked)}
+                className="w-4 h-4 text-cyan-600 rounded cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => onTriggerSync(selectedSource)}
+                disabled={isSyncing}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-mono font-semibold transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Form Fields Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-cyan-500" />
+                <span>API Endpoint URL</span>
+              </label>
+              <input
+                type="text"
+                value={currentConfig.endpointUrl}
+                onChange={(e) => handleFieldChange('endpointUrl', e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-cyan-500" />
+                <span>API Token / Bearer Key</span>
+              </label>
+              <input
+                type="password"
+                value={currentConfig.apiTokenOrKey || ''}
+                onChange={(e) => handleFieldChange('apiTokenOrKey', e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Project / Scope Filter</span>
+              </label>
+              <input
+                type="text"
+                value={currentConfig.projectOrOrgKey || ''}
+                onChange={(e) => handleFieldChange('projectOrOrgKey', e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Retrieval Frequency</span>
+              </label>
+              <select
+                value={currentConfig.frequency}
+                onChange={(e) => handleFieldChange('frequency', e.target.value as RetrievalFrequency)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-cyan-500 cursor-pointer"
+              >
+                {RETRIEVAL_FREQUENCY_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Ingestion Safety Notice */}
+          <div className="p-3 rounded-xl bg-cyan-50/50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-300 text-xs flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-cyan-600 dark:text-cyan-400" />
+            <div className="space-y-0.5">
+              <div className="font-bold">Atomic Wipe-and-Replace Ingestion Policy Active</div>
+              <p className="text-[11px] leading-relaxed opacity-90">
+                To guarantee zero stale duplicate records, newly fetched live payloads replace the existing dataset within an atomic SQLite transaction.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </BaseModal>
   );
 };

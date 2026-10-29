@@ -9,15 +9,12 @@
 /**
  * KPI Platform Filter Bar
  * Multi-dimensional filtering across Products, Components, Sprints, Releases, and Date Ranges.
- * Seamlessly supports Single-Scope Filtering and Dual-Scope Comparative Evaluation.
+ * Refactored into a 100% modular architecture composing FilterHeader, FilterSelect, and FilterDateWindow.
  */
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Filter, RotateCcw, Layers, Box, GitBranch, Calendar, 
-  ArrowLeftRight, X 
-} from 'lucide-react';
+import { Box, Layers, GitBranch, ArrowLeftRight, X } from 'lucide-react';
 import type { KPIFilterState, ReleaseWindow } from '../../types/kpiPlatform';
 import { 
   APP_PRODUCTS, 
@@ -25,6 +22,7 @@ import {
   PRODUCT_RELEASES_MAP, 
   type AppProduct 
 } from '../../constants/kpiConstants';
+import { FilterHeader, FilterSelect, FilterDateWindow } from '../common/filter';
 
 interface KPIFilterBarProps {
   filters: KPIFilterState;
@@ -86,54 +84,38 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
   const productReleasesB = PRODUCT_RELEASES_MAP[activeProductB] || [];
   const defaultReleaseB = productReleasesB[0] || '';
 
+  // Select Option Mappers
+  const productOptions = APP_PRODUCTS.map(p => ({ value: p, label: p }));
+  const componentOptionsA = [
+    { value: 'All', label: t('kpiPlatform.allComponents', 'All Components') },
+    ...productComponentsA.map(c => ({ value: c, label: c }))
+  ];
+  const releaseOptionsA = productReleasesA.map(r => ({ value: r, label: r }));
+
+  const componentOptionsB = [
+    { value: 'All', label: t('kpiPlatform.allComponents', 'All Components') },
+    ...productComponentsB.map(c => ({ value: c, label: c }))
+  ];
+  const releaseOptionsB = productReleasesB.map(r => ({ value: r, label: r }));
+
   return (
     <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-cyan-500/20 shadow-sm space-y-4">
       {/* Top Header: Title, Telemetry Counts & Compare Mode Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider font-mono">
-          <Filter className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-          <span>{t('kpiPlatform.multiFilters', 'Multi-Dimensional Telemetry Filters')}</span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Active Dataset Stats */}
-          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-            {t('kpiPlatform.activeDataset', 'Active Dataset')}: <strong className="text-cyan-600 dark:text-cyan-400">{totalFilteredTests.toLocaleString()}</strong> {t('kpiPlatform.testsCount', 'tests')} | <strong className="text-purple-600 dark:text-purple-400">{totalFilteredJira.toLocaleString()}</strong> {t('kpiPlatform.workItemsCount', 'items')}
-            {isCompareMode && (
-              <span className="ml-2 pl-2 border-l border-slate-300 dark:border-slate-700 text-purple-600 dark:text-purple-400">
-                Comparative: <strong>{totalFilteredTestsB.toLocaleString()}</strong> tests | <strong>{totalFilteredJiraB.toLocaleString()}</strong> items
-              </span>
-            )}
-          </span>
-
-          {/* Reset Scope A Filter Button */}
-          {isFilteredA && !isCompareMode && (
-            <button
-              onClick={onResetFilters}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-900/80 transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>{t('kpiPlatform.reset', 'Reset')}</span>
-            </button>
-          )}
-
-          {/* Compare Mode Toggle Switch */}
-          {onToggleCompareMode && (
-            <button
-              type="button"
-              onClick={onToggleCompareMode}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold font-mono transition-all border cursor-pointer ${
-                isCompareMode
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-transparent shadow-md shadow-purple-600/25 ring-2 ring-purple-400/40'
-                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-              }`}
-            >
-              <ArrowLeftRight className="w-3.5 h-3.5" />
-              <span>{isCompareMode ? 'Compare Mode Active' : 'Compare Mode (⇄)'}</span>
-            </button>
-          )}
-        </div>
-      </div>
+      <FilterHeader
+        title={t('kpiPlatform.multiFilters', 'Multi-Dimensional Telemetry Filters')}
+        totalFilteredJira={totalFilteredJira}
+        totalFilteredTests={totalFilteredTests}
+        isFiltered={isFilteredA}
+        onResetFilters={onResetFilters}
+        isCompareMode={isCompareMode}
+        onToggleCompareMode={onToggleCompareMode}
+        totalFilteredJiraB={totalFilteredJiraB}
+        totalFilteredTestsB={totalFilteredTestsB}
+        activeDatasetLabel={t('kpiPlatform.activeDataset', 'Active Dataset')}
+        testsCountLabel={t('kpiPlatform.testsCount', 'tests')}
+        itemsCountLabel={t('kpiPlatform.workItemsCount', 'items')}
+        resetLabel={t('kpiPlatform.reset', 'Reset')}
+      />
 
       {/* Scope A Filter Section */}
       <div className="space-y-1.5">
@@ -161,73 +143,40 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* Product Filter */}
-          <div className="space-y-1">
-            <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-              <Box className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-              <span>{t('kpiPlatform.product', 'Product Scope')}</span>
-            </label>
-            <select
-              value={activeProductA}
-              onChange={(e) => onFilterChange('product', e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500 text-xs font-medium cursor-pointer"
-            >
-              {APP_PRODUCTS.map(p => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelect
+            label={t('kpiPlatform.product', 'Product Scope')}
+            icon={<Box className="w-3.5 h-3.5" />}
+            value={activeProductA}
+            options={productOptions}
+            onChange={(val) => onFilterChange('product', val)}
+          />
 
           {/* Component Filter */}
-          <div className="space-y-1">
-            <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-              <Layers className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-              <span>{t('kpiPlatform.component', 'Component')}</span>
-            </label>
-            <select
-              value={filters.component}
-              onChange={(e) => onFilterChange('component', e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500 text-xs font-medium cursor-pointer"
-            >
-              <option value="All">{t('kpiPlatform.allComponents', 'All Components')}</option>
-              {productComponentsA.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelect
+            label={t('kpiPlatform.component', 'Component')}
+            icon={<Layers className="w-3.5 h-3.5" />}
+            value={filters.component}
+            options={componentOptionsA}
+            onChange={(val) => onFilterChange('component', val)}
+          />
 
           {/* Release Target Filter */}
-          <div className="space-y-1">
-            <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-              <GitBranch className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-              <span>{t('kpiPlatform.releaseTarget', 'Release Target')}</span>
-            </label>
-            <select
-              value={filters.releaseVersion || defaultReleaseA}
-              onChange={(e) => onFilterChange('releaseVersion', e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-cyan-500 text-xs font-medium cursor-pointer font-mono"
-            >
-              {productReleasesA.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelect
+            label={t('kpiPlatform.releaseTarget', 'Release Target')}
+            icon={<GitBranch className="w-3.5 h-3.5" />}
+            value={filters.releaseVersion || defaultReleaseA}
+            options={releaseOptionsA}
+            onChange={(val) => onFilterChange('releaseVersion', val)}
+            fontMono
+          />
 
           {/* Automatic Release Window Display */}
-          <div className="space-y-1">
-            <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-              <Calendar className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-              <span>{t('kpiPlatform.releaseWindow', 'Release Window')}</span>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 font-bold">{t('kpiPlatform.auto', 'Auto')}</span>
-            </label>
-            <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs font-mono font-medium">
-              <span className="truncate">{releaseWindow?.formattedRange || t('kpiPlatform.activeCycle', 'Active Cycle')}</span>
-              {releaseWindow && (
-                <span className="ml-1.5 text-[10px] text-cyan-600 dark:text-cyan-400 font-bold whitespace-nowrap bg-cyan-50 dark:bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-200 dark:border-cyan-800">
-                  {releaseWindow.totalDays}d
-                </span>
-              )}
-            </div>
-          </div>
+          <FilterDateWindow
+            label={t('kpiPlatform.releaseWindow', 'Release Window')}
+            releaseWindow={releaseWindow}
+            autoLabel={t('kpiPlatform.auto', 'Auto')}
+            activeCycleLabel={t('kpiPlatform.activeCycle', 'Active Cycle')}
+          />
         </div>
       </div>
 
@@ -265,73 +214,44 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             {/* Scope B Product */}
-            <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <Box className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                <span>Product B</span>
-              </label>
-              <select
-                value={activeProductB}
-                onChange={(e) => onFilterChangeB('product', e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-purple-200 dark:border-purple-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500 text-xs font-medium cursor-pointer"
-              >
-                {APP_PRODUCTS.map(p => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-            </div>
+            <FilterSelect
+              label="Product B"
+              icon={<Box className="w-3.5 h-3.5" />}
+              value={activeProductB}
+              options={productOptions}
+              onChange={(val) => onFilterChangeB('product', val)}
+              variant="secondary"
+            />
 
             {/* Scope B Component */}
-            <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                <span>Component B</span>
-              </label>
-              <select
-                value={filtersB.component}
-                onChange={(e) => onFilterChangeB('component', e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-purple-200 dark:border-purple-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500 text-xs font-medium cursor-pointer"
-              >
-                <option value="All">{t('kpiPlatform.allComponents', 'All Components')}</option>
-                {productComponentsB.map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
+            <FilterSelect
+              label="Component B"
+              icon={<Layers className="w-3.5 h-3.5" />}
+              value={filtersB.component}
+              options={componentOptionsB}
+              onChange={(val) => onFilterChangeB('component', val)}
+              variant="secondary"
+            />
 
             {/* Scope B Release Target */}
-            <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <GitBranch className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                <span>Release Target B</span>
-              </label>
-              <select
-                value={filtersB.releaseVersion || defaultReleaseB}
-                onChange={(e) => onFilterChangeB('releaseVersion', e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-purple-200 dark:border-purple-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500 text-xs font-medium cursor-pointer font-mono"
-              >
-                {productReleasesB.map(r => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </div>
+            <FilterSelect
+              label="Release Target B"
+              icon={<GitBranch className="w-3.5 h-3.5" />}
+              value={filtersB.releaseVersion || defaultReleaseB}
+              options={releaseOptionsB}
+              onChange={(val) => onFilterChangeB('releaseVersion', val)}
+              variant="secondary"
+              fontMono
+            />
 
             {/* Scope B Release Window */}
-            <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-medium">
-                <Calendar className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                <span>Release Window B</span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold">{t('kpiPlatform.auto', 'Auto')}</span>
-              </label>
-              <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-purple-200 dark:border-purple-900 text-slate-900 dark:text-slate-100 text-xs font-mono font-medium">
-                <span className="truncate">{releaseWindowB?.formattedRange || t('kpiPlatform.activeCycle', 'Active Cycle')}</span>
-                {releaseWindowB && (
-                  <span className="ml-1.5 text-[10px] text-purple-600 dark:text-purple-400 font-bold whitespace-nowrap bg-purple-50 dark:bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-200 dark:border-purple-800">
-                    {releaseWindowB.totalDays}d
-                  </span>
-                )}
-              </div>
-            </div>
+            <FilterDateWindow
+              label="Release Window B"
+              releaseWindow={releaseWindowB}
+              autoLabel={t('kpiPlatform.auto', 'Auto')}
+              activeCycleLabel={t('kpiPlatform.activeCycle', 'Active Cycle')}
+              variant="secondary"
+            />
           </div>
         </div>
       )}

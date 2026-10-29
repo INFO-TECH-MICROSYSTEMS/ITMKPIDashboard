@@ -10,13 +10,13 @@
  * Component: MetricJustificationModal
  * Provides in-depth audit trail, mathematical formulas, rule violations,
  * root causes, and recommended actions for any KPI in the platform.
- * Consistently styled using centralized KPI_STATUS_THEMES.
+ * Subclasses BaseModal to adhere to pure modular architecture.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  X, AlertOctagon, AlertTriangle, CheckCircle2, 
+  AlertOctagon, AlertTriangle, CheckCircle2, 
   HelpCircle, Lightbulb, Info, ChevronDown, ChevronUp 
 } from 'lucide-react';
 import type { KPIJustification } from '../../types/kpiPlatform';
@@ -28,6 +28,7 @@ import {
   formatLocalizedStatusBadge, 
   formatLocalizedGradeString 
 } from '../../services/kpiJustificationLocalization';
+import { BaseModal } from '../common/modal/BaseModal';
 
 interface MetricJustificationModalProps {
   justification: KPIJustification | null;
@@ -41,17 +42,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
   onClose
 }) => {
   const { t } = useTranslation();
-
   const [isOverviewExpanded, setIsOverviewExpanded] = useState<boolean>(false);
-
-  // Handle ESC key to dismiss
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   // Reset expanded state when modal opens for a new justification
   useEffect(() => {
@@ -60,7 +51,7 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
     }
   }, [isOpen, justification?.title]);
 
-  if (!isOpen || !justification) return null;
+  if (!justification) return null;
 
   const theme = KPI_STATUS_THEMES[justification.statusColor] || KPI_STATUS_THEMES.cyan;
 
@@ -74,233 +65,137 @@ export const MetricJustificationModal: React.FC<MetricJustificationModalProps> =
 
   const currentIcon = statusIcons[justification.statusColor] || statusIcons.cyan;
 
-  // Localized title & status helpers
   const formatJustificationTitle = (title: string) => {
     return t(`kpiPlatform.modalTitles.${title}`, title);
   };
 
-  const formatStatusBadge = (badge: string) => {
-    return formatLocalizedStatusBadge(badge, t);
-  };
-
-  // Single externalized Metric Overview & Significance text with localization
-  const rawOverview = justification.overviewAndSignificance || justification.description || '';
-  const localizedOverview = getLocalizedOverview(justification.title, rawOverview);
-  const overviewParagraphs = localizedOverview.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-  const isOverviewLong = overviewParagraphs.length > 1 || localizedOverview.length > 240;
-
-  // Localized Rationale
+  const overviewFallback = justification.overviewAndSignificance || justification.description || '';
+  const localizedOverview = getLocalizedOverview(justification.title, overviewFallback);
   const localizedRationale = getLocalizedRationale(justification, justification.rationale);
+  const localizedAction = getLocalizedAction(justification, justification.recommendedAction);
+  const localizedStatusBadge = formatLocalizedStatusBadge(justification.statusBadge, t);
+  const localizedGradeString = formatLocalizedGradeString(justification.statusBadge, t);
+
+  const isLongOverview = overviewFallback.length > 250;
+
+  const modalFooter = (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
+        <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+          ITM Telemetry Formula Engine v2.4 (Audited)
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors cursor-pointer"
+      >
+        Close Audit Details
+      </button>
+    </div>
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-xs animate-fadeIn">
-      {/* Click outside backdrop */}
-      <div className="fixed inset-0" onClick={onClose} />
-
-      <div className="relative z-10 w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Modal Header */}
-        <div className={`p-6 flex items-start justify-between gap-4 ${theme.headerBg}`}>
-          <div className="flex items-start gap-3">
-            {currentIcon}
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 font-bold">
-                  {t('kpiPlatform.modal.decisionAudit')}
-                </span>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${theme.badge}`}>
-                  {formatStatusBadge(justification.statusBadge)}
-                </span>
-              </div>
-              <h3 className="text-xl font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
-                {formatJustificationTitle(justification.title)}
-              </h3>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
-            title="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="3xl"
+      icon={
+        <div className={`p-2.5 rounded-2xl border ${theme.badge} shadow-xs`}>
+          {currentIcon}
         </div>
-
-        {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 text-sm">
-          {/* Status & Values Overview Banner - Styled using theme */}
-          <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl border ${theme.calloutBg} ${theme.calloutBorder} font-mono text-xs`}>
-            <div>
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.currentTelemetry')}</span>
-              <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
-                {formatLocalizedGradeString(justification.currentValue, t)}
-              </span>
+      }
+      title={formatJustificationTitle(justification.title)}
+      subtitle={`Calculated Value: ${justification.currentValue} | Enterprise Benchmark: ${justification.targetValue}`}
+      footer={modalFooter}
+      bodyClassName="p-6 space-y-5"
+    >
+      {/* Metric Status Header Summary Bar */}
+      <div className={`p-4 rounded-2xl border ${theme.badge} flex flex-wrap items-center justify-between gap-4`}>
+        <div className="flex items-center gap-3">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Evaluation Status
+            </span>
+            <div className="text-base font-bold font-['Outfit'] capitalize">
+              {localizedStatusBadge}
             </div>
-            <div>
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.governanceTarget')}</span>
-              <span className={`text-base sm:text-lg mt-0.5 block ${theme.target}`}>
-                {formatLocalizedGradeString(justification.targetValue, t)}
-              </span>
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <span className="text-slate-500 dark:text-slate-400 block font-sans text-[11px] font-medium">{t('kpiPlatform.modal.statusVerdict')}</span>
-              <span className={`text-base sm:text-lg mt-0.5 block ${theme.value}`}>
-                {formatStatusBadge(justification.statusBadge)}
-              </span>
-            </div>
-          </div>
-
-          {/* Unified Educational Metric Overview & Significance */}
-          {overviewParagraphs.length > 0 && (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400">
-                  <Info className="w-4 h-4 shrink-0" />
-                  <span>{t('kpiPlatform.modal.metricOverview', 'Metric Overview & Significance')}</span>
-                </div>
-                {isOverviewLong && (
-                  <button
-                    type="button"
-                    onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                    className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors cursor-pointer"
-                  >
-                    <span>{isOverviewExpanded ? t('kpiPlatform.modal.less', 'less...') : t('kpiPlatform.modal.more', 'more...')}</span>
-                    {isOverviewExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                  </button>
-                )}
-              </div>
-
-              <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                {isOverviewExpanded || !isOverviewLong ? (
-                  <div className="space-y-2.5 animate-fadeIn">
-                    {overviewParagraphs.map((para, idx) => (
-                      <p key={idx}>{para}</p>
-                    ))}
-                  </div>
-                ) : (
-                  <p>
-                    {overviewParagraphs[0]}{' '}
-                    <button
-                      type="button"
-                      onClick={() => setIsOverviewExpanded(true)}
-                      className="text-cyan-600 dark:text-cyan-400 font-bold hover:underline font-mono ml-1 inline-flex items-center gap-0.5 cursor-pointer"
-                    >
-                      {t('kpiPlatform.modal.more', 'more...')}
-                    </button>
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Rationale & Root Cause Explanation */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span>{t('kpiPlatform.modal.whyAssigned')}</span>
-            </h4>
-            <div className={`p-4 rounded-2xl border leading-relaxed text-slate-800 dark:text-slate-200 text-xs sm:text-sm ${theme.calloutBg} ${theme.calloutBorder}`}>
-              {localizedRationale}
-            </div>
-          </div>
-
-          {/* Evaluated Rule or Formula */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-              {t('kpiPlatform.modal.governingFormula')}
-            </h4>
-            <pre className={`p-4 rounded-xl text-xs font-mono overflow-x-auto whitespace-pre-wrap ${theme.codeBlock}`}>
-              {justification.formulaOrRule}
-            </pre>
-          </div>
-
-          {/* Breakdown of Contributing Factors (if provided) */}
-          {justification.factors && justification.factors.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-                {t('kpiPlatform.modal.factorsPenalties')}
-              </h4>
-              <div className="space-y-2">
-                {justification.factors.map((f, i) => {
-                  const factorTheme = f.status === 'critical' 
-                    ? KPI_STATUS_THEMES.rose 
-                    : f.status === 'warning' 
-                    ? KPI_STATUS_THEMES.amber 
-                    : KPI_STATUS_THEMES.emerald;
-                  return (
-                    <div 
-                      key={i} 
-                      className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 text-xs ${factorTheme.card}`}
-                    >
-                      <div className="space-y-1">
-                        <span className="font-bold text-slate-900 dark:text-white block font-['Outfit']">
-                          {t(`kpiPlatform.modalFactors.${f.factor}`, f.factor)}
-                        </span>
-                        <p className="text-slate-600 dark:text-slate-400 leading-snug">{f.details}</p>
-                      </div>
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] shrink-0 ${factorTheme.badge}`}>
-                        {f.impact}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Offending Items / Evidence Sample (from DB) */}
-          {justification.offendingItems && justification.offendingItems.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
-                  {t('kpiPlatform.modal.offendingEntities')}
-                </h4>
-                <span className="text-[11px] font-mono text-slate-400">
-                  {justification.offendingItems.length} {t('kpiPlatform.modal.identified')}
-                </span>
-              </div>
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
-                {justification.offendingItems.map(item => (
-                  <div key={item.id} className="p-3 bg-white dark:bg-slate-900 flex items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[10px] font-bold text-slate-700 dark:text-slate-300 shrink-0">
-                        {item.source}: {item.id}
-                      </span>
-                      <span className="truncate text-slate-800 dark:text-slate-200 font-medium">
-                        {item.title}
-                      </span>
-                    </div>
-                    {item.severityOrStatus && (
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-500/40 font-bold shrink-0">
-                        {item.severityOrStatus}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Actionable Path to Green */}
-          <div className={`p-4 rounded-2xl border space-y-2 ${KPI_STATUS_THEMES.emerald.calloutBg} ${KPI_STATUS_THEMES.emerald.calloutBorder}`}>
-            <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>{t('kpiPlatform.modal.pathGreen')}</span>
-            </h4>
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-              {getLocalizedAction(justification, justification.recommendedAction)}
-            </p>
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-end">
-          <button
-            onClick={onClose}
-            className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${theme.buttonAccent}`}
-          >
-            {t('kpiPlatform.modal.acknowledgeClose')}
-          </button>
+        {justification.statusBadge && (
+          <div className="text-right">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Maturity Grade
+            </span>
+            <div className="text-base font-mono font-black text-cyan-600 dark:text-cyan-400">
+              {localizedGradeString}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mathematical Formula Definition */}
+      {justification.formulaOrRule && (
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <Info className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>Mathematical Formula & Derivation</span>
+          </label>
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-mono text-xs text-cyan-700 dark:text-cyan-300 overflow-x-auto">
+            <code>{justification.formulaOrRule}</code>
+          </div>
+        </div>
+      )}
+
+      {/* Metric Rationale & Context */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <HelpCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+          <span>Metric Purpose & Strategic Objective</span>
+        </label>
+        <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+          {localizedRationale}
+        </p>
+      </div>
+
+      {/* Telemetry Overview & Operational Findings */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            Operational Telemetry Findings
+          </label>
+          {isLongOverview && (
+            <button
+              type="button"
+              onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+              className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>{isOverviewExpanded ? 'Show Less' : 'Show Full Findings'}</span>
+              {isOverviewExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          )}
+        </div>
+        <div className="p-3.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-mono">
+          <p className={!isOverviewExpanded && isLongOverview ? 'line-clamp-3' : ''}>
+            {localizedOverview}
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Recommended Engineering Action */}
+      {justification.recommendedAction && (
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+            <span>Recommended Engineering Mitigation</span>
+          </label>
+          <div className="p-3.5 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 leading-relaxed font-mono">
+            {localizedAction}
+          </div>
+        </div>
+      )}
+    </BaseModal>
   );
 };
