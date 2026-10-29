@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { StackedProgressBar, KPIActionToolbar } from '../../../components/kpi/VisualWidgets';
+import { KPIActionToolbar, StackedProgressBar } from '../../../components/kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
 export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
