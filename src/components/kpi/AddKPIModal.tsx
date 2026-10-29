@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { Search, Check, Plus, Layers, Filter } from 'lucide-react';
-import { KPI_REGISTRY, type KPICategoryFamily } from '../../kpis/registry/kpiRegistry';
+import { KPI_REGISTRY, type KPICategoryFamily } from '../kpis/registry/kpiRegistry';
 import { BaseModal } from '../common/modal/BaseModal';
 
 interface AddKPIModalProps {

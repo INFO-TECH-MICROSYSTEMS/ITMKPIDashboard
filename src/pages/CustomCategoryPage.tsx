@@ -17,8 +17,8 @@ import { useKPIDataContext } from '../context/KPIDataContext';
 import { KPIFilterBar } from '../components/kpi/KPIFilterBar';
 import { AddKPIModal } from '../components/kpi/AddKPIModal';
 import { MetricJustificationModal } from '../components/kpi/MetricJustificationModal';
-import { KPI_COMPONENT_RESOLVER } from '../kpis/widgets/ConcreteKPIWidgets';
-import { KPI_REGISTRY_MAP } from '../kpis/registry/kpiRegistry';
+import { KPI_COMPONENT_RESOLVER } from '../components/kpis/widgets/ConcreteKPIWidgets';
+import { KPI_REGISTRY_MAP } from '../components/kpis/registry/kpiRegistry';
 import { KPIJustificationService } from '../services/kpiJustificationService';
 import type { KPIJustification } from '../types/kpiPlatform';
 
