@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import { Flame, HelpCircle } from 'lucide-react';
 import { AreaTrendChart, KPIActionToolbar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -24,15 +25,27 @@ export const ExecutiveTestBurnoutForecastKPI: React.FC<KPIWidgetRenderProps> = (
 
   return (
     <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('testBurnoutForecast')}
-        onRemove={onRemove}
-      />
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800 pr-16">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800 pr-6">
         <div>
           <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-            Test Execution Burnout & Predictive Velocity Forecast
+            <Flame className="w-4 h-4 text-orange-500 shrink-0" />
+            <span>Test Execution Burnout & Predictive Velocity Forecast</span>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('testBurnoutForecast')}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Total tests, completed tests, and remaining unexecuted tests over time with forecast projection

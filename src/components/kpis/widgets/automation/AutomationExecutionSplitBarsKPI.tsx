@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import { Split, HelpCircle } from 'lucide-react';
 import { KPIActionToolbar, StackedProgressBar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -21,37 +22,55 @@ export const AutomationExecutionSplitBarsKPI: React.FC<KPIWidgetRenderProps> = (
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative">
-        <KPIActionToolbar
-          onJustify={() => onJustifyMetric?.('automatedTestExecution')}
-          onRemove={onRemove}
-        />
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-16">
+        {onRemove && (
+          <KPIActionToolbar
+            onRemove={onRemove}
+          />
+        )}
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
           <span className="text-xs font-bold text-slate-800 dark:text-slate-100 font-mono flex items-center gap-1.5">
+            <Split className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
             <span>Automated Test Execution</span>
             <span className="text-cyan-600 dark:text-cyan-400 font-semibold">(81% of Suite)</span>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('automatedTestExecution')}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </span>
         </div>
         <StackedProgressBar
           distribution={autoDist}
           title="Automated Test Execution"
-          onJustify={() => onJustifyMetric?.('automatedTestExecution')}
         />
       </div>
 
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative">
-        <KPIActionToolbar
-          onJustify={() => onJustifyMetric?.('manualExploratoryExecution')}
-        />
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-16">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
           <span className="text-xs font-bold text-slate-800 dark:text-slate-100 font-mono flex items-center gap-1.5">
+            <Split className="w-3.5 h-3.5 text-purple-500 shrink-0" />
             <span>Manual Exploratory Execution</span>
             <span className="text-purple-600 dark:text-purple-400 font-semibold">(19% of Suite)</span>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('manualExploratoryExecution')}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </span>
         </div>
         <StackedProgressBar
           distribution={manualDist}
           title="Manual Exploratory Execution"
-          onJustify={() => onJustifyMetric?.('manualExploratoryExecution')}
         />
       </div>
     </div>

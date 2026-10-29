@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import { Camera, HelpCircle } from 'lucide-react';
 import { KPIActionToolbar, StackedProgressBar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -22,19 +23,30 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
 
   return (
     <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('testDistribution')}
-        onRemove={onRemove}
-      />
-      <div className="pr-16">
-        <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white">
-          Enterprise Test Suite Execution Snapshot ({dist.total.toLocaleString()} Executed Tests)
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
+      <div className="pr-6">
+        <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
+          <Camera className="w-4 h-4 text-blue-500 shrink-0" />
+          <span>Enterprise Test Suite Execution Snapshot ({dist.total.toLocaleString()} Executed Tests)</span>
+          {onJustifyMetric && (
+            <button
+              type="button"
+              onClick={() => onJustifyMetric('testDistribution')}
+              className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              title="Click for KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
         </h4>
       </div>
       <StackedProgressBar
         distribution={dist}
         title="Consolidated QA Execution Health (Automated + Manual)"
-        onJustify={() => onJustifyMetric?.('testDistribution')}
       />
       {isCompareMode && distB && (
         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -43,7 +55,6 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
             title="Consolidated QA Execution Health (Scope B)"
             scopeLabel="Scope B"
             scopeType="secondary"
-            onJustify={() => onJustifyMetric?.('testDistribution')}
           />
         </div>
       )}

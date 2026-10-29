@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, HelpCircle } from 'lucide-react';
 import { KPIActionToolbar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -21,15 +21,26 @@ export const QualityActiveGatingDefectsTableKPI: React.FC<KPIWidgetRenderProps> 
 
   return (
     <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-3 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('gatingDefectsTable')}
-        onRemove={onRemove}
-      />
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
-      <div className="flex items-center justify-between pb-2 border-b border-rose-100 dark:border-rose-900/40 pr-16">
+      <div className="flex items-center justify-between pb-2 border-b border-rose-100 dark:border-rose-900/40 pr-6">
         <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-sm font-['Outfit']">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>Active Release Gating Defects ({gatingList.length} Items Require Sign-off)</span>
+          {onJustifyMetric && (
+            <button
+              type="button"
+              onClick={() => onJustifyMetric('gatingDefectsTable')}
+              className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              title="Click for KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { AlertOctagon, CheckCircle2 } from 'lucide-react';
+import { AlertOctagon, CheckCircle2, Gauge, HelpCircle } from 'lucide-react';
 import { GaugeMeter, KPIActionToolbar } from '../../../kpi/VisualWidgets';
 import { KPI_STATUS_THEMES } from '../../../../constants/kpiConstants';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
@@ -38,10 +38,11 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({ met
 
   return (
     <div className={`p-6 sm:p-8 rounded-3xl border relative overflow-hidden transition-all duration-300 ${currentThemeA.card}`}>
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('releaseQualityIndex')}
-        onRemove={onRemove}
-      />
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Dial Meter */}
@@ -77,8 +78,19 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({ met
             </button>
           </div>
 
-          <h3 className="text-2xl sm:text-3xl font-black font-['Outfit'] tracking-tight text-slate-900 dark:text-white">
-            Pre-Release Quality & Risk Assessment
+          <h3 className="text-2xl sm:text-3xl font-black font-['Outfit'] tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <Gauge className="w-7 h-7 text-cyan-500 shrink-0" />
+            <span>Pre-Release Quality & Risk Assessment</span>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('releaseQualityIndex')}
+                className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            )}
           </h3>
 
           <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-2xl">

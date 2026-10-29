@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { SearchCheck, HelpCircle } from 'lucide-react';
 import { KPIActionToolbar } from '../../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
@@ -26,16 +26,27 @@ export const NonFormalInterceptedDefectsTableKPI: React.FC<KPIWidgetRenderProps>
 
   return (
     <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative">
-      <KPIActionToolbar
-        onJustify={() => onJustifyMetric?.('nonFormalDefectsTable')}
-        onRemove={onRemove}
-      />
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
 
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-16">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
         <div>
           <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-rose-500" />
+            <SearchCheck className="w-4 h-4 text-cyan-500 shrink-0" />
             <span>Major Defects Intercepted via Non-Formal Testing</span>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('nonFormalDefectsTable')}
+                className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for KPI justification and audit details"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </span>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             High-severity bugs found during exploratory sessions that prevented production escape
