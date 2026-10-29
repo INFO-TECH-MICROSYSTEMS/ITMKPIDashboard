@@ -864,10 +864,10 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
 
         <div className="flex items-center justify-between gap-2 mb-2 pr-14">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
+            {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
               {title}
             </span>
-            {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
           </div>
         </div>
 
@@ -914,12 +914,12 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
               <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
               <span className="truncate">{scopeALabel}</span>
             </div>
-            {/* Line 2: Metric Title, Suffix Icon, and Justification Trigger */}
+            {/* Line 2: Prefix Icon, Metric Title, and Justification Trigger */}
             <div className="flex items-center gap-1.5 min-w-0">
+              {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
                 {title}
               </span>
-              {icon && <div className={`shrink-0 ${themeA.icon}`}>{icon}</div>}
               <button
                 onClick={onJustify}
                 className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
@@ -969,12 +969,12 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
               <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
               <span className="truncate">{scopeBLabel}</span>
             </div>
-            {/* Line 2: Metric Title, Suffix Icon, and Justification Trigger */}
+            {/* Line 2: Prefix Icon, Metric Title, and Justification Trigger */}
             <div className="flex items-center gap-1.5 min-w-0">
+              {icon && <div className={`shrink-0 ${themeB.icon}`}>{icon}</div>}
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-['Outfit'] truncate">
                 {title}
               </span>
-              {icon && <div className={`shrink-0 ${themeB.icon}`}>{icon}</div>}
               <button
                 onClick={compareOnJustify || onJustify}
                 className="p-0.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-800 transition-colors shrink-0"
