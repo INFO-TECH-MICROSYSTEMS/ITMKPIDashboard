@@ -27,9 +27,361 @@ import type {
   PersonProductivityMetric,
   TestStatusDistribution
 } from '../types/kpiPlatform';
+import type { CalculatedMetricsDeck } from '../components/kpis/registry/kpiRegistry';
 import { QUALITY_THRESHOLDS } from '../constants/kpiConstants';
 
 export class KPIJustificationService {
+
+  /**
+   * Resolves the exact KPIJustification corresponding to a metric key or KPI ID,
+   * querying the provided CalculatedMetricsDeck and underlying data items.
+   */
+  static resolveJustificationByMetricKey(
+    metricKey: string,
+    deck: CalculatedMetricsDeck
+  ): KPIJustification {
+    const sc = deck.executiveScorecard;
+    const jira = deck.jiraItems || [];
+    const testRail = deck.testRailExecutions || [];
+
+    switch (metricKey) {
+      // --- EXECUTIVE SCORECARD ---
+      case 'releaseQualityIndex':
+      case 'executive-readiness-gauge':
+        return this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'blockerDefects':
+      case 'executive-blocker-card':
+        return this.getGatingDefectsJustification(jira);
+
+      case 'defectLeakage':
+      case 'executive-leakage-card':
+        return this.getDefectLeakageJustification(sc?.defectLeakageRate ?? 0, jira);
+
+      case 'regressionCycleTime':
+      case 'executive-regression-cycle':
+        return this.getRegressionCycleTimeJustification(sc);
+
+      case 'performanceP95':
+      case 'executive-latency-p95':
+        return this.getPerformanceP95Justification(sc?.performanceP95Ms ?? 184);
+
+      case 'costOfPoorQuality':
+      case 'executive-copq-card':
+        return this.getCostOfPoorQualityJustification(sc);
+
+      case 'changeFailureRate':
+      case 'executive-cfr-card':
+        return this.getChangeFailureRateJustification(sc?.changeFailureRate ?? 3.4);
+
+      case 'meanTimeToRestoreHours':
+      case 'executive-mttr-restore':
+        return this.getMttrJustification(sc?.meanTimeToRestoreHours ?? 2.8);
+
+      case 'sprintPredictabilityIndex':
+      case 'executive-sprint-predictability':
+        return this.getSprintPredictabilityJustification(sc?.sprintPredictabilityIndex ?? 91.2);
+
+      case 'featureLeadTimeDays':
+      case 'executive-feature-lead-time':
+        return this.getFeatureLeadTimeJustification(sc);
+
+      case 'securityVulnerabilities':
+      case 'executive-security-vulns':
+        return this.getSecurityGateJustification(sc);
+
+      case 'contractUptimePercentage':
+      case 'executive-contract-uptime':
+        return this.getContractUptimeJustification(sc);
+
+      case 'accessibilityScore':
+      case 'executive-wcag-compliance':
+        return this.getAccessibilityScoreJustification(sc);
+
+      case 'testDistribution':
+      case 'executive-test-suite-snapshot':
+        return this.getTestExecutionDistributionJustification(deck.testDistributionAll, 'All');
+
+      case 'testBurnoutForecast':
+      case 'executive-test-burnout-forecast':
+        return deck.testBurnoutForecast 
+          ? this.getTestBurnoutForecastJustification(deck.testBurnoutForecast)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      // --- QUALITY & DEFECTS ---
+      case 'meanTimeToResolve':
+      case 'quality-mttr-resolve':
+        return this.getMttrJustification(deck.mttrMttd?.avgMttrHours ?? 14.2);
+
+      case 'meanTimeToDetect':
+      case 'quality-mttd-detect':
+        return this.getMttdJustification(deck.mttrMttd?.avgMttdHours ?? 4.8);
+
+      case 'defectReopenRate':
+      case 'quality-reopen-rate-card':
+        return this.getReopenRateJustification(
+          deck.mttrMttd?.reopenRate ?? 4.2,
+          deck.mttrMttd?.reopenedCount ?? 6
+        );
+
+      case 'customerEscalations':
+      case 'quality-customer-apars': {
+        const apars = jira.filter(i => i.type === 'CustomerAPAR');
+        return this.getCustomerAparJustification(apars);
+      }
+
+      case 'defectDensity':
+      case 'quality-defect-density':
+        return this.getDefectDensityJustification(deck.mttrMttd?.defectDensityKloc ?? 1.15);
+
+      case 'firstTimeFixRate':
+      case 'quality-first-time-fix-rate':
+        return this.getFirstTimeFixRateJustification(deck.mttrMttd?.firstTimeFixRate ?? 89.4);
+
+      case 'netDefectIntake':
+      case 'quality-net-intake-velocity':
+        return this.getNetDefectVelocityJustification(deck.mttrMttd?.netDefectIntakeVelocity ?? -4);
+
+      case 'defectBurnoutTrend':
+      case 'quality-defect-burnout-chart':
+        return this.getDefectTrendChartJustification(deck.mttrMttd?.netDefectIntakeVelocity ?? -4);
+
+      case 'agingProfile':
+      case 'quality-aging-profile':
+        return deck.agingBuckets 
+          ? this.getAgingProfileJustification(deck.agingBuckets, 'all')
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'agingProfileUnder7':
+        return deck.agingBuckets ? this.getAgingProfileJustification(deck.agingBuckets, 'under7') : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+      case 'agingProfile7To14':
+        return deck.agingBuckets ? this.getAgingProfileJustification(deck.agingBuckets, '7to14') : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+      case 'agingProfile14To21':
+        return deck.agingBuckets ? this.getAgingProfileJustification(deck.agingBuckets, '14to21') : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+      case 'agingProfile21Plus':
+        return deck.agingBuckets ? this.getAgingProfileJustification(deck.agingBuckets, '21plus') : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'defectSeverity':
+      case 'quality-defect-severity-breakdown':
+        return deck.severityCounts
+          ? this.getDefectSeverityJustification(deck.severityCounts)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'gatingDefectsTable':
+      case 'quality-active-gating-defects-table': {
+        const gating = jira.filter(i => i.isGatingDefect && i.status !== 'Done');
+        return this.getGatingDefectsTableJustification(gating);
+      }
+
+      // --- RISK & GATING ---
+      case 'noUnitTests':
+      case 'risk-no-unit-tests':
+      case 'risk-untested-commits-card':
+        return this.getMissingUnitTestsJustification(jira);
+
+      case 'noApiTests':
+      case 'risk-no-api-tests': {
+        const missingApi = jira.filter(i => !i.hasApiTests);
+        return this.getMissingApiTestsJustification(missingApi);
+      }
+
+      case 'highDependencyDepth':
+      case 'risk-high-dependency-depth':
+      case 'risk-high-dependency-depth-list': {
+        const highDep = jira.filter(i => (i.dependencyDepth ?? 0) >= 4);
+        return this.getHighDependencyDepthJustification(highDep);
+      }
+
+      case 'highExecutionTests':
+      case 'risk-high-execution-tests': {
+        const slowTests = testRail.filter(t => (t.durationSeconds ?? 0) > 300);
+        return this.getHighExecutionTestsJustification(slowTests);
+      }
+
+      case 'componentMatrix':
+      case 'risk-component-matrix':
+        return deck.componentRisks
+          ? this.getComponentRiskMatrixJustification(deck.componentRisks)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'blockedDevelopmentItems':
+      case 'risk-blocked-development-items': {
+        const blocked = jira.filter(i => i.status === 'Blocked');
+        return this.getBlockedDevItemsJustification(blocked);
+      }
+
+      // --- AUTOMATION & CI/CD ---
+      case 'automationSuitePassRate':
+      case 'automation-suite-pass-rate':
+      case 'automation-pass-rate-gauge':
+        return this.getAutomationPassRateJustification(deck.testDistributionAutomated?.passRate ?? 88.5);
+
+      case 'flakyIndex':
+      case 'automation-flaky-index':
+        return this.getFlakyTestJustification(
+          deck.automationHealth?.flakyRate ?? 3.4,
+          deck.automationHealth?.flakyCount ?? 7
+        );
+
+      case 'pipelineRuntime':
+      case 'automation-pipeline-runtime':
+        return this.getPipelineRuntimeJustification(deck.automationHealth?.avgPipelineMins ?? 14.5);
+
+      case 'hoursSavedRoi':
+      case 'automation-hours-saved-roi':
+        return this.getManualHoursSavedJustification(deck.automationHealth?.manualHoursSaved ?? 340);
+
+      case 'computeCost':
+      case 'automation-compute-cost':
+        return this.getCicdComputeCostJustification(deck.automationHealth?.cicdComputeCostDollars ?? 1280);
+
+      case 'mtbf':
+      case 'automation-mtbf':
+        return this.getMtbfJustification(deck.automationHealth?.mtbfHours ?? 72);
+
+      case 'defectCatchRatio':
+      case 'automation-defect-catch-ratio':
+        return this.getAutomationCatchRatioJustification(deck.automationHealth?.automationCatchRatio ?? 78.4);
+
+      case 'testAutomationForecast':
+      case 'automation-burnout-velocity-forecast':
+        return deck.testAutomationForecast
+          ? this.getTestAutomationBurnoutForecastJustification(deck.testAutomationForecast)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'automatedTestExecution':
+        return deck.testDistributionAutomated
+          ? this.getTestExecutionDistributionJustification(deck.testDistributionAutomated, 'Automated')
+          : this.getTestExecutionDistributionJustification(deck.testDistributionAll, 'Automated');
+
+      case 'manualExploratoryExecution':
+        return deck.testDistributionManual
+          ? this.getTestExecutionDistributionJustification(deck.testDistributionManual, 'Manual')
+          : this.getTestExecutionDistributionJustification(deck.testDistributionAll, 'Manual');
+
+      case 'flakyTestsTable':
+      case 'automation-flaky-tests-table': {
+        const flaky = testRail.filter(t => t.isFlaky);
+        return this.getFlakyTestsJustification(flaky, flaky.reduce((acc, t) => acc + (t.rerunCount || 0), 0));
+      }
+
+      // --- PRODUCTIVITY & AGILITY ---
+      case 'testCompletionRate':
+      case 'productivity-test-completion-rate':
+        return this.getAvgQaCompletionRateJustification('94.2%');
+
+      case 'overcommittedEngineers':
+      case 'productivity-overcommitted': {
+        const overCount = deck.productivityMetrics?.filter(p => p.isOverCommitted).length ?? 2;
+        return this.getOverCommittedJustification(overCount);
+      }
+
+      case 'storyCompletionRate':
+      case 'productivity-story-completion': {
+        const stories = jira.filter(i => i.type === 'Story');
+        const doneStories = stories.filter(i => i.status === 'Done');
+        const rate = stories.length > 0 ? (doneStories.length / stories.length) * 100 : 88;
+        return this.getStoryCompletionRateJustification(rate, doneStories.length, stories.length);
+      }
+
+      case 'activeSpecialists':
+      case 'productivity-active-specialists':
+        return this.getActiveQaSpecialistsJustification(deck.productivityMetrics?.length ?? 12);
+
+      case 'flowEfficiency':
+      case 'productivity-flow-efficiency':
+        return this.getFlowEfficiencyJustification(deck.squadSummary?.flowEfficiencyPercent ?? 42.5);
+
+      case 'spilloverRate':
+      case 'productivity-spillover-rate':
+        return this.getSprintSpilloverJustification(deck.squadSummary?.sprintSpilloverRate ?? 8.3);
+
+      case 'devToQaRatio':
+      case 'productivity-dev-to-qa-ratio':
+        return this.getDevToQaRatioJustification(deck.squadSummary?.devToQaRatio ?? '3.5:1');
+
+      case 'productivityLedger':
+      case 'productivity-engineer-ledger-table':
+        return deck.productivityMetrics
+          ? this.getQaThroughputLedgerJustification(deck.productivityMetrics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      // --- GOVERNANCE & SLAS ---
+      case 'slaAdherence':
+      case 'governance-sla-adherence':
+      case 'governance-sla-gauge':
+      case 'enterpriseSlasMatrix':
+      case 'governance-enterprise-slas-matrix':
+        return this.getSlaAdherenceJustification(sc);
+
+      case 'governance-wcag-accessibility':
+        return this.getAccessibilityJustification(sc?.accessibilityScore ?? 92.5);
+
+      case 'governance-latency-p95':
+        return this.getPerformanceP95Justification(sc?.performanceP95Ms ?? 184);
+
+      case 'csat':
+      case 'governance-csat':
+        return this.getCsatJustification();
+
+      case 'contractPenalties':
+      case 'governance-sla-penalties':
+        return this.getContractSlaPenaltiesJustification();
+
+      case 'auditTraceability':
+      case 'governance-traceability':
+        return this.getAuditTraceabilityJustification();
+
+      case 'accessibilityAuditPanel':
+      case 'governance-accessibility-audit-panel':
+        return this.getA11yAuditCardJustification(sc);
+
+      case 'benchmarksPanel':
+      case 'governance-benchmarks-panel':
+        return this.getPerfAuditCardJustification(sc);
+
+      // --- LEADING, LAGGING & NEAR MISSES ---
+      case 'leadingHealthIndex':
+      case 'leading-health-index':
+      case 'leadingIndicatorsPanel':
+      case 'leading-indicators-panel':
+        return deck.leadingLaggingMetrics 
+          ? this.getLeadingLaggingJustification(deck.leadingLaggingMetrics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'laggingStability':
+      case 'lagging-outcome-stability':
+      case 'laggingIndicatorsPanel':
+      case 'lagging-indicators-panel':
+        return deck.leadingLaggingMetrics 
+          ? this.getLeadingLaggingJustification(deck.leadingLaggingMetrics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'escapePreventionRatio':
+      case 'near-misses-intercepted':
+      case 'nearMissAnalytics':
+      case 'nonFormalDefectsTable':
+      case 'non-formal-intercepted-defects-table':
+        return deck.nearMissAnalytics
+          ? this.getNearMissAnalyticsJustification(deck.nearMissAnalytics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'defectDiscoveryOrigin':
+      case 'defect-discovery-origin-breakdown':
+        return deck.nearMissAnalytics
+          ? this.getDiscoveryOriginsJustification(deck.nearMissAnalytics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      case 'totalAvoidedOutageCost':
+      case 'avoided-outage-loss':
+        return deck.nearMissAnalytics
+          ? this.getNearMissAnalyticsJustification(deck.nearMissAnalytics)
+          : this.getReleaseQualityIndexJustification(sc, jira, testRail);
+
+      default:
+        return this.getReleaseQualityIndexJustification(sc, jira, testRail);
+    }
+  }
 
   /**
    * 1. Senior Management / Release Quality Index Justification (Explaining Grade A/B/C/F)
