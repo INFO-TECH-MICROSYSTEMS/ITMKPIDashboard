@@ -111,12 +111,11 @@ export const CustomCategoryPage: React.FC = () => {
 
   const activeJustification: KPIJustification | null = useMemo(() => {
     if (!selectedJustifyMetric) return null;
-    return KPIJustificationService.getReleaseQualityIndexJustification(
-      metrics.executiveScorecard,
-      jiraItems,
-      testRailExecutions
+    return KPIJustificationService.resolveJustificationByMetricKey(
+      selectedJustifyMetric,
+      metricsDeck
     );
-  }, [selectedJustifyMetric, metrics.executiveScorecard, jiraItems, testRailExecutions]);
+  }, [selectedJustifyMetric, metricsDeck]);
 
   if (!category) {
     return (
