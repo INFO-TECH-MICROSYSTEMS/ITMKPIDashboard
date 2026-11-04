@@ -72,6 +72,8 @@ export interface KPIWidgetRenderProps {
   isCompareMode?: boolean;
   onRemove?: () => void;
   onJustifyMetric?: (metricKey: string) => void;
+  scopeALabel?: string;
+  scopeBLabel?: string;
 }
 
 /**

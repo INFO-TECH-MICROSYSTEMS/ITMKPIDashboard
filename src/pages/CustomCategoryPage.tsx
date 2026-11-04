@@ -56,6 +56,9 @@ export const CustomCategoryPage: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedJustifyMetric, setSelectedJustifyMetric] = useState<string | null>(null);
   const [saveToast, setSaveToast] = useState(false);
+
+  const scopeALabel = `${filters.product} (${filters.component !== 'All' ? `${filters.component} • ` : ''}v${filters.releaseVersion})`;
+  const scopeBLabel = filtersB ? `${filtersB.product} (${filtersB.component !== 'All' ? `${filtersB.component} • ` : ''}v${filtersB.releaseVersion})` : 'Scope 2';
   
   // HTML5 Drag and Drop State
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -318,6 +321,8 @@ export const CustomCategoryPage: React.FC = () => {
                     metrics={metricsDeck}
                     metricsB={metricsDeckB}
                     isCompareMode={isCompareMode}
+                    scopeALabel={scopeALabel}
+                    scopeBLabel={scopeBLabel}
                     onRemove={() => handleRemoveKPI(kpiId)}
                     onJustifyMetric={(metricKey) => setSelectedJustifyMetric(metricKey)}
                   />
