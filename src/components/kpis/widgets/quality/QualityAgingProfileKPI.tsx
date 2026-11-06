@@ -173,8 +173,8 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {/* Scope 2 Aging Profile Card Stacked Below */}
       {isCompareMode && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -185,13 +185,13 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-purple-500 shrink-0" />
+                  <Clock className="w-4 h-4 text-amber-500 shrink-0" />
                   <span>Items Pending Testing Aging Profile</span>
                   {onJustifyMetric && (
                     <button
                       type="button"
                       onClick={() => onJustifyMetric('agingProfile', 'B')}
-                      className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                       title="Click for Scope 2 KPI justification and audit details"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
@@ -202,7 +202,7 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
                   Backlog latency for items queued in "Under QA" state before verification completion.
                 </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
                 Total In QA Queue: {totalAgingItemsB} Items
               </span>
             </div>
@@ -212,22 +212,22 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
             {/* < 7 Days */}
             <div 
               onClick={() => onJustifyMetric?.('agingProfileUnder7', 'B')}
-              className="p-4 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 cursor-pointer hover:shadow-md transition-shadow"
+              className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 cursor-pointer hover:shadow-md transition-shadow"
             >
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block font-mono">
+              <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block font-mono">
                 &lt; 7 Days Pending
               </span>
               <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-700 dark:text-emerald-400">
                   {agingB.pending7Days}
                 </span>
                 <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
                   Fresh / Healthy
                 </span>
               </div>
-              <div className="w-full bg-purple-100 dark:bg-purple-900/40 h-1.5 rounded-full mt-2">
+              <div className="w-full bg-emerald-200 dark:bg-emerald-900/60 h-1.5 rounded-full mt-2">
                 <div 
-                  className="bg-purple-500 h-1.5 rounded-full" 
+                  className="bg-emerald-500 h-1.5 rounded-full" 
                   style={{ width: `${(agingB.pending7Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
                 />
               </div>
@@ -236,22 +236,22 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
             {/* 7 - 14 Days */}
             <div 
               onClick={() => onJustifyMetric?.('agingProfile7To14', 'B')}
-              className="p-4 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 cursor-pointer hover:shadow-md transition-shadow"
+              className="p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30 cursor-pointer hover:shadow-md transition-shadow"
             >
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block font-mono">
+              <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300 block font-mono">
                 7 - 14 Days Pending
               </span>
               <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-purple-700 dark:text-purple-400">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-cyan-700 dark:text-cyan-400">
                   {agingB.pending7To14Days}
                 </span>
                 <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400">
                   Normal Cadence
                 </span>
               </div>
-              <div className="w-full bg-purple-100 dark:bg-purple-900/40 h-1.5 rounded-full mt-2">
+              <div className="w-full bg-cyan-200 dark:bg-cyan-900/60 h-1.5 rounded-full mt-2">
                 <div 
-                  className="bg-purple-500 h-1.5 rounded-full" 
+                  className="bg-cyan-500 h-1.5 rounded-full" 
                   style={{ width: `${(agingB.pending7To14Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
                 />
               </div>
@@ -260,9 +260,9 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
             {/* 14 - 21 Days */}
             <div 
               onClick={() => onJustifyMetric?.('agingProfile14To21', 'B')}
-              className="p-4 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 cursor-pointer hover:shadow-md transition-shadow"
+              className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 cursor-pointer hover:shadow-md transition-shadow"
             >
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block font-mono">
+              <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block font-mono">
                 14 - 21 Days Pending
               </span>
               <div className="flex items-baseline justify-between mt-2">
@@ -273,7 +273,7 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
                   At Risk
                 </span>
               </div>
-              <div className="w-full bg-purple-100 dark:bg-purple-900/40 h-1.5 rounded-full mt-2">
+              <div className="w-full bg-amber-200 dark:bg-amber-900/60 h-1.5 rounded-full mt-2">
                 <div 
                   className="bg-amber-500 h-1.5 rounded-full" 
                   style={{ width: `${(agingB.pending14To21Days / Math.max(1, totalAgingItemsB)) * 100}%` }}
@@ -284,9 +284,9 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
             {/* 21+ Days */}
             <div 
               onClick={() => onJustifyMetric?.('agingProfile21Plus', 'B')}
-              className="p-4 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 cursor-pointer hover:shadow-md transition-shadow"
+              className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 cursor-pointer hover:shadow-md transition-shadow"
             >
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block font-mono">
+              <span className="text-xs font-semibold text-rose-800 dark:text-rose-300 block font-mono">
                 21+ Days (Stale / Gated)
               </span>
               <div className="flex items-baseline justify-between mt-2">
@@ -297,7 +297,7 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
                   Critical SLA Breach
                 </span>
               </div>
-              <div className="w-full bg-purple-100 dark:bg-purple-900/40 h-1.5 rounded-full mt-2">
+              <div className="w-full bg-rose-200 dark:bg-rose-900/60 h-1.5 rounded-full mt-2">
                 <div 
                   className="bg-rose-500 h-1.5 rounded-full" 
                   style={{ width: `${(agingB.pending21PlusDays / Math.max(1, totalAgingItemsB)) * 100}%` }}

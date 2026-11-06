@@ -119,8 +119,8 @@ export const NonFormalInterceptedDefectsTableKPI: React.FC<KPIWidgetRenderProps>
 
       {/* Scope 2 Non-formal Defect Table Stacked Below */}
       {isCompareMode && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -131,13 +131,13 @@ export const NonFormalInterceptedDefectsTableKPI: React.FC<KPIWidgetRenderProps>
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <SearchCheck className="w-4 h-4 text-purple-500 shrink-0" />
+                  <SearchCheck className="w-4 h-4 text-cyan-500 shrink-0" />
                   <span>Major Defects Intercepted via Non-Formal Testing</span>
                   {onJustifyMetric && (
                     <button
                       type="button"
                       onClick={() => onJustifyMetric('nonFormalDefectsTable', 'B')}
-                      className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                       title="Click for Scope 2 KPI justification and audit details"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export const NonFormalInterceptedDefectsTableKPI: React.FC<KPIWidgetRenderProps>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
                 {defectsB.map(d => (
                   <tr key={d.key} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                    <td className="p-2.5 font-bold text-purple-600 dark:text-purple-400">{d.key}</td>
+                    <td className="p-2.5 font-bold text-cyan-600 dark:text-cyan-400">{d.key}</td>
                     <td className="p-2.5 font-sans font-medium text-slate-900 dark:text-white max-w-xs truncate">{d.title}</td>
                     <td className="p-2.5">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${

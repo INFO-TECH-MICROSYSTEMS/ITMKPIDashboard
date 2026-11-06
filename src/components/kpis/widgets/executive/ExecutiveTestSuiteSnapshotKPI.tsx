@@ -69,8 +69,8 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {/* Scope 2 Card Stacked Below */}
       {isCompareMode && distB && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -80,13 +80,13 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                <Camera className="w-4 h-4 text-purple-500 shrink-0" />
+                <Camera className="w-4 h-4 text-blue-500 shrink-0" />
                 <span>Enterprise Test Suite Execution Snapshot ({distB.total.toLocaleString()} Executed Tests)</span>
                 {onJustifyMetric && (
                   <button
                     type="button"
                     onClick={() => onJustifyMetric('testDistribution', 'B')}
-                    className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                    className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                     title="Click for Scope 2 KPI justification and audit details"
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
@@ -98,7 +98,7 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
           <StackedProgressBar
             distribution={distB}
             title="Consolidated QA Execution Health (Scope B)"
-            scopeLabel="Scope B"
+            scopeLabel={scopeBLabel}
             scopeType="secondary"
             onJustify={() => onJustifyMetric?.('testDistribution', 'B')}
           />

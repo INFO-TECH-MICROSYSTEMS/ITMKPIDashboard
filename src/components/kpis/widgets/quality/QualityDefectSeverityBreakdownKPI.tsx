@@ -103,8 +103,8 @@ export const QualityDefectSeverityBreakdownKPI: React.FC<KPIWidgetRenderProps> =
 
       {/* Scope 2 Severity Breakdown Card Stacked Below */}
       {isCompareMode && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -115,13 +115,13 @@ export const QualityDefectSeverityBreakdownKPI: React.FC<KPIWidgetRenderProps> =
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                  <PieChart className="w-4 h-4 text-purple-500 shrink-0" />
+                  <PieChart className="w-4 h-4 text-rose-500 shrink-0" />
                   <span>Defect Severity Breakdown</span>
                   {onJustifyMetric && (
                     <button
                       type="button"
                       onClick={() => onJustifyMetric('defectSeverity', 'B')}
-                      className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                       title="Click for Scope 2 KPI justification and audit details"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />

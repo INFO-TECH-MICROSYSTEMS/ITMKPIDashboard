@@ -109,8 +109,8 @@ export const LeadingIndicatorsPanelKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {/* Scope 2 Leading Indicators Stacked Below */}
       {isCompareMode && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -121,13 +121,13 @@ export const LeadingIndicatorsPanelKPI: React.FC<KPIWidgetRenderProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-bold font-['Outfit'] text-slate-900 dark:text-white flex items-center gap-2">
-                  <ArrowUpRight className="w-4 h-4 text-purple-500 shrink-0" />
+                  <ArrowUpRight className="w-4 h-4 text-cyan-500 shrink-0" />
                   <span>Leading Indicators (Predictive & In-Flight)</span>
                   {onJustifyMetric && (
                     <button
                       type="button"
                       onClick={() => onJustifyMetric('leadingIndicatorsPanel', 'B')}
-                      className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                       title="Click for Scope 2 KPI justification and audit details"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
@@ -138,7 +138,7 @@ export const LeadingIndicatorsPanelKPI: React.FC<KPIWidgetRenderProps> = ({
                   Signals measured before release gating to forecast outcome risks
                 </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 font-bold border border-cyan-200 dark:border-cyan-800">
                 Shift-Left
               </span>
             </div>
@@ -146,7 +146,7 @@ export const LeadingIndicatorsPanelKPI: React.FC<KPIWidgetRenderProps> = ({
 
           <div className="space-y-3 font-mono text-xs">
             {leadingB.map((ind) => (
-              <div key={ind.name} className="p-3 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 flex justify-between items-center">
+              <div key={ind.name} className="p-3 rounded-xl bg-slate-50/70 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <div>
                   <div className="font-bold text-slate-800 dark:text-slate-200">{ind.name}</div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400">Target: {ind.target} • {ind.description}</div>

@@ -84,8 +84,8 @@ export const RiskHighDependencyDepthListKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {/* Scope 2 High Dependency Depth Stacked Below */}
       {isCompareMode && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-3">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -101,20 +101,20 @@ export const RiskHighDependencyDepthListKPI: React.FC<KPIWidgetRenderProps> = ({
                   <button
                     type="button"
                     onClick={() => onJustifyMetric('highDependencyDepth', 'B')}
-                    className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                    className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                     title="Click for Scope 2 KPI justification and audit details"
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
                   </button>
                 )}
               </span>
-              <span className="text-[10px] font-mono text-purple-400">Coupling Risk</span>
+              <span className="text-[10px] font-mono text-slate-400">Coupling Risk</span>
             </div>
           </div>
 
           <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
             {highDependencyItemsB.slice(0, 4).map(item => (
-              <div key={item.id} className="p-2.5 rounded-xl bg-purple-50/20 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 text-xs">
+              <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-xs">
                 <div className="flex justify-between font-mono font-bold text-slate-900 dark:text-white">
                   <span className="text-cyan-600 dark:text-cyan-400">{item.id}</span>
                   <span className="text-purple-600 dark:text-purple-400">Depth: {item.dependencyDepth}</span>

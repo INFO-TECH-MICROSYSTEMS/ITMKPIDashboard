@@ -119,8 +119,8 @@ export const GovernanceEnterpriseSlasMatrixKPI: React.FC<KPIWidgetRenderProps> =
 
       {/* Scope 2 SLA Matrix Stacked Below */}
       {isCompareMode && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -136,7 +136,7 @@ export const GovernanceEnterpriseSlasMatrixKPI: React.FC<KPIWidgetRenderProps> =
                   <button
                     type="button"
                     onClick={() => onJustifyMetric('enterpriseSlasMatrix', 'B')}
-                    className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                    className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                     title="Click for Scope 2 KPI justification and audit details"
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ export const GovernanceEnterpriseSlasMatrixKPI: React.FC<KPIWidgetRenderProps> =
               const isWarning = !isOptimal && sla.rateNum >= sla.targetNum - 10;
               const statusLabel = isOptimal ? 'Compliant' : isWarning ? 'At Risk' : 'Breached';
               return (
-                <div key={sla.name} className="p-4 rounded-xl border border-purple-100 dark:border-purple-900/40 bg-purple-50/20 dark:bg-purple-950/20 space-y-2">
+                <div key={sla.name} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-200 font-['Outfit']">
                       {sla.name}

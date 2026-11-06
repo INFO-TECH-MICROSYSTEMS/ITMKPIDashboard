@@ -140,8 +140,8 @@ export const RiskComponentMatrixKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {/* Scope 2 Component Risk Matrix Stacked Below */}
       {isCompareMode && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/50 shadow-sm space-y-4">
-          <div className="space-y-1.5 pb-2 border-b border-purple-100 dark:border-purple-900/40 pr-6">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-2 border-b border-slate-100 dark:border-slate-800 pr-6">
             <div 
               className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider cursor-help"
               title={scopeBLabel}
@@ -158,7 +158,7 @@ export const RiskComponentMatrixKPI: React.FC<KPIWidgetRenderProps> = ({
                     <button
                       type="button"
                       onClick={() => onJustifyMetric('componentMatrix', 'B')}
-                      className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                       title="Click for Scope 2 KPI justification and audit details"
                     >
                       <HelpCircle className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const RiskComponentMatrixKPI: React.FC<KPIWidgetRenderProps> = ({
                   Evaluated across test execution failure rates, open gating defects, and unit test omissions.
                 </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800">
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
                 Ranked by Vulnerability
               </span>
             </div>
@@ -215,7 +215,7 @@ export const RiskComponentMatrixKPI: React.FC<KPIWidgetRenderProps> = ({
                     <td className="p-3">
                       <div className="flex items-center gap-2">
                         <div className="w-16 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-purple-500 h-full rounded-full" style={{ width: `${comp.testCoveragePercent}%` }} />
+                          <div className="bg-cyan-500 h-full rounded-full" style={{ width: `${comp.testCoveragePercent}%` }} />
                         </div>
                         <span className="font-mono text-slate-600 dark:text-slate-400">{comp.testCoveragePercent}%</span>
                       </div>
