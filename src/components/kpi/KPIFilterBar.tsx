@@ -182,7 +182,7 @@ export const KPIFilterBar: React.FC<KPIFilterBarProps> = ({
 
       {/* Scope B (Comparative Scope Drawer) */}
       {isCompareMode && filtersB && onFilterChangeB && (
-        <div className="space-y-1.5 pt-3 border-t border-purple-200/80 dark:border-purple-500/20 bg-purple-50/30 dark:bg-purple-950/20 p-3 rounded-xl">
+        <div className="space-y-1.5 pt-3 border-t border-slate-200/80 dark:border-slate-800">
           <div className="flex items-center justify-between text-xs font-mono font-bold text-purple-700 dark:text-purple-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-purple-500" />
