@@ -20,7 +20,7 @@ export const ProductivityOvercommittedKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge="Balanced"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('overcommittedEngineers')}
+      onJustify={() => onJustifyMetric?.('overcommittedEngineers', 'A')} compareOnJustify={() => onJustifyMetric?.('overcommittedEngineers', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1' : undefined}

@@ -20,7 +20,7 @@ export const ProductivityActiveSpecialistsKPI: React.FC<KPIWidgetRenderProps> = 
       statusBadge="Optimal Staffing"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('activeSpecialists')}
+      onJustify={() => onJustifyMetric?.('activeSpecialists', 'A')} compareOnJustify={() => onJustifyMetric?.('activeSpecialists', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '6' : undefined}

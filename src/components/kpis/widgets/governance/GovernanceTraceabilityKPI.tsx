@@ -20,7 +20,7 @@ export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="Complete Evidence"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('auditTraceability')}
+      onJustify={() => onJustifyMetric?.('auditTraceability', 'A')} compareOnJustify={() => onJustifyMetric?.('auditTraceability', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '98.5%' : undefined}

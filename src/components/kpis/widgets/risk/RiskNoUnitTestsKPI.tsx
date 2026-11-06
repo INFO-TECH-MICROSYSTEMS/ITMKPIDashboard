@@ -22,7 +22,7 @@ export const RiskNoUnitTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _m
       statusBadge="Gate Violation"
       statusColor="rose"
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('noUnitTests')}
+      onJustify={() => onJustifyMetric?.('noUnitTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noUnitTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '132' : undefined}

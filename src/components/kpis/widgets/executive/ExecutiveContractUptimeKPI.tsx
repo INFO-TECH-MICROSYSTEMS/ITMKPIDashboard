@@ -24,7 +24,7 @@ export const ExecutiveContractUptimeKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={uptime >= 99.95 ? 'Compliant' : 'Breached'}
       statusColor={uptime >= 99.95 ? 'emerald' : 'rose'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('contractUptimePercentage')}
+      onJustify={() => onJustifyMetric?.('contractUptimePercentage', 'A')} compareOnJustify={() => onJustifyMetric?.('contractUptimePercentage', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.contractUptimePercentage}%` : undefined}

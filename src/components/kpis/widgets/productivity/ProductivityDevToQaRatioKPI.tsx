@@ -20,7 +20,7 @@ export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge="Balanced Squads"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('devToQaRatio')}
+      onJustify={() => onJustifyMetric?.('devToQaRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('devToQaRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1:1.5' : undefined}

@@ -20,7 +20,7 @@ export const RiskHighDependencyDepthKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="Blast Radius Alert"
       statusColor="rose"
       icon={<Cpu className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('highDependencyDepth')}
+      onJustify={() => onJustifyMetric?.('highDependencyDepth', 'A')} compareOnJustify={() => onJustifyMetric?.('highDependencyDepth', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '280' : undefined}

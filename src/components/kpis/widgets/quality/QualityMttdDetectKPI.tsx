@@ -21,7 +21,7 @@ export const QualityMttdDetectKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge={mttd <= 6.0 ? 'Optimal' : 'Critical Lag'}
       statusColor={mttd <= 6.0 ? 'emerald' : 'rose'}
       icon={<Zap className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToDetect')}
+      onJustify={() => onJustifyMetric?.('meanTimeToDetect', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToDetect', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttdHours} hrs` : undefined}

@@ -24,7 +24,7 @@ export const AutomationFlakyIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={flakyRate <= 4.0 ? 'Controlled' : 'Elevated'}
       statusColor={flakyRate <= 4.0 ? 'emerald' : 'amber'}
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('flakyIndex')}
+      onJustify={() => onJustifyMetric?.('flakyIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('flakyIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.flakyRate}%` : undefined}

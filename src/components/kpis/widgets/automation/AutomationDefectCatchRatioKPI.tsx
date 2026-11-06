@@ -23,7 +23,7 @@ export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ 
       statusBadge={ratio >= 70.0 ? 'Optimal' : 'Needs Uplift'}
       statusColor={ratio >= 70.0 ? 'emerald' : 'amber'}
       icon={<ShieldCheck className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('defectCatchRatio')}
+      onJustify={() => onJustifyMetric?.('defectCatchRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('defectCatchRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationCatchRatio}%` : undefined}

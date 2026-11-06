@@ -78,11 +78,23 @@ export const QualityDefectSeverityBreakdownKPI: React.FC<KPIWidgetRenderProps> =
       </div>
 
       {isCompareMode && sevB && (
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
-          <span className="font-bold text-purple-700 dark:text-purple-400">Scope 2 Defect Severity: </span>
-          <span className="text-slate-600 dark:text-slate-300">
-            P1: {sevB.blockerP1} • P2: {sevB.criticalP2} • P3: {sevB.majorP3} • P4: {sevB.minorP4}
-          </span>
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-mono flex items-center justify-between">
+          <div>
+            <span className="font-bold text-purple-700 dark:text-purple-400">Scope 2 Defect Severity: </span>
+            <span className="text-slate-600 dark:text-slate-300">
+              P1: {sevB.blockerP1} • P2: {sevB.criticalP2} • P3: {sevB.majorP3} • P4: {sevB.minorP4}
+            </span>
+          </div>
+          {onJustifyMetric && (
+            <button
+              type="button"
+              onClick={() => onJustifyMetric('defectSeverity', 'B')}
+              className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              title="Click for Scope 2 KPI justification and audit details"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       )}
     </div>

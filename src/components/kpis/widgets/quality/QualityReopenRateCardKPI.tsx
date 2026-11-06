@@ -24,7 +24,7 @@ export const QualityReopenRateCardKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge={rate <= 5.0 ? 'Controlled' : 'High Churn'}
       statusColor={rate <= 5.0 ? 'emerald' : 'rose'}
       icon={<RefreshCw className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectReopenRate')}
+      onJustify={() => onJustifyMetric?.('defectReopenRate', 'A')} compareOnJustify={() => onJustifyMetric?.('defectReopenRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.reopenRate}%` : undefined}

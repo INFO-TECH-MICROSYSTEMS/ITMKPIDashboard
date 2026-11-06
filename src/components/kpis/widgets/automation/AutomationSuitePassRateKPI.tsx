@@ -23,7 +23,7 @@ export const AutomationSuitePassRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={rate >= 90.0 ? 'Optimal' : 'Acceptable'}
       statusColor={rate >= 90.0 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('automationSuitePassRate')}
+      onJustify={() => onJustifyMetric?.('automationSuitePassRate', 'A')} compareOnJustify={() => onJustifyMetric?.('automationSuitePassRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationRatioPercent}%` : undefined}

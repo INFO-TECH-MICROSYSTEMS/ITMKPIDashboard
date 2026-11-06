@@ -20,7 +20,7 @@ export const LeadingHealthIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics:
       statusBadge="Predictive Safety"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('leadingHealthIndex')}
+      onJustify={() => onJustifyMetric?.('leadingHealthIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('leadingHealthIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '89.1' : undefined}

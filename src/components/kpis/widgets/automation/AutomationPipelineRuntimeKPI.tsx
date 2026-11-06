@@ -21,7 +21,7 @@ export const AutomationPipelineRuntimeKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge={runtime <= 15.0 ? 'Optimal' : 'Moderate Latency'}
       statusColor={runtime <= 15.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('pipelineRuntime')}
+      onJustify={() => onJustifyMetric?.('pipelineRuntime', 'A')} compareOnJustify={() => onJustifyMetric?.('pipelineRuntime', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.avgPipelineMins} mins` : undefined}

@@ -20,7 +20,7 @@ export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="Pipeline Bottleneck"
       statusColor="rose"
       icon={<Clock className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('highExecutionTests')}
+      onJustify={() => onJustifyMetric?.('highExecutionTests', 'A')} compareOnJustify={() => onJustifyMetric?.('highExecutionTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '175' : undefined}

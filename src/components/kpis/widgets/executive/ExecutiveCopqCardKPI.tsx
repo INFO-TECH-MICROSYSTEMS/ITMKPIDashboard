@@ -24,7 +24,7 @@ export const ExecutiveCopqCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge={copq < 25000 ? 'Controlled' : 'Elevated'}
       statusColor={copq < 25000 ? 'emerald' : 'amber'}
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('costOfPoorQuality')}
+      onJustify={() => onJustifyMetric?.('costOfPoorQuality', 'A')} compareOnJustify={() => onJustifyMetric?.('costOfPoorQuality', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `$${(metricsB.executiveScorecard.costOfPoorQuality ?? 675640).toLocaleString()}` : undefined}

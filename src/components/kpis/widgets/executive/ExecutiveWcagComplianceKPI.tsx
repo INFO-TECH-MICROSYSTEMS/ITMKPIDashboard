@@ -24,7 +24,7 @@ export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={wcag >= 92.0 ? 'Certified' : 'Warning'}
       statusColor={wcag >= 92.0 ? 'emerald' : 'amber'}
       icon={<Compass className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('accessibilityScore')}
+      onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}

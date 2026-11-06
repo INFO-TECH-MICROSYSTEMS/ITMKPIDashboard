@@ -53,7 +53,7 @@ export const ExecutiveBlockerCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={count === 0 ? 'Optimal' : count <= 2 ? 'Warning' : 'Action Required'}
       statusColor={count === 0 ? 'emerald' : count <= 2 ? 'amber' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('blockerDefects')}
+      onJustify={() => onJustifyMetric?.('blockerDefects', 'A')} compareOnJustify={() => onJustifyMetric?.('blockerDefects', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard?.gatingDefectCount}
@@ -74,7 +74,7 @@ export const ExecutiveLeakageCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={rate <= 3.0 ? 'Controlled' : rate <= 5.0 ? 'Acceptable' : 'Breached'}
       statusColor={rate <= 3.0 ? 'emerald' : rate <= 5.0 ? 'amber' : 'rose'}
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectLeakage')}
+      onJustify={() => onJustifyMetric?.('defectLeakage', 'A')} compareOnJustify={() => onJustifyMetric?.('defectLeakage', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.defectLeakageRate}%` : undefined}
@@ -95,7 +95,7 @@ export const ExecutiveRegressionCycleKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={days <= 2.5 ? 'Optimal' : days <= 3.5 ? 'Acceptable' : 'Breached'}
       statusColor={days <= 2.5 ? 'emerald' : days <= 3.5 ? 'amber' : 'rose'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('regressionCycleTime')}
+      onJustify={() => onJustifyMetric?.('regressionCycleTime', 'A')} compareOnJustify={() => onJustifyMetric?.('regressionCycleTime', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.regressionCycleTimeDays} Days` : undefined}
@@ -114,7 +114,7 @@ export const ExecutiveLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics
       statusBadge="P99: 380ms"
       statusColor={p95 <= 200 ? 'emerald' : p95 <= 350 ? 'amber' : 'rose'}
       icon={<Zap className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('performanceP95')}
+      onJustify={() => onJustifyMetric?.('performanceP95', 'A')} compareOnJustify={() => onJustifyMetric?.('performanceP95', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.performanceP95Ms} ms` : undefined}
@@ -135,7 +135,7 @@ export const ExecutiveCopqCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge={copq < 25000 ? 'Controlled' : 'Elevated'}
       statusColor={copq < 25000 ? 'emerald' : 'amber'}
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('costOfPoorQuality')}
+      onJustify={() => onJustifyMetric?.('costOfPoorQuality', 'A')} compareOnJustify={() => onJustifyMetric?.('costOfPoorQuality', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `$${(metricsB.executiveScorecard.costOfPoorQuality ?? 675640).toLocaleString()}` : undefined}
@@ -156,7 +156,7 @@ export const ExecutiveCfrCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, m
       statusBadge={cfr <= 5.0 ? 'DORA Elite' : 'At Risk'}
       statusColor={cfr <= 5.0 ? 'emerald' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('changeFailureRate')}
+      onJustify={() => onJustifyMetric?.('changeFailureRate', 'A')} compareOnJustify={() => onJustifyMetric?.('changeFailureRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.changeFailureRate}%` : undefined}
@@ -177,7 +177,7 @@ export const ExecutiveMttrRestoreKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={mttr <= 4.0 ? 'DORA Elite' : 'Delayed'}
       statusColor={mttr <= 4.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToRestoreHours')}
+      onJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.meanTimeToRestoreHours} hrs` : undefined}
@@ -198,7 +198,7 @@ export const ExecutiveSprintPredictabilityKPI: React.FC<KPIWidgetRenderProps> = 
       statusBadge={spi >= 85 ? 'On Target' : 'Warning'}
       statusColor={spi >= 85 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('sprintPredictabilityIndex')}
+      onJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.sprintPredictabilityIndex}%` : undefined}
@@ -219,7 +219,7 @@ export const ExecutiveFeatureLeadTimeKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={days <= 7.0 ? 'Optimal' : 'Delayed'}
       statusColor={days <= 7.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('featureLeadTimeDays')}
+      onJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'A')} compareOnJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.featureLeadTimeDays} Days` : undefined}
@@ -240,7 +240,7 @@ export const ExecutiveSecurityVulnsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge={vulns === 0 ? 'Certified' : 'Gate Violation'}
       statusColor={vulns === 0 ? 'emerald' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('securityVulnerabilities')}
+      onJustify={() => onJustifyMetric?.('securityVulnerabilities', 'A')} compareOnJustify={() => onJustifyMetric?.('securityVulnerabilities', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.criticalVulnerabilitiesCount} CVEs` : undefined}
@@ -261,7 +261,7 @@ export const ExecutiveContractUptimeKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={uptime >= 99.95 ? 'Compliant' : 'Breached'}
       statusColor={uptime >= 99.95 ? 'emerald' : 'rose'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('contractUptimePercentage')}
+      onJustify={() => onJustifyMetric?.('contractUptimePercentage', 'A')} compareOnJustify={() => onJustifyMetric?.('contractUptimePercentage', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.contractUptimePercentage}%` : undefined}
@@ -282,7 +282,7 @@ export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={wcag >= 92.0 ? 'Certified' : 'Warning'}
       statusColor={wcag >= 92.0 ? 'emerald' : 'amber'}
       icon={<Compass className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('accessibilityScore')}
+      onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}
@@ -306,7 +306,7 @@ export const QualityMttrResolveKPI: React.FC<KPIWidgetRenderProps> = ({ metrics,
       statusBadge={mttr <= 24.0 ? 'Optimal' : 'Breached'}
       statusColor={mttr <= 24.0 ? 'emerald' : 'rose'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToResolve')}
+      onJustify={() => onJustifyMetric?.('meanTimeToResolve', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToResolve', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttrHours} hrs` : undefined}
@@ -324,7 +324,7 @@ export const QualityMttdDetectKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge={mttd <= 6.0 ? 'Optimal' : 'Critical Lag'}
       statusColor={mttd <= 6.0 ? 'emerald' : 'rose'}
       icon={<Zap className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToDetect')}
+      onJustify={() => onJustifyMetric?.('meanTimeToDetect', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToDetect', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttdHours} hrs` : undefined}
@@ -345,7 +345,7 @@ export const QualityReopenRateCardKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge={rate <= 5.0 ? 'Controlled' : 'High Churn'}
       statusColor={rate <= 5.0 ? 'emerald' : 'rose'}
       icon={<RefreshCw className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectReopenRate')}
+      onJustify={() => onJustifyMetric?.('defectReopenRate', 'A')} compareOnJustify={() => onJustifyMetric?.('defectReopenRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.reopenRate}%` : undefined}
@@ -363,7 +363,7 @@ export const QualityCustomerAparsKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge="Severe Escapes"
       statusColor="rose"
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('customerEscalations')}
+      onJustify={() => onJustifyMetric?.('customerEscalations', 'A')} compareOnJustify={() => onJustifyMetric?.('customerEscalations', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? 152 : undefined}
@@ -383,7 +383,7 @@ export const QualityDefectDensityKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={density <= 1.0 ? 'Target Met' : 'Elevated'}
       statusColor={density <= 1.0 ? 'emerald' : 'amber'}
       icon={<Cpu className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectDensity')}
+      onJustify={() => onJustifyMetric?.('defectDensity', 'A')} compareOnJustify={() => onJustifyMetric?.('defectDensity', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.defectDensityKloc} / KLOC` : undefined}
@@ -403,7 +403,7 @@ export const QualityFirstTimeFixRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={ftfr >= 90.0 ? 'Certified' : 'Warning'}
       statusColor={ftfr >= 90.0 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('firstTimeFixRate')}
+      onJustify={() => onJustifyMetric?.('firstTimeFixRate', 'A')} compareOnJustify={() => onJustifyMetric?.('firstTimeFixRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.firstTimeFixRate}%` : undefined}
@@ -423,7 +423,7 @@ export const QualityNetIntakeVelocityKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={net <= 0 ? 'Burning Down' : 'Elevated'}
       statusColor={net <= 0 ? 'emerald' : 'amber'}
       icon={<Activity className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('netDefectIntake')}
+      onJustify={() => onJustifyMetric?.('netDefectIntake', 'A')} compareOnJustify={() => onJustifyMetric?.('netDefectIntake', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `+${metricsB.mttrMttd.netDefectIntakeVelocity} Bugs` : undefined}
@@ -448,7 +448,7 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
       series1Color="#f43f5e"
       series2Color="#10b981"
       height={170}
-      onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
+      onJustify={() => onJustifyMetric?.('defectBurnoutTrend', 'A')}
       onRemove={onRemove}
     />
   );
@@ -469,7 +469,7 @@ export const RiskNoUnitTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _m
       statusBadge="Gate Violation"
       statusColor="rose"
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('noUnitTests')}
+      onJustify={() => onJustifyMetric?.('noUnitTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noUnitTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '132' : undefined}
@@ -486,7 +486,7 @@ export const RiskNoApiTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       statusBadge="Contract Risk"
       statusColor="rose"
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('noApiTests')}
+      onJustify={() => onJustifyMetric?.('noApiTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noApiTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '210' : undefined}
@@ -503,7 +503,7 @@ export const RiskHighDependencyDepthKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="Blast Radius Alert"
       statusColor="rose"
       icon={<Cpu className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('highDependencyDepth')}
+      onJustify={() => onJustifyMetric?.('highDependencyDepth', 'A')} compareOnJustify={() => onJustifyMetric?.('highDependencyDepth', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '280' : undefined}
@@ -520,7 +520,7 @@ export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="Pipeline Bottleneck"
       statusColor="rose"
       icon={<Clock className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('highExecutionTests')}
+      onJustify={() => onJustifyMetric?.('highExecutionTests', 'A')} compareOnJustify={() => onJustifyMetric?.('highExecutionTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '175' : undefined}
@@ -544,7 +544,7 @@ export const AutomationSuitePassRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={rate >= 90.0 ? 'Optimal' : 'Acceptable'}
       statusColor={rate >= 90.0 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('automationSuitePassRate')}
+      onJustify={() => onJustifyMetric?.('automationSuitePassRate', 'A')} compareOnJustify={() => onJustifyMetric?.('automationSuitePassRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationRatioPercent}%` : undefined}
@@ -565,7 +565,7 @@ export const AutomationFlakyIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={flakyRate <= 4.0 ? 'Controlled' : 'Elevated'}
       statusColor={flakyRate <= 4.0 ? 'emerald' : 'amber'}
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('flakyIndex')}
+      onJustify={() => onJustifyMetric?.('flakyIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('flakyIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.flakyRate}%` : undefined}
@@ -583,7 +583,7 @@ export const AutomationPipelineRuntimeKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge={runtime <= 15.0 ? 'Optimal' : 'Moderate Latency'}
       statusColor={runtime <= 15.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('pipelineRuntime')}
+      onJustify={() => onJustifyMetric?.('pipelineRuntime', 'A')} compareOnJustify={() => onJustifyMetric?.('pipelineRuntime', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.avgPipelineMins} mins` : undefined}
@@ -603,7 +603,7 @@ export const AutomationHoursSavedRoiKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="High ROI"
       statusColor="emerald"
       icon={<Zap className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('hoursSavedRoi')}
+      onJustify={() => onJustifyMetric?.('hoursSavedRoi', 'A')} compareOnJustify={() => onJustifyMetric?.('hoursSavedRoi', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.manualHoursSaved} hrs` : undefined}
@@ -623,7 +623,7 @@ export const AutomationComputeCostKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge={cost <= 250 ? 'Controlled' : 'Elevated'}
       statusColor={cost <= 250 ? 'emerald' : 'amber'}
       icon={<Cpu className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('computeCost')}
+      onJustify={() => onJustifyMetric?.('computeCost', 'A')} compareOnJustify={() => onJustifyMetric?.('computeCost', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `$${metricsB.automationHealth.cicdComputeCostDollars}` : undefined}
@@ -643,7 +643,7 @@ export const AutomationMtbfKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, met
       statusBadge={mtbf >= 24.0 ? 'Stable' : 'Warning'}
       statusColor={mtbf >= 24.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('mtbf')}
+      onJustify={() => onJustifyMetric?.('mtbf', 'A')} compareOnJustify={() => onJustifyMetric?.('mtbf', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.mtbfHours} hrs` : undefined}
@@ -663,7 +663,7 @@ export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ 
       statusBadge={ratio >= 70.0 ? 'Optimal' : 'Needs Uplift'}
       statusColor={ratio >= 70.0 ? 'emerald' : 'amber'}
       icon={<ShieldCheck className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('defectCatchRatio')}
+      onJustify={() => onJustifyMetric?.('defectCatchRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('defectCatchRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationCatchRatio}%` : undefined}
@@ -687,7 +687,7 @@ export const ProductivityTestCompletionRateKPI: React.FC<KPIWidgetRenderProps> =
       statusBadge="On Target"
       statusColor="emerald"
       icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('testCompletionRate')}
+      onJustify={() => onJustifyMetric?.('testCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('testCompletionRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '88.2%' : undefined}
@@ -704,7 +704,7 @@ export const ProductivityOvercommittedKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge="Balanced"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('overcommittedEngineers')}
+      onJustify={() => onJustifyMetric?.('overcommittedEngineers', 'A')} compareOnJustify={() => onJustifyMetric?.('overcommittedEngineers', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1' : undefined}
@@ -722,7 +722,7 @@ export const ProductivityStoryCompletionKPI: React.FC<KPIWidgetRenderProps> = ({
       statusBadge="Slipping"
       statusColor="rose"
       icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('storyCompletionRate')}
+      onJustify={() => onJustifyMetric?.('storyCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('storyCompletionRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '65.0%' : undefined}
@@ -739,7 +739,7 @@ export const ProductivityActiveSpecialistsKPI: React.FC<KPIWidgetRenderProps> = 
       statusBadge="Optimal Staffing"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('activeSpecialists')}
+      onJustify={() => onJustifyMetric?.('activeSpecialists', 'A')} compareOnJustify={() => onJustifyMetric?.('activeSpecialists', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '6' : undefined}
@@ -759,7 +759,7 @@ export const ProductivityFlowEfficiencyKPI: React.FC<KPIWidgetRenderProps> = ({ 
       statusBadge="Delayed"
       statusColor="amber"
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('flowEfficiency')}
+      onJustify={() => onJustifyMetric?.('flowEfficiency', 'A')} compareOnJustify={() => onJustifyMetric?.('flowEfficiency', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '31.5%' : undefined}
@@ -779,7 +779,7 @@ export const ProductivitySpilloverRateKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge="Elevated"
       statusColor="amber"
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('spilloverRate')}
+      onJustify={() => onJustifyMetric?.('spilloverRate', 'A')} compareOnJustify={() => onJustifyMetric?.('spilloverRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '42.0%' : undefined}
@@ -796,7 +796,7 @@ export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge="Balanced Squads"
       statusColor="emerald"
       icon={<Users className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('devToQaRatio')}
+      onJustify={() => onJustifyMetric?.('devToQaRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('devToQaRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1:1.5' : undefined}
@@ -818,7 +818,7 @@ export const GovernanceSlaAdherenceKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge={adherence >= 95.0 ? 'Certified' : 'SLA Breached'}
       statusColor={adherence >= 95.0 ? 'emerald' : 'rose'}
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('slaAdherence')}
+      onJustify={() => onJustifyMetric?.('slaAdherence', 'A')} compareOnJustify={() => onJustifyMetric?.('slaAdherence', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.slaAdherenceRate}%` : undefined}
@@ -836,7 +836,7 @@ export const GovernanceWcagAccessibilityKPI: React.FC<KPIWidgetRenderProps> = ({
       statusBadge={wcag >= 95.0 ? 'Certified' : 'Audit Deficit'}
       statusColor={wcag >= 95.0 ? 'emerald' : 'amber'}
       icon={<Compass className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('accessibilityScore')}
+      onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}
@@ -854,7 +854,7 @@ export const GovernanceLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge="Optimal Flow"
       statusColor="emerald"
       icon={<Zap className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('performanceP95')}
+      onJustify={() => onJustifyMetric?.('performanceP95', 'A')} compareOnJustify={() => onJustifyMetric?.('performanceP95', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.performanceP95Ms} ms` : undefined}
@@ -871,7 +871,7 @@ export const GovernanceCsatKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       statusBadge="High Satisfaction"
       statusColor="emerald"
       icon={<Award className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('csat')}
+      onJustify={() => onJustifyMetric?.('csat', 'A')} compareOnJustify={() => onJustifyMetric?.('csat', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '4.5 / 5.0' : undefined}
@@ -888,7 +888,7 @@ export const GovernanceSlaPenaltiesKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="No Financial Escapes"
       statusColor="emerald"
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('contractPenalties')}
+      onJustify={() => onJustifyMetric?.('contractPenalties', 'A')} compareOnJustify={() => onJustifyMetric?.('contractPenalties', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '$0' : undefined}
@@ -905,7 +905,7 @@ export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="Complete Evidence"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('auditTraceability')}
+      onJustify={() => onJustifyMetric?.('auditTraceability', 'A')} compareOnJustify={() => onJustifyMetric?.('auditTraceability', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '98.5%' : undefined}
@@ -926,7 +926,7 @@ export const LeadingHealthIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics:
       statusBadge="Predictive Safety"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('leadingHealthIndex')}
+      onJustify={() => onJustifyMetric?.('leadingHealthIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('leadingHealthIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '89.1' : undefined}
@@ -943,7 +943,7 @@ export const LaggingOutcomeStabilityKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="Production Stable"
       statusColor="emerald"
       icon={<Activity className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('laggingStability')}
+      onJustify={() => onJustifyMetric?.('laggingStability', 'A')} compareOnJustify={() => onJustifyMetric?.('laggingStability', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '86.4' : undefined}
@@ -961,7 +961,7 @@ export const NearMissesInterceptedKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge="Zero Escaped Outages"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('escapePreventionRatio')}
+      onJustify={() => onJustifyMetric?.('escapePreventionRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('escapePreventionRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `${metricsB.nearMissAnalytics.escapePreventionRatio}%` : undefined}
@@ -979,7 +979,7 @@ export const AvoidedOutageLossKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge="High Risk Value"
       statusColor="emerald"
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('totalAvoidedOutageCost')}
+      onJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'A')} compareOnJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `$${((metricsB.nearMissAnalytics.totalAvoidedOutageCost ?? 184500) / 1000).toFixed(0)}k` : undefined}

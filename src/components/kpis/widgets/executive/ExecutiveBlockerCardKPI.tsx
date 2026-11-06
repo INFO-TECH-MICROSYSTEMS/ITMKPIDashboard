@@ -22,7 +22,7 @@ export const ExecutiveBlockerCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={count === 0 ? 'Optimal' : count <= 2 ? 'Warning' : 'Action Required'}
       statusColor={count === 0 ? 'emerald' : count <= 2 ? 'amber' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('blockerDefects')}
+      onJustify={() => onJustifyMetric?.('blockerDefects', 'A')} compareOnJustify={() => onJustifyMetric?.('blockerDefects', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard?.gatingDefectCount}

@@ -24,7 +24,7 @@ export const ExecutiveCfrCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, m
       statusBadge={cfr <= 5.0 ? 'DORA Elite' : 'At Risk'}
       statusColor={cfr <= 5.0 ? 'emerald' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('changeFailureRate')}
+      onJustify={() => onJustifyMetric?.('changeFailureRate', 'A')} compareOnJustify={() => onJustifyMetric?.('changeFailureRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.changeFailureRate}%` : undefined}

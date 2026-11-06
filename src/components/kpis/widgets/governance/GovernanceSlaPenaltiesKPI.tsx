@@ -20,7 +20,7 @@ export const GovernanceSlaPenaltiesKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge="No Financial Escapes"
       statusColor="emerald"
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('contractPenalties')}
+      onJustify={() => onJustifyMetric?.('contractPenalties', 'A')} compareOnJustify={() => onJustifyMetric?.('contractPenalties', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '$0' : undefined}

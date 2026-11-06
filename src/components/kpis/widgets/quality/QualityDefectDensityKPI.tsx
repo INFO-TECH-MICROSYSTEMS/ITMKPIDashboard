@@ -23,7 +23,7 @@ export const QualityDefectDensityKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={density <= 1.0 ? 'Target Met' : 'Elevated'}
       statusColor={density <= 1.0 ? 'emerald' : 'amber'}
       icon={<Cpu className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectDensity')}
+      onJustify={() => onJustifyMetric?.('defectDensity', 'A')} compareOnJustify={() => onJustifyMetric?.('defectDensity', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.defectDensityKloc} / KLOC` : undefined}

@@ -21,7 +21,7 @@ export const NearMissesInterceptedKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge="Zero Escaped Outages"
       statusColor="emerald"
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('escapePreventionRatio')}
+      onJustify={() => onJustifyMetric?.('escapePreventionRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('escapePreventionRatio', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `${metricsB.nearMissAnalytics.escapePreventionRatio}%` : undefined}

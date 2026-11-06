@@ -20,7 +20,7 @@ export const RiskNoApiTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       statusBadge="Contract Risk"
       statusColor="rose"
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('noApiTests')}
+      onJustify={() => onJustifyMetric?.('noApiTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noApiTests', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '210' : undefined}

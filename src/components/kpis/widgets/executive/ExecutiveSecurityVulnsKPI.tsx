@@ -24,7 +24,7 @@ export const ExecutiveSecurityVulnsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge={vulns === 0 ? 'Certified' : 'Gate Violation'}
       statusColor={vulns === 0 ? 'emerald' : 'rose'}
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('securityVulnerabilities')}
+      onJustify={() => onJustifyMetric?.('securityVulnerabilities', 'A')} compareOnJustify={() => onJustifyMetric?.('securityVulnerabilities', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.criticalVulnerabilitiesCount} CVEs` : undefined}

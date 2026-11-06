@@ -23,7 +23,7 @@ export const ProductivitySpilloverRateKPI: React.FC<KPIWidgetRenderProps> = ({ m
       statusBadge="Elevated"
       statusColor="amber"
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('spilloverRate')}
+      onJustify={() => onJustifyMetric?.('spilloverRate', 'A')} compareOnJustify={() => onJustifyMetric?.('spilloverRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '42.0%' : undefined}

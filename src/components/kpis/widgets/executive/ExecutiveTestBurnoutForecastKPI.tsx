@@ -103,7 +103,7 @@ export const ExecutiveTestBurnoutForecastKPI: React.FC<KPIWidgetRenderProps> = (
         forecastBadge={`Target Complete: ${forecast.estimatedCompletionDate}`}
         forecastStatus={forecast.isVelocityHealthy ? 'emerald' : 'amber'}
         height={220}
-        onJustify={() => onJustifyMetric?.('testBurnoutForecast')}
+        onJustify={() => onJustifyMetric?.('testBurnoutForecast', 'A')}
       />
 
       {isCompareMode && forecastB && (
@@ -124,7 +124,7 @@ export const ExecutiveTestBurnoutForecastKPI: React.FC<KPIWidgetRenderProps> = (
             forecastBadge={`Target Complete: ${forecastB.estimatedCompletionDate}`}
             forecastStatus={forecastB.isVelocityHealthy ? 'emerald' : 'amber'}
             height={220}
-            onJustify={() => onJustifyMetric?.('testBurnoutForecast')}
+            onJustify={() => onJustifyMetric?.('testBurnoutForecast', 'B')}
           />
         </div>
       )}

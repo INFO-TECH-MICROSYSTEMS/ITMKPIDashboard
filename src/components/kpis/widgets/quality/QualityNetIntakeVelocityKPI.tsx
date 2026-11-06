@@ -23,7 +23,7 @@ export const QualityNetIntakeVelocityKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={net <= 0 ? 'Burning Down' : 'Elevated'}
       statusColor={net <= 0 ? 'emerald' : 'amber'}
       icon={<Activity className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('netDefectIntake')}
+      onJustify={() => onJustifyMetric?.('netDefectIntake', 'A')} compareOnJustify={() => onJustifyMetric?.('netDefectIntake', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `+${metricsB.mttrMttd.netDefectIntakeVelocity} Bugs` : undefined}

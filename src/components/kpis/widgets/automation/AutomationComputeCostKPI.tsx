@@ -23,7 +23,7 @@ export const AutomationComputeCostKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       statusBadge={cost <= 250 ? 'Controlled' : 'Elevated'}
       statusColor={cost <= 250 ? 'emerald' : 'amber'}
       icon={<Cpu className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('computeCost')}
+      onJustify={() => onJustifyMetric?.('computeCost', 'A')} compareOnJustify={() => onJustifyMetric?.('computeCost', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `$${metricsB.automationHealth.cicdComputeCostDollars}` : undefined}

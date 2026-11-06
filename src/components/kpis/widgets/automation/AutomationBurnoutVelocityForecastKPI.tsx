@@ -93,7 +93,7 @@ export const AutomationBurnoutVelocityForecastKPI: React.FC<KPIWidgetRenderProps
         forecastBadge={`Target 100% Automated: ${forecast.estimatedAllAutomatedDate}`}
         forecastStatus="emerald"
         height={220}
-        onJustify={() => onJustifyMetric?.('testAutomationForecast')}
+        onJustify={() => onJustifyMetric?.('testAutomationForecast', 'A')}
       />
     </div>
   );

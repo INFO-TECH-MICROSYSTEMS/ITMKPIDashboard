@@ -21,7 +21,7 @@ export const QualityCustomerAparsKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge="Severe Escapes"
       statusColor="rose"
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
-      onJustify={() => onJustifyMetric?.('customerEscalations')}
+      onJustify={() => onJustifyMetric?.('customerEscalations', 'A')} compareOnJustify={() => onJustifyMetric?.('customerEscalations', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? 152 : undefined}

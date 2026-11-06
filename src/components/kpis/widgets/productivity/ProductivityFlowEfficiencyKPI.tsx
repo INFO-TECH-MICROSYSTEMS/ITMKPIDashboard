@@ -23,7 +23,7 @@ export const ProductivityFlowEfficiencyKPI: React.FC<KPIWidgetRenderProps> = ({ 
       statusBadge="Delayed"
       statusColor="amber"
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('flowEfficiency')}
+      onJustify={() => onJustifyMetric?.('flowEfficiency', 'A')} compareOnJustify={() => onJustifyMetric?.('flowEfficiency', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '31.5%' : undefined}

@@ -21,7 +21,7 @@ export const GovernanceSlaAdherenceKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       statusBadge={adherence >= 95.0 ? 'Certified' : 'SLA Breached'}
       statusColor={adherence >= 95.0 ? 'emerald' : 'rose'}
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('slaAdherence')}
+      onJustify={() => onJustifyMetric?.('slaAdherence', 'A')} compareOnJustify={() => onJustifyMetric?.('slaAdherence', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.slaAdherenceRate}%` : undefined}

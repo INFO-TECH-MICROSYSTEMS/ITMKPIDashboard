@@ -23,7 +23,7 @@ export const QualityFirstTimeFixRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge={ftfr >= 90.0 ? 'Certified' : 'Warning'}
       statusColor={ftfr >= 90.0 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('firstTimeFixRate')}
+      onJustify={() => onJustifyMetric?.('firstTimeFixRate', 'A')} compareOnJustify={() => onJustifyMetric?.('firstTimeFixRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.firstTimeFixRate}%` : undefined}

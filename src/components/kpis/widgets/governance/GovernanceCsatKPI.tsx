@@ -20,7 +20,7 @@ export const GovernanceCsatKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       statusBadge="High Satisfaction"
       statusColor="emerald"
       icon={<Award className="w-5 h-5 text-amber-500" />}
-      onJustify={() => onJustifyMetric?.('csat')}
+      onJustify={() => onJustifyMetric?.('csat', 'A')} compareOnJustify={() => onJustifyMetric?.('csat', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '4.5 / 5.0' : undefined}

@@ -23,7 +23,7 @@ export const AutomationHoursSavedRoiKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="High ROI"
       statusColor="emerald"
       icon={<Zap className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('hoursSavedRoi')}
+      onJustify={() => onJustifyMetric?.('hoursSavedRoi', 'A')} compareOnJustify={() => onJustifyMetric?.('hoursSavedRoi', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.manualHoursSaved} hrs` : undefined}

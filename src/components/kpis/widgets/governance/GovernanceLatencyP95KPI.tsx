@@ -21,7 +21,7 @@ export const GovernanceLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge="Optimal Flow"
       statusColor="emerald"
       icon={<Zap className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('performanceP95')}
+      onJustify={() => onJustifyMetric?.('performanceP95', 'A')} compareOnJustify={() => onJustifyMetric?.('performanceP95', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.performanceP95Ms} ms` : undefined}

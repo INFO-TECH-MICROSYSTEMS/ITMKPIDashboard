@@ -21,7 +21,7 @@ export const GovernanceWcagAccessibilityKPI: React.FC<KPIWidgetRenderProps> = ({
       statusBadge={wcag >= 95.0 ? 'Certified' : 'Audit Deficit'}
       statusColor={wcag >= 95.0 ? 'emerald' : 'amber'}
       icon={<Compass className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('accessibilityScore')}
+      onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}

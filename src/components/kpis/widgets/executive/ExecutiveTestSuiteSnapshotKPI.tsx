@@ -47,6 +47,7 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
       <StackedProgressBar
         distribution={dist}
         title="Consolidated QA Execution Health (Automated + Manual)"
+        onJustify={() => onJustifyMetric?.('testDistribution', 'A')}
       />
       {isCompareMode && distB && (
         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -55,6 +56,7 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
             title="Consolidated QA Execution Health (Scope B)"
             scopeLabel="Scope B"
             scopeType="secondary"
+            onJustify={() => onJustifyMetric?.('testDistribution', 'B')}
           />
         </div>
       )}

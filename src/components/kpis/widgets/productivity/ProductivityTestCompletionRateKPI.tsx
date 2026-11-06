@@ -23,7 +23,7 @@ export const ProductivityTestCompletionRateKPI: React.FC<KPIWidgetRenderProps> =
       statusBadge="On Target"
       statusColor="emerald"
       icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('testCompletionRate')}
+      onJustify={() => onJustifyMetric?.('testCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('testCompletionRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '88.2%' : undefined}

@@ -24,7 +24,7 @@ export const ExecutiveSprintPredictabilityKPI: React.FC<KPIWidgetRenderProps> = 
       statusBadge={spi >= 85 ? 'On Target' : 'Warning'}
       statusColor={spi >= 85 ? 'emerald' : 'amber'}
       icon={<CheckCircle2 className="w-5 h-5 text-blue-500" />}
-      onJustify={() => onJustifyMetric?.('sprintPredictabilityIndex')}
+      onJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.sprintPredictabilityIndex}%` : undefined}

@@ -29,7 +29,7 @@ export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ m
       series1Color="#f43f5e"
       series2Color="#10b981"
       height={170}
-      onJustify={() => onJustifyMetric?.('defectBurnoutTrend')}
+      onJustify={() => onJustifyMetric?.('defectBurnoutTrend', 'A')}
       onRemove={onRemove}
     />
   );

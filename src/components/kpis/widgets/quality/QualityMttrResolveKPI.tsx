@@ -23,7 +23,7 @@ export const QualityMttrResolveKPI: React.FC<KPIWidgetRenderProps> = ({ metrics,
       statusBadge={mttr <= 24.0 ? 'Optimal' : 'Breached'}
       statusColor={mttr <= 24.0 ? 'emerald' : 'rose'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToResolve')}
+      onJustify={() => onJustifyMetric?.('meanTimeToResolve', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToResolve', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttrHours} hrs` : undefined}

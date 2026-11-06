@@ -24,7 +24,7 @@ export const ExecutiveMttrRestoreKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={mttr <= 4.0 ? 'DORA Elite' : 'Delayed'}
       statusColor={mttr <= 4.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('meanTimeToRestoreHours')}
+      onJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.meanTimeToRestoreHours} hrs` : undefined}

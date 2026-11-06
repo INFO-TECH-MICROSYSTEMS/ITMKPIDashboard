@@ -23,7 +23,7 @@ export const AutomationMtbfKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, met
       statusBadge={mtbf >= 24.0 ? 'Stable' : 'Warning'}
       statusColor={mtbf >= 24.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-purple-500" />}
-      onJustify={() => onJustifyMetric?.('mtbf')}
+      onJustify={() => onJustifyMetric?.('mtbf', 'A')} compareOnJustify={() => onJustifyMetric?.('mtbf', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.mtbfHours} hrs` : undefined}

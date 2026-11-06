@@ -21,7 +21,7 @@ export const ProductivityStoryCompletionKPI: React.FC<KPIWidgetRenderProps> = ({
       statusBadge="Slipping"
       statusColor="rose"
       icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('storyCompletionRate')}
+      onJustify={() => onJustifyMetric?.('storyCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('storyCompletionRate', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '65.0%' : undefined}

@@ -157,22 +157,50 @@ export const QualityAgingProfileKPI: React.FC<KPIWidgetRenderProps> = ({
 
       {isCompareMode && agingB && (
         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-          <div className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-2">
-            Scope 2 Aging Profile ({totalAgingItemsB} Items)
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">
+              Scope 2 Aging Profile ({totalAgingItemsB} Items)
+            </div>
+            {onJustifyMetric && (
+              <button
+                type="button"
+                onClick={() => onJustifyMetric('agingProfile', 'B')}
+                className="p-0.5 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                title="Click for Scope 2 aging profile justification"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => onJustifyMetric?.('agingProfileUnder7', 'B')}
+              className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs text-left cursor-pointer hover:shadow-md transition-shadow"
+            >
               &lt; 7 Days: <strong className="text-emerald-600">{agingB.pending7Days}</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs">
+            </button>
+            <button
+              type="button"
+              onClick={() => onJustifyMetric?.('agingProfile7To14', 'B')}
+              className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs text-left cursor-pointer hover:shadow-md transition-shadow"
+            >
               7-14 Days: <strong className="text-cyan-600">{agingB.pending7To14Days}</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs">
+            </button>
+            <button
+              type="button"
+              onClick={() => onJustifyMetric?.('agingProfile14To21', 'B')}
+              className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs text-left cursor-pointer hover:shadow-md transition-shadow"
+            >
               14-21 Days: <strong className="text-amber-600">{agingB.pending14To21Days}</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs">
+            </button>
+            <button
+              type="button"
+              onClick={() => onJustifyMetric?.('agingProfile21Plus', 'B')}
+              className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 font-mono text-xs text-left cursor-pointer hover:shadow-md transition-shadow"
+            >
               21+ Days: <strong className="text-rose-600">{agingB.pending21PlusDays}</strong>
-            </div>
+            </button>
           </div>
         </div>
       )}

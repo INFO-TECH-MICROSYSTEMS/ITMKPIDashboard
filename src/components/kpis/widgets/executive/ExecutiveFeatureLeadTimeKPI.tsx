@@ -24,7 +24,7 @@ export const ExecutiveFeatureLeadTimeKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={days <= 7.0 ? 'Optimal' : 'Delayed'}
       statusColor={days <= 7.0 ? 'emerald' : 'amber'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('featureLeadTimeDays')}
+      onJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'A')} compareOnJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.featureLeadTimeDays} Days` : undefined}

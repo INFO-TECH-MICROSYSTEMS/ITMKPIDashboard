@@ -24,7 +24,7 @@ export const ExecutiveRegressionCycleKPI: React.FC<KPIWidgetRenderProps> = ({ me
       statusBadge={days <= 2.5 ? 'Optimal' : days <= 3.5 ? 'Acceptable' : 'Breached'}
       statusColor={days <= 2.5 ? 'emerald' : days <= 3.5 ? 'amber' : 'rose'}
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('regressionCycleTime')}
+      onJustify={() => onJustifyMetric?.('regressionCycleTime', 'A')} compareOnJustify={() => onJustifyMetric?.('regressionCycleTime', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.regressionCycleTimeDays} Days` : undefined}

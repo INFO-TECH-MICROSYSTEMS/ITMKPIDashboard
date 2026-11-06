@@ -20,7 +20,7 @@ export const LaggingOutcomeStabilityKPI: React.FC<KPIWidgetRenderProps> = ({ met
       statusBadge="Production Stable"
       statusColor="emerald"
       icon={<Activity className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('laggingStability')}
+      onJustify={() => onJustifyMetric?.('laggingStability', 'A')} compareOnJustify={() => onJustifyMetric?.('laggingStability', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB ? '86.4' : undefined}

@@ -21,7 +21,7 @@ export const AvoidedOutageLossKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       statusBadge="High Risk Value"
       statusColor="emerald"
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
-      onJustify={() => onJustifyMetric?.('totalAvoidedOutageCost')}
+      onJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'A')} compareOnJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `$${((metricsB.nearMissAnalytics.totalAvoidedOutageCost ?? 184500) / 1000).toFixed(0)}k` : undefined}

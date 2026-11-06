@@ -24,7 +24,7 @@ export const ExecutiveLeakageCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       statusBadge={rate <= 3.0 ? 'Controlled' : rate <= 5.0 ? 'Acceptable' : 'Breached'}
       statusColor={rate <= 3.0 ? 'emerald' : rate <= 5.0 ? 'amber' : 'rose'}
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
-      onJustify={() => onJustifyMetric?.('defectLeakage')}
+      onJustify={() => onJustifyMetric?.('defectLeakage', 'A')} compareOnJustify={() => onJustifyMetric?.('defectLeakage', 'B')}
       onRemove={onRemove}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.defectLeakageRate}%` : undefined}
