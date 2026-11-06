@@ -940,7 +940,12 @@ export const MetricCard: React.FC<IMetricCardContract> = ({
 
   // Full Metric Comparison View: Full Metric for Scope 1 on top of Full Metric for Scope 2
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 relative group">
+      {onRemove && (
+        <KPIActionToolbar
+          onRemove={onRemove}
+        />
+      )}
       {/* Scope 1: Complete Full Metric Card */}
       <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${themeA.card}`}>
         <div className="flex items-start justify-between gap-2 mb-2">

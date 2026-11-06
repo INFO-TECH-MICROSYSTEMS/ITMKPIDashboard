@@ -13,10 +13,14 @@ import type { KPIWidgetRenderProps } from '../../registry/kpiRegistry';
 
 export const AutomationBurnoutVelocityForecastKPI: React.FC<KPIWidgetRenderProps> = ({
   metrics,
+  metricsB,
+  isCompareMode,
   onJustifyMetric,
   onRemove
 }) => {
   const forecast = metrics.testAutomationForecast;
+  const forecastB = metricsB?.testAutomationForecast;
+
   if (!forecast) return null;
 
   return (
@@ -35,7 +39,7 @@ export const AutomationBurnoutVelocityForecastKPI: React.FC<KPIWidgetRenderProps
             {onJustifyMetric && (
               <button
                 type="button"
-                onClick={() => onJustifyMetric('testAutomationForecast')}
+                onClick={() => onJustifyMetric('testAutomationForecast', 'A')}
                 className="p-0.5 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                 title="Click for KPI justification and audit details"
               >
@@ -95,6 +99,29 @@ export const AutomationBurnoutVelocityForecastKPI: React.FC<KPIWidgetRenderProps
         height={220}
         onJustify={() => onJustifyMetric?.('testAutomationForecast', 'A')}
       />
+
+      {isCompareMode && forecastB && (
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <AreaTrendChart
+            data={forecastB.historyAndForecast}
+            title="Scope B: Automation Burnout & Velocity Forecast"
+            scopeLabel="Scope B"
+            scopeType="secondary"
+            series1Name="Total Tests"
+            series2Name="Automated Tests"
+            series3Name="Manual Tests"
+            series1Color="#f43f5e"
+            series2Color="#10b981"
+            series3Color="#f59e0b"
+            projectionLineColor="#a855f7"
+            series3ProjectionLineColor="#a855f7"
+            forecastBadge={`Target 100% Automated: ${forecastB.estimatedAllAutomatedDate}`}
+            forecastStatus="emerald"
+            height={220}
+            onJustify={() => onJustifyMetric?.('testAutomationForecast', 'B')}
+          />
+        </div>
+      )}
     </div>
   );
 };
