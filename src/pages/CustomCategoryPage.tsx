@@ -54,7 +54,7 @@ export const CustomCategoryPage: React.FC = () => {
   } = useKPIDataContext();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedJustifyMetric, setSelectedJustifyMetric] = useState<string | null>(null);
+  const [selectedJustifyMetric, setSelectedJustifyMetric] = useState<{ key: string; scope: 'A' | 'B' } | null>(null);
   const [saveToast, setSaveToast] = useState(false);
 
   const scopeALabel = `${filters.product} (${filters.component !== 'All' ? `${filters.component} • ` : ''}v${filters.releaseVersion})`;
@@ -114,11 +114,20 @@ export const CustomCategoryPage: React.FC = () => {
 
   const activeJustification: KPIJustification | null = useMemo(() => {
     if (!selectedJustifyMetric) return null;
-    return KPIJustificationService.resolveJustificationByMetricKey(
-      selectedJustifyMetric,
-      metricsDeck
+    const targetDeck = (selectedJustifyMetric.scope === 'B' && metricsDeckB) ? metricsDeckB : metricsDeck;
+    const just = KPIJustificationService.resolveJustificationByMetricKey(
+      selectedJustifyMetric.key,
+      targetDeck
     );
-  }, [selectedJustifyMetric, metricsDeck]);
+    if (!just) return null;
+    if (isCompareMode) {
+      return {
+        ...just,
+        scopeLabel: selectedJustifyMetric.scope === 'B' ? scopeBLabel : scopeALabel
+      };
+    }
+    return just;
+  }, [selectedJustifyMetric, metricsDeck, metricsDeckB, isCompareMode, scopeALabel, scopeBLabel]);
 
   if (!category) {
     return (
@@ -324,7 +333,7 @@ export const CustomCategoryPage: React.FC = () => {
                     scopeALabel={scopeALabel}
                     scopeBLabel={scopeBLabel}
                     onRemove={() => handleRemoveKPI(kpiId)}
-                    onJustifyMetric={(metricKey) => setSelectedJustifyMetric(metricKey)}
+                    onJustifyMetric={(metricKey, scope = 'A') => setSelectedJustifyMetric({ key: metricKey, scope })}
                   />
                 </div>
               );

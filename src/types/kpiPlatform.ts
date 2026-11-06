@@ -410,6 +410,8 @@ export interface KPIJustification {
   statusColor: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple';
   currentValue: string | number;
   targetValue: string;
+  /** Optional scope label shown in the clarification dialog header (e.g. "Scope 1 — youtube (v23.4.2)") */
+  scopeLabel?: string;
   // Educational & Contextual Metric Metadata: Single unified, formatted overview string
   overviewAndSignificance?: string;
   description?: string; // Optional backwards compatibility

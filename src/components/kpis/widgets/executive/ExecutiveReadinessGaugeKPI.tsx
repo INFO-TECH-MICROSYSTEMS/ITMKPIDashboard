@@ -165,7 +165,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
           </div>
           <button 
             type="button"
-            onClick={() => onJustifyMetric?.('releaseQualityIndex')}
+            onClick={() => onJustifyMetric?.('releaseQualityIndex', 'A')}
             className={`px-3 py-1 rounded-full text-xs font-mono font-bold border flex items-center gap-1.5 shadow-2xs hover:scale-105 transition-transform cursor-pointer ${currentThemeA.badge}`}
             title="Click to see why this release verdict was triggered"
           >
@@ -187,7 +187,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
               subtitle="Composite score across testing gates"
               grade={scorecard.releaseReadyGrade}
               size={185}
-              onJustify={() => onJustifyMetric?.('releaseQualityIndex')}
+              onJustify={() => onJustifyMetric?.('releaseQualityIndex', 'A')}
             />
           </div>
 
@@ -205,7 +205,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
               {onJustifyMetric && (
                 <button
                   type="button"
-                  onClick={() => onJustifyMetric('releaseQualityIndex')}
+                  onClick={() => onJustifyMetric('releaseQualityIndex', 'A')}
                   className="p-1 rounded-full text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                   title="Click for KPI justification and audit details"
                 >
@@ -264,7 +264,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
           </div>
           <button 
             type="button"
-            onClick={() => onJustifyMetric?.('releaseQualityIndex')}
+            onClick={() => onJustifyMetric?.('releaseQualityIndex', 'B')}
             className={`px-3 py-1 rounded-full text-xs font-mono font-bold border flex items-center gap-1.5 shadow-2xs hover:scale-105 transition-transform cursor-pointer ${currentThemeB.badge}`}
             title="Click to see why this release verdict was triggered"
           >
@@ -286,7 +286,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
               subtitle="Composite score across testing gates"
               grade={scorecardB.releaseReadyGrade}
               size={185}
-              onJustify={() => onJustifyMetric?.('releaseQualityIndex')}
+              onJustify={() => onJustifyMetric?.('releaseQualityIndex', 'B')}
             />
           </div>
 
@@ -304,7 +304,7 @@ export const ExecutiveReadinessGaugeKPI: React.FC<KPIWidgetRenderProps> = ({
               {onJustifyMetric && (
                 <button
                   type="button"
-                  onClick={() => onJustifyMetric('releaseQualityIndex')}
+                  onClick={() => onJustifyMetric('releaseQualityIndex', 'B')}
                   className="p-1 rounded-full text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
                   title="Click for KPI justification and audit details"
                 >

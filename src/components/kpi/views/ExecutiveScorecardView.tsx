@@ -103,7 +103,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
       jiraItems,
       testRailExecutions
     );
-    setSelectedJustification(just);
+    setSelectedJustification({ ...just, scopeLabel: isCompareMode ? scopeALabel : undefined });
   };
 
   const handleOpenReleaseIndexJustificationB = () => {
@@ -113,8 +113,12 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
       jiraItemsB,
       testRailExecutionsB
     );
-    setSelectedJustification(just);
+    setSelectedJustification({ ...just, scopeLabel: scopeBLabel });
   };
+
+  /** Tags a justification with the given scope label (only in compare mode) */
+  const withScope = (just: ReturnType<typeof KPIJustificationService.getGatingDefectsJustification>, label?: string) =>
+    label ? { ...just, scopeLabel: label } : just;
 
   return (
     <div className="space-y-6">
@@ -352,13 +356,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.gatingDefectCount === 0 ? t('kpiPlatform.executiveView.statusPassed', 'Clear Gate') : t('kpiPlatform.executiveView.actionRequired')}
           statusColor={scorecard.gatingDefectCount === 0 ? 'emerald' : 'rose'}
           icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getGatingDefectsJustification(jiraItems))}
+          onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getGatingDefectsJustification(jiraItems), isCompareMode ? scopeALabel : undefined))}
           isComparing={isCompareMode}
           scopeALabel={scopeALabel}
           scopeBLabel={scopeBLabel}
           compareValue={scorecardB?.gatingDefectCount}
           compareStatusBadge={scorecardB ? (scorecardB.gatingDefectCount === 0 ? 'Clear Gate' : 'Action Req') : undefined}
           compareStatusColor={scorecardB?.gatingDefectCount === 0 ? 'emerald' : 'rose'}
+          compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getGatingDefectsJustification(jiraItemsB), scopeBLabel)) : undefined}
           delta={scorecardB !== undefined ? `${scorecard.gatingDefectCount - scorecardB.gatingDefectCount > 0 ? '+' : ''}${scorecard.gatingDefectCount - scorecardB.gatingDefectCount} blockers` : undefined}
           deltaPositive={scorecardB !== undefined && scorecard.gatingDefectCount <= scorecardB.gatingDefectCount}
         />
@@ -373,13 +378,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.defectLeakageRate <= 3.0 ? t('kpiPlatform.executiveView.statusPassed', 'Controlled') : scorecard.defectLeakageRate <= 5.0 ? t('kpiPlatform.executiveView.acceptable') : t('kpiPlatform.executiveView.breached')}
           statusColor={scorecard.defectLeakageRate <= 3.0 ? 'emerald' : scorecard.defectLeakageRate <= 5.0 ? 'amber' : 'rose'}
           icon={<TrendingDown className="w-5 h-5 text-cyan-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getDefectLeakageJustification(scorecard.defectLeakageRate, jiraItems))}
+          onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getDefectLeakageJustification(scorecard.defectLeakageRate, jiraItems), isCompareMode ? scopeALabel : undefined))}
           isComparing={isCompareMode}
           scopeALabel={scopeALabel}
           scopeBLabel={scopeBLabel}
           compareValue={scorecardB ? `${scorecardB.defectLeakageRate}%` : undefined}
           compareStatusBadge={scorecardB ? (scorecardB.defectLeakageRate <= 3.0 ? 'Controlled' : 'Elevated') : undefined}
           compareStatusColor={scorecardB ? (scorecardB.defectLeakageRate <= 3.0 ? 'emerald' : 'rose') : undefined}
+          compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getDefectLeakageJustification(scorecardB.defectLeakageRate, jiraItemsB), scopeBLabel)) : undefined}
           delta={scorecardB !== undefined ? `${(scorecard.defectLeakageRate - scorecardB.defectLeakageRate) > 0 ? '+' : ''}${(scorecard.defectLeakageRate - scorecardB.defectLeakageRate).toFixed(1)}%` : undefined}
           deltaPositive={scorecardB !== undefined && scorecard.defectLeakageRate <= scorecardB.defectLeakageRate}
         />
@@ -394,13 +400,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.regressionCycleTimeDays <= 2.5 ? t('kpiPlatform.executiveView.statusPassed', 'Optimal') : scorecard.regressionCycleTimeDays <= 3.5 ? t('kpiPlatform.executiveView.acceptable') : t('kpiPlatform.executiveView.breached')}
           statusColor={scorecard.regressionCycleTimeDays <= 2.5 ? 'emerald' : scorecard.regressionCycleTimeDays <= 3.5 ? 'amber' : 'rose'}
           icon={<Clock className="w-5 h-5 text-emerald-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getRegressionCycleTimeJustification(scorecard))}
+          onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getRegressionCycleTimeJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
           isComparing={isCompareMode}
           scopeALabel={scopeALabel}
           scopeBLabel={scopeBLabel}
           compareValue={scorecardB ? `${scorecardB.regressionCycleTimeDays} ${t('kpiPlatform.executiveView.daysUnit')}` : undefined}
           compareStatusBadge={scorecardB ? (scorecardB.regressionCycleTimeDays <= 2.5 ? 'Optimal' : 'Elevated') : undefined}
           compareStatusColor={scorecardB ? (scorecardB.regressionCycleTimeDays <= 2.5 ? 'emerald' : 'amber') : undefined}
+          compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getRegressionCycleTimeJustification(scorecardB), scopeBLabel)) : undefined}
           delta={scorecardB !== undefined ? `${(scorecard.regressionCycleTimeDays - scorecardB.regressionCycleTimeDays) > 0 ? '+' : ''}${(scorecard.regressionCycleTimeDays - scorecardB.regressionCycleTimeDays).toFixed(1)}d` : undefined}
           deltaPositive={scorecardB !== undefined && scorecard.regressionCycleTimeDays <= scorecardB.regressionCycleTimeDays}
         />
@@ -413,13 +420,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
           statusBadge={scorecard.performanceP95Ms <= 200 ? 'P99: 380ms' : t('kpiPlatform.executiveView.latencyWarning')}
           statusColor={scorecard.performanceP95Ms <= 200 ? 'emerald' : scorecard.performanceP95Ms <= 350 ? 'amber' : 'rose'}
           icon={<Zap className="w-5 h-5 text-purple-500" />}
-          onJustify={() => setSelectedJustification(KPIJustificationService.getPerformanceP95Justification(scorecard))}
+          onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getPerformanceP95Justification(scorecard), isCompareMode ? scopeALabel : undefined))}
           isComparing={isCompareMode}
           scopeALabel={scopeALabel}
           scopeBLabel={scopeBLabel}
           compareValue={scorecardB ? `${scorecardB.performanceP95Ms} ${t('kpiPlatform.executiveView.msUnit')}` : undefined}
           compareStatusBadge={scorecardB ? (scorecardB.performanceP95Ms <= 200 ? 'Optimal' : 'Elevated') : undefined}
           compareStatusColor={scorecardB ? (scorecardB.performanceP95Ms <= 200 ? 'emerald' : 'amber') : undefined}
+          compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getPerformanceP95Justification(scorecardB), scopeBLabel)) : undefined}
           delta={scorecardB !== undefined ? `${(scorecard.performanceP95Ms - scorecardB.performanceP95Ms) > 0 ? '+' : ''}${scorecard.performanceP95Ms - scorecardB.performanceP95Ms}ms` : undefined}
           deltaPositive={scorecardB !== undefined && scorecard.performanceP95Ms <= scorecardB.performanceP95Ms}
         />
@@ -447,13 +455,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={(scorecard.costOfPoorQuality ?? 18450) < 25000 ? t('kpiPlatform.statusControlled', 'Controlled') : t('kpiPlatform.statusElevated', 'High Rework')}
             statusColor={(scorecard.costOfPoorQuality ?? 18450) < 25000 ? 'emerald' : 'amber'}
             icon={<TrendingDown className="w-5 h-5 text-emerald-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getCostOfPoorQualityJustification(scorecard))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getCostOfPoorQualityJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `$${(scorecardB.costOfPoorQuality ?? 18450).toLocaleString()}` : undefined}
             compareStatusBadge={scorecardB ? ((scorecardB.costOfPoorQuality ?? 18450) < 25000 ? 'Controlled' : 'High') : undefined}
             compareStatusColor={scorecardB ? ((scorecardB.costOfPoorQuality ?? 18450) < 25000 ? 'emerald' : 'amber') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getCostOfPoorQualityJustification(scorecardB), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${((scorecard.costOfPoorQuality ?? 18450) - (scorecardB.costOfPoorQuality ?? 18450)) > 0 ? '+$' : '-$'}${Math.abs((scorecard.costOfPoorQuality ?? 18450) - (scorecardB.costOfPoorQuality ?? 18450)).toLocaleString()}` : undefined}
             deltaPositive={scorecardB !== undefined && (scorecard.costOfPoorQuality ?? 18450) <= (scorecardB.costOfPoorQuality ?? 18450)}
           />
@@ -468,13 +477,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={(scorecard.changeFailureRate ?? 3.4) <= 5.0 ? t('kpiPlatform.executiveView.eliteDora', 'DORA Elite') : t('kpiPlatform.statusAtRisk', 'High Risk')}
             statusColor={(scorecard.changeFailureRate ?? 3.4) <= 5.0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-cyan-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getChangeFailureRateJustification(scorecard.changeFailureRate ?? 3.4))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getChangeFailureRateJustification(scorecard.changeFailureRate ?? 3.4), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.changeFailureRate ?? 3.4}%` : undefined}
             compareStatusBadge={scorecardB ? ((scorecardB.changeFailureRate ?? 3.4) <= 5.0 ? 'DORA Elite' : 'At Risk') : undefined}
             compareStatusColor={scorecardB ? ((scorecardB.changeFailureRate ?? 3.4) <= 5.0 ? 'emerald' : 'rose') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getChangeFailureRateJustification(scorecardB.changeFailureRate ?? 3.4), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${((scorecard.changeFailureRate ?? 3.4) - (scorecardB.changeFailureRate ?? 3.4)) > 0 ? '+' : ''}${((scorecard.changeFailureRate ?? 3.4) - (scorecardB.changeFailureRate ?? 3.4)).toFixed(1)}%` : undefined}
             deltaPositive={scorecardB !== undefined && (scorecard.changeFailureRate ?? 3.4) <= (scorecardB.changeFailureRate ?? 3.4)}
           />
@@ -489,13 +499,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? t('kpiPlatform.executiveView.eliteDora', 'DORA Elite') : t('kpiPlatform.statusDelayed', 'Delayed')}
             statusColor={(scorecard.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-purple-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getMttrJustification(scorecard.meanTimeToRestoreHours ?? 2.8))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getMttrJustification(scorecard.meanTimeToRestoreHours ?? 2.8), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.meanTimeToRestoreHours ?? 2.8} ${t('kpiPlatform.hrsUnit', 'hrs')}` : undefined}
             compareStatusBadge={scorecardB ? ((scorecardB.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? 'DORA Elite' : 'Delayed') : undefined}
             compareStatusColor={scorecardB ? ((scorecardB.meanTimeToRestoreHours ?? 2.8) <= 4.0 ? 'emerald' : 'amber') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getMttrJustification(scorecardB.meanTimeToRestoreHours ?? 2.8), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${((scorecard.meanTimeToRestoreHours ?? 2.8) - (scorecardB.meanTimeToRestoreHours ?? 2.8)) > 0 ? '+' : ''}${((scorecard.meanTimeToRestoreHours ?? 2.8) - (scorecardB.meanTimeToRestoreHours ?? 2.8)).toFixed(1)}h` : undefined}
             deltaPositive={scorecardB !== undefined && (scorecard.meanTimeToRestoreHours ?? 2.8) <= (scorecardB.meanTimeToRestoreHours ?? 2.8)}
           />
@@ -510,13 +521,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85 ? t('kpiPlatform.statusOnTarget', 'On Roadmap') : t('kpiPlatform.statusWarning', 'Variance')}
             statusColor={(scorecard.sprintPredictabilityIndex ?? 91.2) >= 85 ? 'emerald' : 'amber'}
             icon={<CheckCircle2 className="w-5 h-5 text-blue-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getSprintPredictabilityJustification(scorecard.sprintPredictabilityIndex ?? 91.2))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getSprintPredictabilityJustification(scorecard.sprintPredictabilityIndex ?? 91.2), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.sprintPredictabilityIndex ?? 91.2}%` : undefined}
             compareStatusBadge={scorecardB ? ((scorecardB.sprintPredictabilityIndex ?? 91.2) >= 85 ? 'On Roadmap' : 'Variance') : undefined}
             compareStatusColor={scorecardB ? ((scorecardB.sprintPredictabilityIndex ?? 91.2) >= 85 ? 'emerald' : 'amber') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getSprintPredictabilityJustification(scorecardB.sprintPredictabilityIndex ?? 91.2), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${((scorecard.sprintPredictabilityIndex ?? 91.2) - (scorecardB.sprintPredictabilityIndex ?? 91.2)) > 0 ? '+' : ''}${((scorecard.sprintPredictabilityIndex ?? 91.2) - (scorecardB.sprintPredictabilityIndex ?? 91.2)).toFixed(1)}%` : undefined}
             deltaPositive={scorecardB !== undefined && (scorecard.sprintPredictabilityIndex ?? 91.2) >= (scorecardB.sprintPredictabilityIndex ?? 91.2)}
           />
@@ -531,13 +543,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.featureLeadTimeDays <= 7.0 ? t('kpiPlatform.statusOptimal', 'Optimal') : t('kpiPlatform.statusDelayed', 'Bottlenecked')}
             statusColor={scorecard.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber'}
             icon={<Clock className="w-5 h-5 text-teal-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getFeatureLeadTimeJustification(scorecard))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getFeatureLeadTimeJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.featureLeadTimeDays} ${t('kpiPlatform.daysUnit', 'Days')}` : undefined}
             compareStatusBadge={scorecardB ? (scorecardB.featureLeadTimeDays <= 7.0 ? 'Optimal' : 'Delayed') : undefined}
             compareStatusColor={scorecardB ? (scorecardB.featureLeadTimeDays <= 7.0 ? 'emerald' : 'amber') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getFeatureLeadTimeJustification(scorecardB), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${(scorecard.featureLeadTimeDays - scorecardB.featureLeadTimeDays) > 0 ? '+' : ''}${(scorecard.featureLeadTimeDays - scorecardB.featureLeadTimeDays).toFixed(1)}d` : undefined}
             deltaPositive={scorecardB !== undefined && scorecard.featureLeadTimeDays <= scorecardB.featureLeadTimeDays}
           />
@@ -552,13 +565,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.criticalVulnerabilitiesCount === 0 ? t('kpiPlatform.statusCompliant', 'Gate Clear') : t('kpiPlatform.statusGateViolation', 'CISO Escalation')}
             statusColor={scorecard.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose'}
             icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getSecurityGateJustification(scorecard))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getSecurityGateJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.criticalVulnerabilitiesCount} CVEs` : undefined}
             compareStatusBadge={scorecardB ? (scorecardB.criticalVulnerabilitiesCount === 0 ? 'Gate Clear' : 'Escalation') : undefined}
             compareStatusColor={scorecardB ? (scorecardB.criticalVulnerabilitiesCount === 0 ? 'emerald' : 'rose') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getSecurityGateJustification(scorecardB), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${(scorecard.criticalVulnerabilitiesCount - scorecardB.criticalVulnerabilitiesCount) > 0 ? '+' : ''}${scorecard.criticalVulnerabilitiesCount - scorecardB.criticalVulnerabilitiesCount} CVEs` : undefined}
             deltaPositive={scorecardB !== undefined && scorecard.criticalVulnerabilitiesCount <= scorecardB.criticalVulnerabilitiesCount}
           />
@@ -573,13 +587,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.contractUptimePercentage >= 99.95 ? t('kpiPlatform.statusOptimal', 'Four Nines') : t('kpiPlatform.statusBreached', 'Penalty Risk')}
             statusColor={scorecard.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose'}
             icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getContractUptimeJustification(scorecard))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getContractUptimeJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.contractUptimePercentage}%` : undefined}
             compareStatusBadge={scorecardB ? (scorecardB.contractUptimePercentage >= 99.95 ? 'Four Nines' : 'Breached') : undefined}
             compareStatusColor={scorecardB ? (scorecardB.contractUptimePercentage >= 99.95 ? 'emerald' : 'rose') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getContractUptimeJustification(scorecardB), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${(scorecard.contractUptimePercentage - scorecardB.contractUptimePercentage) > 0 ? '+' : ''}${(scorecard.contractUptimePercentage - scorecardB.contractUptimePercentage).toFixed(2)}%` : undefined}
             deltaPositive={scorecardB !== undefined && scorecard.contractUptimePercentage >= scorecardB.contractUptimePercentage}
           />
@@ -594,13 +609,14 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
             statusBadge={scorecard.accessibilityScore >= 92.0 ? t('kpiPlatform.statusCompliant', 'Compliant') : t('kpiPlatform.statusWarning', 'Audit Notice')}
             statusColor={scorecard.accessibilityScore >= 92.0 ? 'emerald' : 'amber'}
             icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
-            onJustify={() => setSelectedJustification(KPIJustificationService.getAccessibilityScoreJustification(scorecard))}
+            onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getAccessibilityScoreJustification(scorecard), isCompareMode ? scopeALabel : undefined))}
             isComparing={isCompareMode}
             scopeALabel={scopeALabel}
             scopeBLabel={scopeBLabel}
             compareValue={scorecardB ? `${scorecardB.accessibilityScore}%` : undefined}
             compareStatusBadge={scorecardB ? (scorecardB.accessibilityScore >= 92.0 ? 'Compliant' : 'Warning') : undefined}
             compareStatusColor={scorecardB ? (scorecardB.accessibilityScore >= 92.0 ? 'emerald' : 'amber') : undefined}
+            compareOnJustify={scorecardB ? () => setSelectedJustification(withScope(KPIJustificationService.getAccessibilityScoreJustification(scorecardB), scopeBLabel)) : undefined}
             delta={scorecardB !== undefined ? `${(scorecard.accessibilityScore - scorecardB.accessibilityScore) > 0 ? '+' : ''}${(scorecard.accessibilityScore - scorecardB.accessibilityScore).toFixed(1)}%` : undefined}
             deltaPositive={scorecardB !== undefined && scorecard.accessibilityScore >= scorecardB.accessibilityScore}
           />
@@ -628,7 +644,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               title={t('kpiPlatform.executiveView.stackedTitle', 'Consolidated QA Execution Health (Automated + Manual)')}
               scopeLabel={scopeALabel}
               scopeType="primary"
-              onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistribution, 'All'))}
+              onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getTestExecutionDistributionJustification(testDistribution, 'All'), scopeALabel))}
             />
           </div>
 
@@ -640,7 +656,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 title={t('kpiPlatform.executiveView.stackedTitle', 'Consolidated QA Execution Health (Automated + Manual)')}
                 scopeLabel={scopeBLabel}
                 scopeType="secondary"
-                onJustify={() => setSelectedJustification(KPIJustificationService.getTestExecutionDistributionJustification(testDistributionB, 'All'))}
+                onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getTestExecutionDistributionJustification(testDistributionB, 'All'), scopeBLabel))}
               />
             ) : (
               <div className="text-xs font-mono text-slate-400 py-4">Distribution unavailable</div>
@@ -769,7 +785,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
               series3ProjectionLineColor="#fbbf24"
               forecastBadge={`${testBurnoutForecast.daysToCompletion}d runway • ${testBurnoutForecast.estimatedCompletionDate}`}
               forecastStatus={testBurnoutForecast.isVelocityHealthy ? 'emerald' : 'amber'}
-              onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast))}
+              onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecast), scopeALabel))}
               height={160}
             />
           </div>
@@ -792,7 +808,7 @@ export const ExecutiveScorecardView: React.FC<ExecutiveScorecardViewProps> = ({
                 series3ProjectionLineColor="#fbbf24"
                 forecastBadge={`${testBurnoutForecastB.daysToCompletion}d runway • ${testBurnoutForecastB.estimatedCompletionDate}`}
                 forecastStatus={testBurnoutForecastB.isVelocityHealthy ? 'emerald' : 'amber'}
-                onJustify={() => setSelectedJustification(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecastB))}
+                onJustify={() => setSelectedJustification(withScope(KPIJustificationService.getTestBurnoutForecastJustification(testBurnoutForecastB), scopeBLabel))}
                 height={160}
               />
             ) : (

@@ -71,7 +71,7 @@ export interface KPIWidgetRenderProps {
   metricsB?: CalculatedMetricsDeck;
   isCompareMode?: boolean;
   onRemove?: () => void;
-  onJustifyMetric?: (metricKey: string) => void;
+  onJustifyMetric?: (metricKey: string, scope?: 'A' | 'B') => void;
   scopeALabel?: string;
   scopeBLabel?: string;
 }

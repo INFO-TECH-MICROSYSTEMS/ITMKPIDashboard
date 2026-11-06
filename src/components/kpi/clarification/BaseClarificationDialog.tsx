@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   X, AlertOctagon, AlertTriangle, CheckCircle2, 
-  HelpCircle, Lightbulb, Info, ChevronDown, ChevronUp 
+  HelpCircle, Lightbulb, Info, ChevronDown, ChevronUp, Layers 
 } from 'lucide-react';
 import type { KPIJustification, KPIContributingFactor } from '../../../types/kpiPlatform';
 import { KPI_STATUS_THEMES, type KPIStatusTheme } from '../../../constants/kpiConstants';
@@ -136,6 +136,14 @@ export const BaseClarificationDialog: React.FC<BaseClarificationDialogProps> = (
               <h3 className="text-xl font-bold font-['Outfit'] text-slate-900 dark:text-white mt-1">
                 {customTitle ?? formatJustificationTitle(justification.title)}
               </h3>
+              {justification.scopeLabel && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <Layers className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate max-w-xs">
+                    {justification.scopeLabel}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <button
