@@ -12,13 +12,14 @@ import {
   Clock, RefreshCw, Cpu, Compass, ShieldCheck,
   AlertOctagon, CheckCircle2, Zap, DollarSign, Users, Award
 } from 'lucide-react';
-import { MetricCard, AreaTrendChart } from '../../kpi/VisualWidgets';
+import { MetricCard } from '../../kpi/VisualWidgets';
 import type { KPIWidgetRenderProps } from '../registry/kpiRegistry';
 
 import { ExecutiveTestSuiteSnapshotKPI } from './executive/ExecutiveTestSuiteSnapshotKPI';
 import { ExecutiveReadinessGaugeKPI } from './executive/ExecutiveReadinessGaugeKPI';
 import { ExecutiveTestBurnoutForecastKPI } from './executive/ExecutiveTestBurnoutForecastKPI';
 import { QualityAgingProfileKPI } from './quality/QualityAgingProfileKPI';
+import { QualityDefectBurnoutChartKPI } from './quality/QualityDefectBurnoutChartKPI';
 import { QualityDefectSeverityBreakdownKPI } from './quality/QualityDefectSeverityBreakdownKPI';
 import { QualityActiveGatingDefectsTableKPI } from './quality/QualityActiveGatingDefectsTableKPI';
 import { RiskComponentMatrixKPI } from './risk/RiskComponentMatrixKPI';
@@ -42,7 +43,7 @@ import { NonFormalInterceptedDefectsTableKPI } from './leadingLagging/NonFormalI
 
 export { ExecutiveReadinessGaugeKPI };
 
-export const ExecutiveBlockerCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveBlockerCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const count = sc?.gatingDefectCount ?? 47;
   return (
@@ -55,13 +56,15 @@ export const ExecutiveBlockerCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
       onJustify={() => onJustifyMetric?.('blockerDefects', 'A')} compareOnJustify={() => onJustifyMetric?.('blockerDefects', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard?.gatingDefectCount}
     />
   );
 };
 
-export const ExecutiveLeakageCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveLeakageCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const rate = sc?.defectLeakageRate ?? 48.1;
   return (
@@ -76,13 +79,15 @@ export const ExecutiveLeakageCardKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('defectLeakage', 'A')} compareOnJustify={() => onJustifyMetric?.('defectLeakage', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.defectLeakageRate}%` : undefined}
     />
   );
 };
 
-export const ExecutiveRegressionCycleKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveRegressionCycleKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const days = sc?.regressionCycleTimeDays ?? 1.2;
   return (
@@ -97,13 +102,15 @@ export const ExecutiveRegressionCycleKPI: React.FC<KPIWidgetRenderProps> = ({ me
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('regressionCycleTime', 'A')} compareOnJustify={() => onJustifyMetric?.('regressionCycleTime', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.regressionCycleTimeDays} Days` : undefined}
     />
   );
 };
 
-export const ExecutiveLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const p95 = sc?.performanceP95Ms ?? 135;
   return (
@@ -116,13 +123,15 @@ export const ExecutiveLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics
       icon={<Zap className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('performanceP95', 'A')} compareOnJustify={() => onJustifyMetric?.('performanceP95', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.performanceP95Ms} ms` : undefined}
     />
   );
 };
 
-export const ExecutiveCopqCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveCopqCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const copq = sc?.costOfPoorQuality ?? 675640;
   return (
@@ -137,13 +146,15 @@ export const ExecutiveCopqCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('costOfPoorQuality', 'A')} compareOnJustify={() => onJustifyMetric?.('costOfPoorQuality', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `$${(metricsB.executiveScorecard.costOfPoorQuality ?? 675640).toLocaleString()}` : undefined}
     />
   );
 };
 
-export const ExecutiveCfrCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveCfrCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const cfr = sc?.changeFailureRate ?? 10.6;
   return (
@@ -158,13 +169,15 @@ export const ExecutiveCfrCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, m
       icon={<AlertOctagon className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('changeFailureRate', 'A')} compareOnJustify={() => onJustifyMetric?.('changeFailureRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.changeFailureRate}%` : undefined}
     />
   );
 };
 
-export const ExecutiveMttrRestoreKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveMttrRestoreKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const mttr = sc?.meanTimeToRestoreHours ?? 73.7;
   return (
@@ -179,13 +192,15 @@ export const ExecutiveMttrRestoreKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<Clock className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToRestoreHours', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.meanTimeToRestoreHours} hrs` : undefined}
     />
   );
 };
 
-export const ExecutiveSprintPredictabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveSprintPredictabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const spi = sc?.sprintPredictabilityIndex ?? 49.9;
   return (
@@ -200,13 +215,15 @@ export const ExecutiveSprintPredictabilityKPI: React.FC<KPIWidgetRenderProps> = 
       icon={<CheckCircle2 className="w-5 h-5 text-blue-500" />}
       onJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('sprintPredictabilityIndex', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.sprintPredictabilityIndex}%` : undefined}
     />
   );
 };
 
-export const ExecutiveFeatureLeadTimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveFeatureLeadTimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const days = sc?.featureLeadTimeDays ?? 4.1;
   return (
@@ -221,13 +238,15 @@ export const ExecutiveFeatureLeadTimeKPI: React.FC<KPIWidgetRenderProps> = ({ me
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'A')} compareOnJustify={() => onJustifyMetric?.('featureLeadTimeDays', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.featureLeadTimeDays} Days` : undefined}
     />
   );
 };
 
-export const ExecutiveSecurityVulnsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveSecurityVulnsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const vulns = sc?.criticalVulnerabilitiesCount ?? 22;
   return (
@@ -242,13 +261,15 @@ export const ExecutiveSecurityVulnsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
       onJustify={() => onJustifyMetric?.('securityVulnerabilities', 'A')} compareOnJustify={() => onJustifyMetric?.('securityVulnerabilities', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.criticalVulnerabilitiesCount} CVEs` : undefined}
     />
   );
 };
 
-export const ExecutiveContractUptimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveContractUptimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const uptime = sc?.contractUptimePercentage ?? 96.82;
   return (
@@ -263,13 +284,15 @@ export const ExecutiveContractUptimeKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('contractUptimePercentage', 'A')} compareOnJustify={() => onJustifyMetric?.('contractUptimePercentage', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.contractUptimePercentage}%` : undefined}
     />
   );
 };
 
-export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const sc = metrics.executiveScorecard;
   const wcag = sc?.accessibilityScore ?? 87.1;
   return (
@@ -284,6 +307,8 @@ export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<Compass className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}
     />
@@ -294,7 +319,7 @@ export const ExecutiveWcagComplianceKPI: React.FC<KPIWidgetRenderProps> = ({ met
 // QUALITY & DEFECT DIAGNOSTICS KPIS
 // =========================================================================
 
-export const QualityMttrResolveKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityMttrResolveKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const mttr = metrics.mttrMttd?.avgMttrHours ?? 83.8;
   return (
     <MetricCard
@@ -308,13 +333,15 @@ export const QualityMttrResolveKPI: React.FC<KPIWidgetRenderProps> = ({ metrics,
       icon={<Clock className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('meanTimeToResolve', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToResolve', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttrHours} hrs` : undefined}
     />
   );
 };
 
-export const QualityMttdDetectKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityMttdDetectKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const mttd = metrics.mttrMttd?.avgMttdHours ?? 42.7;
   return (
     <MetricCard
@@ -326,13 +353,15 @@ export const QualityMttdDetectKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       icon={<Zap className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('meanTimeToDetect', 'A')} compareOnJustify={() => onJustifyMetric?.('meanTimeToDetect', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.avgMttdHours} hrs` : undefined}
     />
   );
 };
 
-export const QualityReopenRateCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityReopenRateCardKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const rate = metrics.mttrMttd?.reopenRate ?? 15.5;
   const count = metrics.mttrMttd?.reopenedCount ?? 27;
   return (
@@ -347,13 +376,15 @@ export const QualityReopenRateCardKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       icon={<RefreshCw className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('defectReopenRate', 'A')} compareOnJustify={() => onJustifyMetric?.('defectReopenRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.reopenRate}%` : undefined}
     />
   );
 };
 
-export const QualityCustomerAparsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityCustomerAparsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const apars = 167;
   return (
     <MetricCard
@@ -365,13 +396,15 @@ export const QualityCustomerAparsKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
       onJustify={() => onJustifyMetric?.('customerEscalations', 'A')} compareOnJustify={() => onJustifyMetric?.('customerEscalations', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? 152 : undefined}
     />
   );
 };
 
-export const QualityDefectDensityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityDefectDensityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const density = metrics.mttrMttd?.defectDensityKloc ?? 2.39;
   return (
     <MetricCard
@@ -385,13 +418,15 @@ export const QualityDefectDensityKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<Cpu className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('defectDensity', 'A')} compareOnJustify={() => onJustifyMetric?.('defectDensity', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.defectDensityKloc} / KLOC` : undefined}
     />
   );
 };
 
-export const QualityFirstTimeFixRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityFirstTimeFixRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const ftfr = metrics.mttrMttd?.firstTimeFixRate ?? 84.5;
   return (
     <MetricCard
@@ -405,13 +440,15 @@ export const QualityFirstTimeFixRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('firstTimeFixRate', 'A')} compareOnJustify={() => onJustifyMetric?.('firstTimeFixRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `${metricsB.mttrMttd.firstTimeFixRate}%` : undefined}
     />
   );
 };
 
-export const QualityNetIntakeVelocityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const QualityNetIntakeVelocityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const net = metrics.mttrMttd?.netDefectIntakeVelocity ?? 173;
   return (
     <MetricCard
@@ -425,40 +462,21 @@ export const QualityNetIntakeVelocityKPI: React.FC<KPIWidgetRenderProps> = ({ me
       icon={<Activity className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('netDefectIntake', 'A')} compareOnJustify={() => onJustifyMetric?.('netDefectIntake', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.mttrMttd ? `+${metricsB.mttrMttd.netDefectIntakeVelocity} Bugs` : undefined}
     />
   );
 };
 
-export const QualityDefectBurnoutChartKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, onJustifyMetric, onRemove }) => {
-  const data = metrics.defectTrends || [
-    { date: '2026-10-01', label: 'Day 1', value1: 24, value2: 18, value3: 6 },
-    { date: '2026-10-03', label: 'Day 3', value1: 32, value2: 25, value3: 7 },
-    { date: '2026-10-06', label: 'Day 6', value1: 45, value2: 38, value3: 7 },
-    { date: '2026-10-09', label: 'Day 9', value1: 52, value2: 48, value3: 4 },
-    { date: '2026-10-12', label: 'Day 12', value1: 58, value2: 56, value3: 2 }
-  ];
-  return (
-    <AreaTrendChart
-      data={data}
-      title="Defect Discovery Rate vs. Defect Resolution Burnout (14-Day Velocity)"
-      series1Name="Discovered Defects"
-      series2Name="Resolved / Burned Out"
-      series1Color="#f43f5e"
-      series2Color="#10b981"
-      height={170}
-      onJustify={() => onJustifyMetric?.('defectBurnoutTrend', 'A')}
-      onRemove={onRemove}
-    />
-  );
-};
+export { QualityDefectBurnoutChartKPI };
 
 // =========================================================================
 // RISK ASSESSMENT & QUALITY GATES KPIS
 // =========================================================================
 
-export const RiskNoUnitTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const RiskNoUnitTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Items With No Unit Tests"
@@ -471,13 +489,15 @@ export const RiskNoUnitTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _m
       icon={<AlertOctagon className="w-5 h-5 text-rose-500" />}
       onJustify={() => onJustifyMetric?.('noUnitTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noUnitTests', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '132' : undefined}
     />
   );
 };
 
-export const RiskNoApiTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const RiskNoApiTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Items With No API Tests"
@@ -488,13 +508,15 @@ export const RiskNoApiTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('noApiTests', 'A')} compareOnJustify={() => onJustifyMetric?.('noApiTests', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '210' : undefined}
     />
   );
 };
 
-export const RiskHighDependencyDepthKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const RiskHighDependencyDepthKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="High Dependency Depth (Depth ≥ 4)"
@@ -505,13 +527,15 @@ export const RiskHighDependencyDepthKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<Cpu className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('highDependencyDepth', 'A')} compareOnJustify={() => onJustifyMetric?.('highDependencyDepth', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '280' : undefined}
     />
   );
 };
 
-export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="High Execution Time Tests (>300s)"
@@ -522,6 +546,8 @@ export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       icon={<Clock className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('highExecutionTests', 'A')} compareOnJustify={() => onJustifyMetric?.('highExecutionTests', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '175' : undefined}
     />
@@ -532,7 +558,7 @@ export const RiskHighExecutionTestsKPI: React.FC<KPIWidgetRenderProps> = ({ metr
 // AUTOMATION ROI & PIPELINE HEALTH KPIS
 // =========================================================================
 
-export const AutomationSuitePassRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationSuitePassRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const rate = metrics.automationHealth?.automationRatioPercent ?? 84.6;
   return (
     <MetricCard
@@ -546,13 +572,15 @@ export const AutomationSuitePassRateKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('automationSuitePassRate', 'A')} compareOnJustify={() => onJustifyMetric?.('automationSuitePassRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationRatioPercent}%` : undefined}
     />
   );
 };
 
-export const AutomationFlakyIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationFlakyIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const flakyRate = metrics.automationHealth?.flakyRate ?? 3.6;
   const count = metrics.automationHealth?.flakyCount ?? 32;
   return (
@@ -567,13 +595,15 @@ export const AutomationFlakyIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<AlertTriangle className="w-5 h-5 text-rose-500" />}
       onJustify={() => onJustifyMetric?.('flakyIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('flakyIndex', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.flakyRate}%` : undefined}
     />
   );
 };
 
-export const AutomationPipelineRuntimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationPipelineRuntimeKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const runtime = metrics.automationHealth?.avgPipelineMins ?? 15.6;
   return (
     <MetricCard
@@ -585,13 +615,15 @@ export const AutomationPipelineRuntimeKPI: React.FC<KPIWidgetRenderProps> = ({ m
       icon={<Clock className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('pipelineRuntime', 'A')} compareOnJustify={() => onJustifyMetric?.('pipelineRuntime', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.avgPipelineMins} mins` : undefined}
     />
   );
 };
 
-export const AutomationHoursSavedRoiKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationHoursSavedRoiKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const hrs = metrics.automationHealth?.manualHoursSaved ?? 218;
   return (
     <MetricCard
@@ -605,13 +637,15 @@ export const AutomationHoursSavedRoiKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<Zap className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('hoursSavedRoi', 'A')} compareOnJustify={() => onJustifyMetric?.('hoursSavedRoi', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.manualHoursSaved} hrs` : undefined}
     />
   );
 };
 
-export const AutomationComputeCostKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationComputeCostKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const cost = metrics.automationHealth?.cicdComputeCostDollars ?? 317;
   return (
     <MetricCard
@@ -625,13 +659,15 @@ export const AutomationComputeCostKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       icon={<Cpu className="w-5 h-5 text-blue-500" />}
       onJustify={() => onJustifyMetric?.('computeCost', 'A')} compareOnJustify={() => onJustifyMetric?.('computeCost', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `$${metricsB.automationHealth.cicdComputeCostDollars}` : undefined}
     />
   );
 };
 
-export const AutomationMtbfKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationMtbfKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const mtbf = metrics.automationHealth?.mtbfHours ?? 3.8;
   return (
     <MetricCard
@@ -645,13 +681,15 @@ export const AutomationMtbfKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, met
       icon={<Clock className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('mtbf', 'A')} compareOnJustify={() => onJustifyMetric?.('mtbf', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.mtbfHours} hrs` : undefined}
     />
   );
 };
 
-export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const ratio = metrics.automationHealth?.automationCatchRatio ?? 79.2;
   return (
     <MetricCard
@@ -665,6 +703,8 @@ export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ 
       icon={<ShieldCheck className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('defectCatchRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('defectCatchRatio', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.automationHealth ? `${metricsB.automationHealth.automationCatchRatio}%` : undefined}
     />
@@ -675,7 +715,7 @@ export const AutomationDefectCatchRatioKPI: React.FC<KPIWidgetRenderProps> = ({ 
 // PLANNING, VELOCITY & SQUAD PRODUCTIVITY KPIS
 // =========================================================================
 
-export const ProductivityTestCompletionRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityTestCompletionRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const rate = 91.0;
   return (
     <MetricCard
@@ -689,13 +729,15 @@ export const ProductivityTestCompletionRateKPI: React.FC<KPIWidgetRenderProps> =
       icon={<TrendingUp className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('testCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('testCompletionRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '88.2%' : undefined}
     />
   );
 };
 
-export const ProductivityOvercommittedKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityOvercommittedKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Over-Committed Engineers"
@@ -706,13 +748,15 @@ export const ProductivityOvercommittedKPI: React.FC<KPIWidgetRenderProps> = ({ m
       icon={<Users className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('overcommittedEngineers', 'A')} compareOnJustify={() => onJustifyMetric?.('overcommittedEngineers', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1' : undefined}
     />
   );
 };
 
-export const ProductivityStoryCompletionKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityStoryCompletionKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const rate = 49.9;
   return (
     <MetricCard
@@ -724,13 +768,15 @@ export const ProductivityStoryCompletionKPI: React.FC<KPIWidgetRenderProps> = ({
       icon={<CheckCircle2 className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('storyCompletionRate', 'A')} compareOnJustify={() => onJustifyMetric?.('storyCompletionRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '65.0%' : undefined}
     />
   );
 };
 
-export const ProductivityActiveSpecialistsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityActiveSpecialistsKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Active QA Specialists"
@@ -741,13 +787,15 @@ export const ProductivityActiveSpecialistsKPI: React.FC<KPIWidgetRenderProps> = 
       icon={<Users className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('activeSpecialists', 'A')} compareOnJustify={() => onJustifyMetric?.('activeSpecialists', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '6' : undefined}
     />
   );
 };
 
-export const ProductivityFlowEfficiencyKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityFlowEfficiencyKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const flow = 28.4;
   return (
     <MetricCard
@@ -761,13 +809,15 @@ export const ProductivityFlowEfficiencyKPI: React.FC<KPIWidgetRenderProps> = ({ 
       icon={<TrendingUp className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('flowEfficiency', 'A')} compareOnJustify={() => onJustifyMetric?.('flowEfficiency', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '31.5%' : undefined}
     />
   );
 };
 
-export const ProductivitySpilloverRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivitySpilloverRateKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const spillover = 51.4;
   return (
     <MetricCard
@@ -781,13 +831,15 @@ export const ProductivitySpilloverRateKPI: React.FC<KPIWidgetRenderProps> = ({ m
       icon={<AlertTriangle className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('spilloverRate', 'A')} compareOnJustify={() => onJustifyMetric?.('spilloverRate', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '42.0%' : undefined}
     />
   );
 };
 
-export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Dev-to-QA Ratio"
@@ -798,6 +850,8 @@ export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ me
       icon={<Users className="w-5 h-5 text-blue-500" />}
       onJustify={() => onJustifyMetric?.('devToQaRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('devToQaRatio', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '1:1.5' : undefined}
     />
@@ -808,7 +862,7 @@ export const ProductivityDevToQaRatioKPI: React.FC<KPIWidgetRenderProps> = ({ me
 // GOVERNANCE, SLAS & BENCHMARKS KPIS
 // =========================================================================
 
-export const GovernanceSlaAdherenceKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceSlaAdherenceKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const adherence = metrics.executiveScorecard?.slaAdherenceRate ?? 87.3;
   return (
     <MetricCard
@@ -820,13 +874,15 @@ export const GovernanceSlaAdherenceKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('slaAdherence', 'A')} compareOnJustify={() => onJustifyMetric?.('slaAdherence', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.slaAdherenceRate}%` : undefined}
     />
   );
 };
 
-export const GovernanceWcagAccessibilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceWcagAccessibilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const wcag = metrics.executiveScorecard?.accessibilityScore ?? 87.1;
   return (
     <MetricCard
@@ -838,13 +894,15 @@ export const GovernanceWcagAccessibilityKPI: React.FC<KPIWidgetRenderProps> = ({
       icon={<Compass className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('accessibilityScore', 'A')} compareOnJustify={() => onJustifyMetric?.('accessibilityScore', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.accessibilityScore}%` : undefined}
     />
   );
 };
 
-export const GovernanceLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const p95 = metrics.executiveScorecard?.performanceP95Ms ?? 135;
   return (
     <MetricCard
@@ -856,13 +914,15 @@ export const GovernanceLatencyP95KPI: React.FC<KPIWidgetRenderProps> = ({ metric
       icon={<Zap className="w-5 h-5 text-purple-500" />}
       onJustify={() => onJustifyMetric?.('performanceP95', 'A')} compareOnJustify={() => onJustifyMetric?.('performanceP95', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.executiveScorecard ? `${metricsB.executiveScorecard.performanceP95Ms} ms` : undefined}
     />
   );
 };
 
-export const GovernanceCsatKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceCsatKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Stakeholder Satisfaction (CSAT)"
@@ -873,13 +933,15 @@ export const GovernanceCsatKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _me
       icon={<Award className="w-5 h-5 text-amber-500" />}
       onJustify={() => onJustifyMetric?.('csat', 'A')} compareOnJustify={() => onJustifyMetric?.('csat', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '4.5 / 5.0' : undefined}
     />
   );
 };
 
-export const GovernanceSlaPenaltiesKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceSlaPenaltiesKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Contract SLA Penalties"
@@ -890,13 +952,15 @@ export const GovernanceSlaPenaltiesKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('contractPenalties', 'A')} compareOnJustify={() => onJustifyMetric?.('contractPenalties', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '$0' : undefined}
     />
   );
 };
 
-export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Audit Trail Traceability"
@@ -907,6 +971,8 @@ export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metr
       icon={<ShieldCheck className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('auditTraceability', 'A')} compareOnJustify={() => onJustifyMetric?.('auditTraceability', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '98.5%' : undefined}
     />
@@ -917,7 +983,7 @@ export const GovernanceTraceabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metr
 // LEADING, LAGGING & NEAR MISS KPIS
 // =========================================================================
 
-export const LeadingHealthIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const LeadingHealthIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Leading Health Index"
@@ -928,13 +994,15 @@ export const LeadingHealthIndexKPI: React.FC<KPIWidgetRenderProps> = ({ metrics:
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('leadingHealthIndex', 'A')} compareOnJustify={() => onJustifyMetric?.('leadingHealthIndex', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '89.1' : undefined}
     />
   );
 };
 
-export const LaggingOutcomeStabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const LaggingOutcomeStabilityKPI: React.FC<KPIWidgetRenderProps> = ({ metrics: _metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   return (
     <MetricCard
       title="Lagging Outcome Stability"
@@ -945,13 +1013,15 @@ export const LaggingOutcomeStabilityKPI: React.FC<KPIWidgetRenderProps> = ({ met
       icon={<Activity className="w-5 h-5 text-cyan-500" />}
       onJustify={() => onJustifyMetric?.('laggingStability', 'A')} compareOnJustify={() => onJustifyMetric?.('laggingStability', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB ? '86.4' : undefined}
     />
   );
 };
 
-export const NearMissesInterceptedKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const NearMissesInterceptedKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const escapes = metrics.nearMissAnalytics?.escapePreventionRatio ?? 94.6;
   return (
     <MetricCard
@@ -963,13 +1033,15 @@ export const NearMissesInterceptedKPI: React.FC<KPIWidgetRenderProps> = ({ metri
       icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('escapePreventionRatio', 'A')} compareOnJustify={() => onJustifyMetric?.('escapePreventionRatio', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `${metricsB.nearMissAnalytics.escapePreventionRatio}%` : undefined}
     />
   );
 };
 
-export const AvoidedOutageLossKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove }) => {
+export const AvoidedOutageLossKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, metricsB, isCompareMode, onJustifyMetric, onRemove, scopeALabel = 'Scope 1', scopeBLabel = 'Scope 2' }) => {
   const loss = metrics.nearMissAnalytics?.totalAvoidedOutageCost ?? 184500;
   return (
     <MetricCard
@@ -981,6 +1053,8 @@ export const AvoidedOutageLossKPI: React.FC<KPIWidgetRenderProps> = ({ metrics, 
       icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
       onJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'A')} compareOnJustify={() => onJustifyMetric?.('totalAvoidedOutageCost', 'B')}
       onRemove={onRemove}
+      scopeALabel={scopeALabel}
+      scopeBLabel={scopeBLabel}
       isComparing={isCompareMode}
       compareValue={metricsB?.nearMissAnalytics ? `$${((metricsB.nearMissAnalytics.totalAvoidedOutageCost ?? 184500) / 1000).toFixed(0)}k` : undefined}
     />

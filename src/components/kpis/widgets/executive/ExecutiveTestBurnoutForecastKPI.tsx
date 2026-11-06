@@ -194,9 +194,7 @@ export const ExecutiveTestBurnoutForecastKPI: React.FC<KPIWidgetRenderProps> = (
 
           <AreaTrendChart
             data={forecastB.historyAndForecast}
-            title="Scope B: Execution Burnout & Velocity Forecast"
-            scopeLabel={scopeBLabel}
-            scopeType="secondary"
+            title="Execution Burnout & Velocity Forecast"
             series1Name="Total Tests"
             series2Name="Completed Tests"
             series3Name="Remaining Tests"

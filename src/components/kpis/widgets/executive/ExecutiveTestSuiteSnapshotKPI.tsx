@@ -97,9 +97,7 @@ export const ExecutiveTestSuiteSnapshotKPI: React.FC<KPIWidgetRenderProps> = ({
           </div>
           <StackedProgressBar
             distribution={distB}
-            title="Consolidated QA Execution Health (Scope B)"
-            scopeLabel={scopeBLabel}
-            scopeType="secondary"
+            title="Consolidated QA Execution Health (Automated + Manual)"
             onJustify={() => onJustifyMetric?.('testDistribution', 'B')}
           />
         </div>

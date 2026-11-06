@@ -182,9 +182,7 @@ export const AutomationBurnoutVelocityForecastKPI: React.FC<KPIWidgetRenderProps
 
           <AreaTrendChart
             data={forecastB.historyAndForecast}
-            title="Scope B: Automation Burnout & Velocity Forecast"
-            scopeLabel={scopeBLabel}
-            scopeType="secondary"
+            title="Automation Burnout & Velocity Forecast"
             series1Name="Total Tests"
             series2Name="Automated Tests"
             series3Name="Manual Tests"
