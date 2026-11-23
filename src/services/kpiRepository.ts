@@ -88,6 +88,16 @@ class HybridKPIDataRepository implements IKPIDataRepository {
       }
     }
 
+    // Clean legacy placeholder user in Dexie if it exists without password hash
+    try {
+      const legacyUser = await kpiDb.users.get('usr_sudarsha_001');
+      if (legacyUser && !legacyUser.passwordHash) {
+        await kpiDb.users.delete('usr_sudarsha_001');
+      }
+    } catch {
+      // ignore
+    }
+
     this.initialized = true;
   }
 
@@ -341,26 +351,100 @@ class HybridKPIDataRepository implements IKPIDataRepository {
   // ==========================================
 
   async getAllUsers(): Promise<UserAccount[]> {
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (!error && data) {
+          return data.map((d: any) => ({
+            id: d.id,
+            name: d.name,
+            email: d.email,
+            role: d.role as UserRole,
+            passwordHash: d.password_hash,
+            passwordSalt: d.password_salt,
+            department: d.department || 'Quality Engineering',
+            createdAt: d.created_at,
+            updatedAt: d.updated_at,
+            lastLoginAt: d.last_login_at
+          }));
+        }
+      } catch (err) {
+        console.warn('[Repository] Falling back to local users:', err);
+      }
+    }
     return await kpiDb.users.toArray();
   }
 
   async getUserByEmail(email: string): Promise<UserAccount | undefined> {
     const normalized = email.trim().toLowerCase();
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .ilike('email', normalized)
+          .maybeSingle();
+        if (!error && data) {
+          return {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            role: data.role as UserRole,
+            passwordHash: data.password_hash,
+            passwordSalt: data.password_salt,
+            department: data.department || 'Quality Engineering',
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+            lastLoginAt: data.last_login_at
+          };
+        }
+      } catch (err) {
+        console.warn('[Repository] Supabase user query error:', err);
+      }
+    }
     return await kpiDb.users.filter(u => u.email.toLowerCase() === normalized).first();
   }
 
   async getUserById(id: string): Promise<UserAccount | undefined> {
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+        if (!error && data) {
+          return {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            role: data.role as UserRole,
+            passwordHash: data.password_hash,
+            passwordSalt: data.password_salt,
+            department: data.department || 'Quality Engineering',
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+            lastLoginAt: data.last_login_at
+          };
+        }
+      } catch (err) {
+        console.warn('[Repository] Supabase user query error:', err);
+      }
+    }
     return await kpiDb.users.get(id);
   }
 
   async saveUser(user: UserAccount): Promise<void> {
     await kpiDb.users.put(user);
 
-    // If Supabase is connected, optionally mirror user
+    // If Supabase is connected, persist directly to cloud users table
     const status = await this.getStorageStatus();
     if (status.activeProvider === 'supabase' && supabase) {
       try {
-        await supabase.from('users').upsert({
+        const { error } = await supabase.from('users').upsert({
           id: user.id,
           name: user.name,
           email: user.email.toLowerCase(),
@@ -371,14 +455,17 @@ class HybridKPIDataRepository implements IKPIDataRepository {
           updated_at: user.updatedAt,
           last_login_at: user.lastLoginAt
         });
+        if (error) {
+          console.warn('[Repository] Supabase user upsert error:', error.message);
+        }
       } catch (err) {
-        console.warn('[Repository] Supabase user sync notification:', err);
+        console.warn('[Repository] Supabase user sync exception:', err);
       }
     }
   }
 
   async updateUserRole(userId: string, newRole: UserRole): Promise<void> {
-    const user = await kpiDb.users.get(userId);
+    const user = await this.getUserById(userId);
     if (!user) throw new Error('User not found.');
 
     // If demoting an admin to user, ensure at least one other admin exists!
@@ -395,7 +482,7 @@ class HybridKPIDataRepository implements IKPIDataRepository {
   }
 
   async deleteUser(userId: string): Promise<void> {
-    const user = await kpiDb.users.get(userId);
+    const user = await this.getUserById(userId);
     if (!user) return;
 
     if (user.role === 'admin') {
@@ -416,10 +503,31 @@ class HybridKPIDataRepository implements IKPIDataRepository {
   }
 
   async getUserCount(): Promise<number> {
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        const { count, error } = await supabase.from('users').select('*', { count: 'exact', head: true });
+        if (!error && count !== null) return count;
+      } catch {
+        // fallback
+      }
+    }
     return await kpiDb.users.count();
   }
 
   async getAdminCount(): Promise<number> {
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        const { count, error } = await supabase
+          .from('users')
+          .select('*', { count: 'exact', head: true })
+          .eq('role', 'admin');
+        if (!error && count !== null) return count;
+      } catch {
+        // fallback
+      }
+    }
     return await kpiDb.users.filter(u => u.role === 'admin').count();
   }
 }
