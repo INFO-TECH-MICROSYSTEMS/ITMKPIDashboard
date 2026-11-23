@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   Home, ShieldCheck, Activity, AlertTriangle, 
-  Cpu, TrendingUp, Gauge, Compass, Plus, Sparkles, Layers, Settings 
+  Cpu, TrendingUp, Gauge, Compass, Plus, Sparkles, Layers, Settings, Lock 
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
-  const { customCategories } = useUser();
+  const { customCategories, isAdmin } = useUser();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isHomeActive = location.pathname === '/';
@@ -165,9 +165,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
           <NavItem
             to="/settings"
-            icon={<Settings className="w-4 h-4 shrink-0" />}
+            icon={isAdmin ? <Settings className="w-4 h-4 shrink-0" /> : <Lock className="w-4 h-4 shrink-0 text-amber-500" />}
             label="Settings & Database"
-            badge="Admin"
+            badge={isAdmin ? 'Admin' : 'Locked'}
             isActive={location.pathname === '/settings'}
             isCollapsed={isCollapsed}
             onClick={() => setIsMobileOpen(false)}

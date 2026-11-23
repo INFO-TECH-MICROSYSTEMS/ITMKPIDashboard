@@ -72,6 +72,69 @@ export const SettingsPage: React.FC = () => {
 
   const isSupabase = storageStatus?.activeProvider === 'supabase';
 
+  // INDUSTRY STANDARD SECURITY GATE:
+  // If user is not authenticated or not an admin, lock the entire settings page!
+  if (!isAuthenticated || !isAdmin) {
+    return (
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-16 flex items-center justify-center animate-fadeIn">
+        <div className="max-w-lg w-full p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/20 shadow-2xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-500">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono tracking-wider bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 uppercase">
+              Administrator Access Required
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit']">
+              Restricted Administrative Area
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
+              Settings, connector telemetry, sample data generation, and account governance are protected administrative functions. You must be signed in with an <strong>Administrator (Admin)</strong> account to access this page.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-left text-xs space-y-2">
+            <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
+              <Info className="w-4 h-4 text-cyan-500 shrink-0" />
+              <span>Current Session Status</span>
+            </div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1 font-mono">
+              <div className="flex justify-between">
+                <span>Account Status:</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                  {isAuthenticated ? 'Authenticated (Standard User)' : 'Unauthenticated (Guest)'}
+                </span>
+              </div>
+              {currentUser && (
+                <div className="flex justify-between">
+                  <span>Signed in as:</span>
+                  <span className="text-cyan-600 dark:text-cyan-400">{currentUser.email}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md shadow-cyan-500/20 transition-all cursor-pointer"
+            >
+              {isAuthenticated ? 'Switch to Administrator Account' : 'Sign In as Administrator'}
+            </button>
+            <a
+              href="/"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors text-center cursor-pointer"
+            >
+              Return to Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8 animate-fadeIn">
       {/* Top Breadcrumb & Page Header */}
