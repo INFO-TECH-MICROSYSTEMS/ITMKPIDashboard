@@ -166,7 +166,7 @@ export const SettingsPage: React.FC = () => {
                   {storageStatus?.url && (
                     <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400">
                       Cloud Endpoint: <span className="underline">
-                        {storageStatus.url.replace(/https:\/\/[^.]+\.supabase\.co/i, 'https://*****.supabase.co')}
+                        {storageStatus.url.replace(/https:\/\/([a-z0-9]{2})[a-z0-9]+([a-z0-9]{2})\.supabase\.co/i, 'https://$1••••$2.supabase.co')}
                       </span>
                     </p>
                   )}
