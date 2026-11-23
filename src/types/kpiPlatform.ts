@@ -434,16 +434,20 @@ export interface KPIJustification {
 // 8. USER ACCOUNTS & CUSTOM KPI CATEGORIES
 // ==========================================
 
+export type UserRole = 'admin' | 'user';
+
 export interface UserAccount {
   id: string;
   name: string;
   email: string;
-  password?: string; // Stored securely in Dexie DB
+  role: UserRole;
+  passwordHash: string;
+  passwordSalt: string;
   avatarUrl?: string;
-  role?: string;
   department?: string;
   createdAt: string;
   updatedAt: string;
+  lastLoginAt?: string;
 }
 
 export interface UserCustomCategory {

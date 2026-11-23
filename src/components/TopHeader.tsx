@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Mail, Sun, Moon, ExternalLink } from 'lucide-react';
+import { Menu, Phone, Mail, Sun, Moon, ExternalLink, LogIn, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
@@ -22,7 +22,7 @@ interface TopHeaderProps {
 export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
-  const { currentUser } = useUser();
+  const { currentUser, isAuthenticated, isAdmin, openAuthModal, logout } = useUser();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -104,25 +104,58 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
 
           {/* Right Action Icons (Both Mobile & Desktop): User Account, Language Selector, Theme Toggle */}
           <div className="flex items-center space-x-2 sm:space-x-2.5">
-            {/* User Profile Pill */}
-            <button
-              type="button"
-              onClick={() => setIsProfileOpen(true)}
-              title="User Account & Profile (Database Connected)"
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 bg-slate-50 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer group"
-            >
-              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-600 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shadow-xs">
-                {currentUser?.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'SW'}
+            {/* User Profile Pill or Sign In Button */}
+            {isAuthenticated && currentUser ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsProfileOpen(true)}
+                  title={`${currentUser.name} (${currentUser.role.toUpperCase()}) - Click to view profile`}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-cyan-400 dark:hover:border-cyan-500 bg-slate-50 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer group"
+                >
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-600 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shadow-xs shrink-0">
+                    {currentUser.name ? currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'U'}
+                  </div>
+                  <div className="hidden md:flex flex-col text-left leading-none">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                        {currentUser.name}
+                      </span>
+                      {isAdmin ? (
+                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-mono">
+                          ADMIN
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">
+                          USER
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 truncate max-w-[140px]">
+                      {currentUser.email}
+                    </span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={logout}
+                  title="Sign out of account"
+                  className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-50 dark:bg-slate-900/80 transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-              <div className="hidden md:flex flex-col text-left leading-none">
-                <span className="text-xs font-semibold group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                  {currentUser?.name || 'Sudarsha W.'}
-                </span>
-                <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500">
-                  {currentUser?.email || 'sudarsha.wijenayake@gmail.com'}
-                </span>
-              </div>
-            </button>
+            ) : (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            )}
 
             {/* Language Selector Dropdown with Flags */}
             <LanguageSelector />

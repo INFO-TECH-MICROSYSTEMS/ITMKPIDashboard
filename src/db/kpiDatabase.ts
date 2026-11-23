@@ -55,6 +55,10 @@ export class KPIDatabase extends Dexie {
       users: 'id, email, name',
       userCustomCategories: 'id, userId, title, orderIndex'
     });
+
+    this.version(4).stores({
+      users: 'id, email, name, role, createdAt'
+    });
   }
 }
 

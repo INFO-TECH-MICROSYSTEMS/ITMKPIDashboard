@@ -25,7 +25,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
   const [name, setName] = useState(currentUser?.name || '');
   const [email, setEmail] = useState(currentUser?.email || '');
-  const [password, setPassword] = useState(currentUser?.password || '');
+  const [password, setPassword] = useState('');
   const [department, setDepartment] = useState(currentUser?.department || '');
   const [role, setRole] = useState(currentUser?.role || '');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -36,7 +36,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     if (currentUser) {
       setName(currentUser.name);
       setEmail(currentUser.email);
-      setPassword(currentUser.password || '');
+      setPassword('');
       setDepartment(currentUser.department || '');
       setRole(currentUser.role || '');
     }
@@ -49,9 +49,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
       await updateProfile({
         name,
         email,
-        password,
-        department,
-        role
+        ...(password ? { password } : {}),
+        department
       });
       setIsSuccess(true);
       setTimeout(() => {

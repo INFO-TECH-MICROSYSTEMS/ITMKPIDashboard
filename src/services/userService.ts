@@ -7,11 +7,11 @@
  */
 
 import { userRepository, type IUserRepository } from './userRepository';
-import type { UserAccount, UserCustomCategory } from '../types/kpiPlatform';
+import type { UserAccount, UserCustomCategory, UserRole } from '../types/kpiPlatform';
 
 export interface IUserService {
   getCurrentUser(): Promise<UserAccount>;
-  updateProfile(profile: { name: string; email: string; password?: string; department?: string; role?: string }): Promise<UserAccount>;
+  updateProfile(profile: { name: string; email: string; password?: string; department?: string; role?: UserRole }): Promise<UserAccount>;
   getUserCustomCategories(): Promise<UserCustomCategory[]>;
   createCustomCategory(title: string, iconName?: string, description?: string): Promise<UserCustomCategory>;
   updateCustomCategory(category: UserCustomCategory): Promise<void>;
@@ -37,12 +37,11 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async updateProfile(profile: { name: string; email: string; password?: string; department?: string; role?: string }): Promise<UserAccount> {
+  async updateProfile(profile: { name: string; email: string; password?: string; department?: string; role?: UserRole }): Promise<UserAccount> {
     const updated = await this.repo.updateUser({
       id: this.currentUserId,
       name: profile.name.trim(),
       email: profile.email.trim(),
-      ...(profile.password ? { password: profile.password } : {}),
       ...(profile.department !== undefined ? { department: profile.department } : {}),
       ...(profile.role !== undefined ? { role: profile.role } : {})
     });

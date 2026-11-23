@@ -22,9 +22,12 @@ import {
   Shuffle,
   ShieldCheck,
   Clock,
-  Sparkles
+  Sparkles,
+  Users,
+  Trash2
 } from 'lucide-react';
 import { useKPIDataContext } from '../context/KPIDataContext';
+import { useUser } from '../context/UserContext';
 
 export const SettingsPage: React.FC = () => {
   const { 
@@ -38,10 +41,20 @@ export const SettingsPage: React.FC = () => {
     reload 
   } = useKPIDataContext();
 
+  const { 
+    currentUser, 
+    isAuthenticated, 
+    isAdmin, 
+    allUsers, 
+    updateUserRole, 
+    deleteUser,
+    openAuthModal 
+  } = useUser();
+
   const [seedInput, setSeedInput] = useState<string>('');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'storage' | 'connectors' | 'audit'>('storage');
+  const [activeTab, setActiveTab] = useState<'storage' | 'connectors' | 'audit' | 'users'>('storage');
 
   const handleRegenerate = async (useRandomSeed: boolean) => {
     try {
@@ -108,6 +121,17 @@ export const SettingsPage: React.FC = () => {
         >
           <Clock className="w-4 h-4" />
           Sync Audit Trail
+        </button>
+        <button
+          onClick={() => setActiveTab('users')}
+          className={`flex items-center gap-2 pb-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'users'
+              ? 'border-cyan-500 text-cyan-600 dark:text-cyan-400'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          User Accounts & RBAC
         </button>
       </div>
 
@@ -444,6 +468,187 @@ export const SettingsPage: React.FC = () => {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: User Accounts & RBAC */}
+      {activeTab === 'users' && (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 text-xs text-slate-600 dark:text-slate-400 flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <Info className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                  Role-Based Access Control (RBAC) & Account Governance
+                </p>
+                <p>
+                  Accounts are stored securely in the database with PBKDF2-SHA256 salt-hashing. If no administrator exists, the first registered user is granted Admin privileges automatically. Only existing Administrators can grant or revoke admin privileges.
+                </p>
+              </div>
+            </div>
+
+            {!isAuthenticated && (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 text-white font-semibold text-xs shrink-0 shadow-xs cursor-pointer"
+              >
+                Sign In / Register
+              </button>
+            )}
+          </div>
+
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-cyan-500" />
+                  Registered System Accounts ({allUsers.length})
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Manage user profiles, promote users to Administrator, or revoke admin privileges.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="px-3.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-cyan-500 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+              >
+                + Create New Account
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase font-mono text-[10px]">
+                    <th className="py-2.5 px-3">User</th>
+                    <th className="py-2.5 px-3">Email</th>
+                    <th className="py-2.5 px-3">Role</th>
+                    <th className="py-2.5 px-3">Department</th>
+                    <th className="py-2.5 px-3">Created</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-slate-700 dark:text-slate-300">
+                  {allUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400 font-sans">
+                        <Users className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
+                        <p className="font-semibold text-slate-600 dark:text-slate-400">No user accounts created yet.</p>
+                        <p className="text-xs text-slate-400">Click "+ Create New Account" or "Sign In" to register the first Administrator.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    allUsers.map((user) => {
+                      const isCurrentUser = currentUser?.id === user.id;
+
+                      return (
+                        <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                          <td className="py-3 px-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-600 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+                                {user.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'U'}
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900 dark:text-slate-100 block font-sans">
+                                  {user.name}
+                                </span>
+                                {isCurrentUser && (
+                                  <span className="text-[9px] text-cyan-600 dark:text-cyan-400 font-bold font-mono">
+                                    (You)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{user.email}</td>
+                          <td className="py-3 px-3">
+                            {user.role === 'admin' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
+                                <ShieldCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                Administrator
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                Standard User
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-slate-500">{user.department || '—'}</td>
+                          <td className="py-3 px-3 text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td className="py-3 px-3 text-right">
+                            {isAdmin ? (
+                              <div className="flex items-center justify-end gap-2 font-sans">
+                                {user.role === 'admin' ? (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      try {
+                                        await updateUserRole(user.id, 'user');
+                                        setSuccessMessage(`Demoted ${user.name} to Standard User.`);
+                                      } catch (err: any) {
+                                        alert(err?.message || 'Failed to update role.');
+                                      }
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:border-amber-500 text-[11px] font-medium text-slate-700 dark:text-slate-300 transition-colors"
+                                    title="Demote to Standard User"
+                                  >
+                                    Demote to User
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      try {
+                                        await updateUserRole(user.id, 'admin');
+                                        setSuccessMessage(`Promoted ${user.name} to Administrator!`);
+                                      } catch (err: any) {
+                                        alert(err?.message || 'Failed to update role.');
+                                      }
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-500/30 hover:border-cyan-500 text-[11px] font-semibold text-cyan-700 dark:text-cyan-300 transition-colors"
+                                    title="Grant Administrator Permissions"
+                                  >
+                                    Grant Admin
+                                  </button>
+                                )}
+
+                                {!isCurrentUser && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      if (confirm(`Are you sure you want to delete user account "${user.name}"?`)) {
+                                        try {
+                                          await deleteUser(user.id);
+                                          setSuccessMessage(`Account for ${user.name} removed.`);
+                                        } catch (err: any) {
+                                          alert(err?.message || 'Failed to remove user.');
+                                        }
+                                      }
+                                    }}
+                                    className="p-1 rounded-lg text-slate-400 hover:text-rose-600 transition-colors"
+                                    title="Delete User"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 font-sans italic">
+                                Admin login required
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

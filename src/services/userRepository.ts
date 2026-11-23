@@ -20,11 +20,12 @@ export interface IUserRepository {
 }
 
 export const DEFAULT_USER: UserAccount = {
-  id: 'usr_sudarsha_001',
-  name: 'Sudarsha Wijenayake',
-  email: 'sudarsha.wijenayake@gmail.com',
-  password: 'password',
-  role: 'Quality Engineering Director & Chief Architect',
+  id: 'usr_admin_bootstrap',
+  name: 'System Administrator',
+  email: 'admin@infotechmicrosystems.com',
+  role: 'admin',
+  passwordHash: '',
+  passwordSalt: '',
   department: 'Enterprise Quality & Delivery Operations',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),

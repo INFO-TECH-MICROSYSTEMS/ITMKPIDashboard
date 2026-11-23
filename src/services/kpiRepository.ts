@@ -17,7 +17,9 @@ import type {
   DataSourceConfig, 
   SyncAuditLog, 
   KPIFilterState,
-  DataSourceType
+  DataSourceType,
+  UserAccount,
+  UserRole
 } from '../types/kpiPlatform';
 import { DEFAULT_CONNECTOR_CONFIGS } from '../constants/kpiConstants';
 
@@ -41,6 +43,16 @@ export interface IKPIDataRepository {
   getSyncLogs(): Promise<SyncAuditLog[]>;
   logSync(log: SyncAuditLog): Promise<void>;
   getRecordCounts(): Promise<{ jira: number; testRail: number; githubPRs: number; githubCommits: number }>;
+  
+  // User Authentication & Management
+  getAllUsers(): Promise<UserAccount[]>;
+  getUserByEmail(email: string): Promise<UserAccount | undefined>;
+  getUserById(id: string): Promise<UserAccount | undefined>;
+  saveUser(user: UserAccount): Promise<void>;
+  updateUserRole(userId: string, newRole: UserRole): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
+  getUserCount(): Promise<number>;
+  getAdminCount(): Promise<number>;
 }
 
 class HybridKPIDataRepository implements IKPIDataRepository {
@@ -322,6 +334,93 @@ class HybridKPIDataRepository implements IKPIDataRepository {
       kpiDb.githubCommits.count()
     ]);
     return { jira, testRail, githubPRs, githubCommits };
+  }
+
+  // ==========================================
+  // USER AUTHENTICATION & RBAC IMPLEMENTATION
+  // ==========================================
+
+  async getAllUsers(): Promise<UserAccount[]> {
+    return await kpiDb.users.toArray();
+  }
+
+  async getUserByEmail(email: string): Promise<UserAccount | undefined> {
+    const normalized = email.trim().toLowerCase();
+    return await kpiDb.users.filter(u => u.email.toLowerCase() === normalized).first();
+  }
+
+  async getUserById(id: string): Promise<UserAccount | undefined> {
+    return await kpiDb.users.get(id);
+  }
+
+  async saveUser(user: UserAccount): Promise<void> {
+    await kpiDb.users.put(user);
+
+    // If Supabase is connected, optionally mirror user
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        await supabase.from('users').upsert({
+          id: user.id,
+          name: user.name,
+          email: user.email.toLowerCase(),
+          role: user.role,
+          password_hash: user.passwordHash,
+          password_salt: user.passwordSalt,
+          created_at: user.createdAt,
+          updated_at: user.updatedAt,
+          last_login_at: user.lastLoginAt
+        });
+      } catch (err) {
+        console.warn('[Repository] Supabase user sync notification:', err);
+      }
+    }
+  }
+
+  async updateUserRole(userId: string, newRole: UserRole): Promise<void> {
+    const user = await kpiDb.users.get(userId);
+    if (!user) throw new Error('User not found.');
+
+    // If demoting an admin to user, ensure at least one other admin exists!
+    if (user.role === 'admin' && newRole === 'user') {
+      const adminCount = await this.getAdminCount();
+      if (adminCount <= 1) {
+        throw new Error('Action blocked: Cannot demote the last remaining Administrator.');
+      }
+    }
+
+    user.role = newRole;
+    user.updatedAt = new Date().toISOString();
+    await this.saveUser(user);
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const user = await kpiDb.users.get(userId);
+    if (!user) return;
+
+    if (user.role === 'admin') {
+      const adminCount = await this.getAdminCount();
+      if (adminCount <= 1) {
+        throw new Error('Action blocked: Cannot delete the last remaining Administrator.');
+      }
+    }
+
+    await kpiDb.users.delete(userId);
+    if (supabase) {
+      try {
+        await supabase.from('users').delete().eq('id', userId);
+      } catch (err) {
+        // ignore cloud delete error
+      }
+    }
+  }
+
+  async getUserCount(): Promise<number> {
+    return await kpiDb.users.count();
+  }
+
+  async getAdminCount(): Promise<number> {
+    return await kpiDb.users.filter(u => u.role === 'admin').count();
   }
 }
 

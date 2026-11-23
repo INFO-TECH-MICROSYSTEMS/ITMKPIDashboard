@@ -20,6 +20,7 @@ import { KPICategoryPage } from './pages/KPICategoryPage';
 import { CustomCategoryPage } from './pages/CustomCategoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { KPIProgressModal } from './components/common/KPIProgressModal';
+import { AuthModal } from './components/auth/AuthModal';
 import { useKPIDataContext } from './context/KPIDataContext';
 
 function AppContent({
@@ -38,6 +39,7 @@ function AppContent({
   return (
     <>
       <KPIProgressModal progress={progressState} />
+      <AuthModal />
       <div className="min-h-screen flex bg-slate-50 text-slate-900 dark:bg-[#070913] dark:text-slate-100 transition-colors duration-300">
         {/* Collapsible Left Side Navigation Pane */}
         <Sidebar
