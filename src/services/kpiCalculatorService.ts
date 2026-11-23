@@ -496,18 +496,19 @@ export class KPICalculatorService {
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const targetMs = targetDate.getTime();
 
-      // Cumulative tests planned / in scope up to this date - EXCLUSIVELY FROM DATABASE
+      // Cumulative tests planned / in scope up to this date - based on when test was added to release scope
       const cumulativePlanned = testRailExecutions.filter(t => {
-        const itemMs = new Date(t.executionDate).getTime();
-        return itemMs <= targetMs + 86400000;
+        const itemAddMs = new Date(t.addedDate || t.executionDate).getTime();
+        return itemAddMs <= targetMs + 86400000;
       }).length;
       const totalTestsAtDate = cumulativePlanned;
 
-      // Cumulative completed tests up to this date - EXCLUSIVELY FROM DATABASE
+      // Cumulative completed tests up to this date - based on when execution actually occurred
+      // (At day 0 / kickoff, completed tests = 0 since no executions have completed yet)
       const cumulativeCompleted = testRailExecutions.filter(t => {
         if (t.status === 'Unattempted') return false;
-        const itemMs = new Date(t.executionDate).getTime();
-        return itemMs <= targetMs + 86400000;
+        const itemExecMs = new Date(t.executionDate).getTime();
+        return itemExecMs <= targetMs + 86400000;
       }).length;
       const completedTestsAtDate = Math.min(totalTestsAtDate, cumulativeCompleted);
 
@@ -629,18 +630,19 @@ export class KPICalculatorService {
       const label = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const targetMs = targetDate.getTime();
 
-      // Cumulative tests in scope up to this date - EXCLUSIVELY FROM DATABASE
+      // Cumulative tests in scope up to this date - based on addedDate
       const cumulativeInScope = testRailExecutions.filter(t => {
-        const itemMs = new Date(t.executionDate).getTime();
-        return itemMs <= targetMs + 86400000;
+        const itemAddMs = new Date(t.addedDate || t.executionDate).getTime();
+        return itemAddMs <= targetMs + 86400000;
       }).length;
       const totalTestsAtDate = cumulativeInScope;
 
-      // Cumulative automated tests up to this date - EXCLUSIVELY FROM DATABASE
+      // Cumulative automated tests up to this date
+      // An automated test contributes to automated tests up to this date once in scope/executed
       const cumulativeAutomated = testRailExecutions.filter(t => {
         if (t.mode !== 'Automated') return false;
-        const itemMs = new Date(t.executionDate).getTime();
-        return itemMs <= targetMs + 86400000;
+        const itemDateMs = new Date(t.addedDate || t.executionDate).getTime();
+        return itemDateMs <= targetMs + 86400000;
       }).length;
 
       const automatedAtDate = Math.min(totalTestsAtDate, cumulativeAutomated);

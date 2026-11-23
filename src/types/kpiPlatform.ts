@@ -109,7 +109,8 @@ export interface TestRailExecution {
   sprint: string;
   releaseVersion: string;
   executedBy: string;
-  executionDate: string;
+  addedDate?: string; // When test was selected/added to release scope (ISO string)
+  executionDate: string; // When test was executed (ISO string)
   durationSeconds: number;
   isFlaky: boolean;
   rerunCount: number;

@@ -316,10 +316,16 @@ export function generateDynamicKPIEnterpriseDataset(seedInput?: string | number)
     }
 
     // 2. Generate ~1,000 TestRail Test Executions for this release (e.g. 980 - 1,060)
-    // Progressive Automation & Execution Growth Model:
-    // - Initially marked for execution at startDate.
-    // - Automation starts lower, ramps up dynamically as release progresses (~85% by end).
+    // REALISTIC LIFECYCLE REQUIREMENTS:
+    // - Release kickoff (Day 0): A large initial bulk of existing tests (~85-90%) is marked for execution on startDate.
+    // - Completed tests at kickoff = 0!
+    // - As the release progresses, small amounts of new tests (~10-15%) are progressively added to scope.
+    // - At release start: Both automated and manual tests exist; Manual tests exceed automated tests (e.g. ~55-65% manual vs ~35-45% automated).
+    // - Over release progression: Manual tests are steadily automated, reaching ~85-90% automated by release end (some remaining manual).
+    // - Completed tests grow steadily across the release cycle.
+    // - At release end (completed releases): All tests marked for execution are completed (unattempted = 0).
     const testCount = rng.range(980, 1050);
+    const initialScopeCount = Math.floor(testCount * rng.range(84, 89) / 100); // 84-89% existing tests selected on day 0
 
     for (let j = 0; j < testCount; j++) {
       testCounter++;
@@ -328,77 +334,81 @@ export function generateDynamicKPIEnterpriseDataset(seedInput?: string | number)
       const suiteType = rng.choice(suiteTypes);
       const component = rng.choice(components);
 
-      // Normalized progress point within release cycle (0 = start, 1 = end of release)
-      let progressPoint: number;
+      // 1. Determine when the test was selected/added to scope (addedDate)
+      const isInitialTest = (j < initialScopeCount);
+      let addedMs: number;
+      if (isInitialTest) {
+        // Selected at release kickoff (Day 0)
+        addedMs = startDate.getTime();
+      } else {
+        // Added later during release progression (spread between start and end/today)
+        const maxAddMs = isOngoing ? now.getTime() : targetDate.getTime();
+        addedMs = startDate.getTime() + rng.next() * (maxAddMs - startDate.getTime());
+      }
+      const addedDate = new Date(addedMs).toISOString();
+
+      // 2. Determine execution status & execution timestamp (executionDate)
+      let status: TestExecutionStatus;
+      let executionDate: string;
       let execTimeMs: number;
 
       if (!isOngoing) {
-        // Completed release: tests span entire startDate -> targetDate
-        progressPoint = rng.next();
-        execTimeMs = startDate.getTime() + progressPoint * releaseSpanMs;
+        // COMPLETED RELEASE:
+        // All tests marked for execution are completed! (unattempted === 0)
+        // High pass rate (96%+), minor failures, tiny blocked due to deferred defects
+        const roll = rng.next();
+        if (roll < 0.965) status = 'Passed';
+        else if (roll < 0.99) status = 'Failed';
+        else status = 'Blocked';
+
+        // Executed between addedMs and targetDate
+        const executionSpan = Math.max(86400000, targetDate.getTime() - addedMs);
+        execTimeMs = addedMs + rng.next() * executionSpan;
+        executionDate = new Date(execTimeMs).toISOString();
       } else {
-        // Ongoing release: tests executed between startDate and now
-        const elapsedRatio = Math.min(1, Math.max(0.05, (now.getTime() - startDate.getTime()) / releaseSpanMs));
-        const hasBeenExecuted = rng.next() < elapsedRatio; // Tests executed grow with time elapsed
+        // ONGOING RELEASE:
+        // Starts with 0 completed tests at startDate, growing toward today.
+        const releaseElapsedRatio = Math.min(1, Math.max(0.05, (now.getTime() - startDate.getTime()) / releaseSpanMs));
+        
+        // Probability this test has been executed yet: proportional to elapsed time since added
+        const testAvailableSpan = Math.max(86400000, now.getTime() - addedMs);
+        const testElapsedRatio = Math.min(1, testAvailableSpan / releaseSpanMs);
+        const executionProbability = releaseElapsedRatio * (0.8 + 0.4 * testElapsedRatio);
+        const hasBeenExecuted = rng.next() < executionProbability;
 
         if (hasBeenExecuted) {
-          progressPoint = rng.next() * elapsedRatio;
-          execTimeMs = startDate.getTime() + (progressPoint / elapsedRatio) * (now.getTime() - startDate.getTime());
+          const resRoll = rng.next();
+          if (resRoll < 0.88) status = 'Passed';
+          else if (resRoll < 0.95) status = 'Failed';
+          else status = 'Blocked';
+
+          // Executed between addedMs and now
+          execTimeMs = addedMs + rng.next() * (now.getTime() - addedMs);
+          executionDate = new Date(execTimeMs).toISOString();
         } else {
-          // Untested / Pending execution (remains Unattempted)
-          progressPoint = elapsedRatio;
+          // Untested / Pending execution
+          status = 'Unattempted';
+          // For unattempted tests, executionDate defaults to now (or addedDate)
           execTimeMs = now.getTime();
+          executionDate = addedDate;
         }
       }
 
-      // Progressive Automation Ratio:
-      // At release start (progressPoint = 0): automated ratio is ~45% (manual > automated)
-      // By release end (progressPoint = 1): automated ratio reaches ~85-90%
-      const automationProbability = 0.45 + (progressPoint * 0.42);
-      const isAutomated = (suiteType === 'Unit' || suiteType === 'API' || suiteType === 'Contract') 
-        ? rng.boolean(0.95) 
-        : rng.boolean(automationProbability);
+      // 3. Automation Mode:
+      // - At release start: large number of both automated and manual tests exist.
+      // - Manual tests can always be more than automated tests initially (~40% automated, ~60% manual).
+      // - Progressively automated as the release advances, reaching ~85-90% automated by end.
+      // - Unit/API/Contract are almost always automated; UI/Regression/Security are gradually automated.
+      const normalizedPoint = Math.min(1, Math.max(0, (execTimeMs - startDate.getTime()) / releaseSpanMs));
+      const autoProbability = 0.38 + (normalizedPoint * 0.48); // 38% at start -> ~86% at end
+      
+      const isAutomated = (suiteType === 'Unit' || suiteType === 'API' || suiteType === 'Contract')
+        ? rng.boolean(0.92)
+        : rng.boolean(autoProbability);
       const mode: TestExecutionMode = isAutomated ? 'Automated' : 'Manual';
 
-      let status: TestExecutionStatus;
-      if (!isOngoing) {
-        // COMPLETED RELEASE RULES:
-        // Must pass Pre-Release Quality Assessment:
-        // NO untested tests! (unattempted === 0)
-        // Small failure rate (~1.5% - 2.5%), tiny blocked rate (~1% due to deferred minor bugs)
-        const roll = rng.next();
-        if (roll < 0.965) {
-          status = 'Passed';
-        } else if (roll < 0.99) {
-          status = 'Failed';
-        } else {
-          status = 'Blocked';
-        }
-      } else {
-        // ONGOING RELEASE RULES:
-        // In-flight: has Unattempted tests, Blocked, Failed, Passed
-        const elapsedRatio = Math.min(1, Math.max(0.05, (now.getTime() - startDate.getTime()) / releaseSpanMs));
-        const roll = rng.next();
-
-        if (roll > elapsedRatio) {
-          status = 'Unattempted';
-        } else {
-          const resultRoll = rng.next();
-          if (resultRoll < 0.88) {
-            status = 'Passed';
-          } else if (resultRoll < 0.95) {
-            status = 'Failed';
-          } else {
-            status = 'Blocked';
-          }
-        }
-      }
-
-      const executionDate = new Date(execTimeMs).toISOString();
       const isFlaky = isAutomated && rng.boolean(0.035);
       const durationSeconds = isAutomated ? rng.range(2, 35) : rng.range(180, 1200);
-
-      // Mid-point sprint allocation
       const sprint = execTimeMs < (startDate.getTime() + releaseSpanMs / 2) ? sprint1 : sprint2;
 
       testRailExecutions.push({
@@ -413,6 +423,7 @@ export function generateDynamicKPIEnterpriseDataset(seedInput?: string | number)
         sprint,
         releaseVersion,
         executedBy: isAutomated ? 'CI/CD GitHub Actions' : rng.choice(QA_ENGINEERS),
+        addedDate,
         executionDate,
         durationSeconds,
         isFlaky,
