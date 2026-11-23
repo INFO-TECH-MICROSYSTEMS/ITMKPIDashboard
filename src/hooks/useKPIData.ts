@@ -16,6 +16,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { kpiRepository } from '../services/kpiRepository';
 import { KPICalculatorService } from '../services/kpiCalculatorService';
+import type { StorageStatus } from '../services/supabaseClient';
 import type { 
   JiraWorkItem, 
   TestRailExecution, 
@@ -65,6 +66,13 @@ export function useKPIData() {
 
   const [connectorConfigs, setConnectorConfigs] = useState<DataSourceConfig[]>([]);
   const [syncLogs, setSyncLogs] = useState<SyncAuditLog[]>([]);
+  const [storageStatus, setStorageStatus] = useState<StorageStatus | null>(null);
+  const [recordCounts, setRecordCounts] = useState<{ jira: number; testRail: number; githubPRs: number; githubCommits: number }>({
+    jira: 0,
+    testRail: 0,
+    githubPRs: 0,
+    githubCommits: 0
+  });
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
@@ -75,6 +83,13 @@ export function useKPIData() {
     try {
       setIsLoading(true);
       await kpiRepository.init();
+
+      const [status, counts] = await Promise.all([
+        kpiRepository.getStorageStatus(),
+        kpiRepository.getRecordCounts()
+      ]);
+      setStorageStatus(status);
+      setRecordCounts(counts);
 
       const promises: [
         Promise<JiraWorkItem[]>,
@@ -152,14 +167,16 @@ export function useKPIData() {
     }
   }, [loadData]);
 
-  // Reset to initial rich sample dataset
-  const resetToSampleData = useCallback(async () => {
+  // Reset to initial rich sample dataset (supports optional deterministic seed)
+  const resetToSampleData = useCallback(async (seed?: string | number) => {
     setIsSyncing(true);
     try {
-      await kpiRepository.resetToSampleDataset();
+      const result = await kpiRepository.resetToSampleDataset(seed);
       await loadData();
+      return result;
     } catch (err) {
       console.error('Error resetting sample dataset:', err);
+      throw err;
     } finally {
       setIsSyncing(false);
     }
@@ -383,6 +400,8 @@ export function useKPIData() {
     githubCommitsB,
     connectorConfigs,
     syncLogs,
+    storageStatus,
+    recordCounts,
     isLoading,
     isSyncing,
     lastRefreshedAt,

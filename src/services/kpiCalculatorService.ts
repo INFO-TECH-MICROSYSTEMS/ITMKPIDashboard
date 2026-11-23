@@ -473,14 +473,17 @@ export class KPICalculatorService {
 
     let startMs: number;
     let endMs: number;
+    let isOngoing = false;
 
     if (typeof releaseWindow === 'object' && releaseWindow !== null) {
       startMs = new Date(releaseWindow.startDate).getTime();
       endMs = new Date(releaseWindow.endDate).getTime();
+      isOngoing = Boolean(releaseWindow.isActive);
     } else {
       const days = typeof releaseWindow === 'number' ? releaseWindow : 30;
       endMs = Date.now();
       startMs = endMs - (days - 1) * 86400000;
+      isOngoing = unexecuted > 0;
     }
 
     const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
@@ -533,13 +536,13 @@ export class KPICalculatorService {
     const currentDailyVelocity = Math.max(1, Math.round(rawVelocity));
 
     const remainingUntested = unexecuted;
-    const daysToCompletion = remainingUntested > 0 
+    const daysToCompletion = (isOngoing && remainingUntested > 0)
       ? Math.max(1, Math.ceil(remainingUntested / currentDailyVelocity))
       : 0;
 
-    // Build extended projection points into the future
+    // Build extended projection points into the future ONLY for ongoing releases with remaining untested tests
     const forecastPoints: TrendPoint[] = [];
-    if (remainingUntested > 0) {
+    if (isOngoing && remainingUntested > 0) {
       const maxForecastDays = Math.min(14, Math.max(3, daysToCompletion));
       let projectedCompleted = historyPoints[historyPoints.length - 1]?.value2 ?? completedSoFar;
 
@@ -603,14 +606,17 @@ export class KPICalculatorService {
 
     let startMs: number;
     let endMs: number;
+    let isOngoing = false;
 
     if (typeof releaseWindow === 'object' && releaseWindow !== null) {
       startMs = new Date(releaseWindow.startDate).getTime();
       endMs = new Date(releaseWindow.endDate).getTime();
+      isOngoing = Boolean(releaseWindow.isActive);
     } else {
       const days = typeof releaseWindow === 'number' ? releaseWindow : 30;
       endMs = Date.now();
       startMs = endMs - (days - 1) * 86400000;
+      isOngoing = manualTestsRemaining > 0;
     }
 
     const totalDays = Math.max(1, Math.round((endMs - startMs) / 86400000)) + 1;
@@ -662,14 +668,14 @@ export class KPICalculatorService {
       : (totalDays > 0 && automatedSoFar > 0 ? Math.round(automatedSoFar / totalDays) : 1);
     const currentDailyVelocity = Math.max(1, Math.round(rawVelocity));
 
-    // Calculate runway in days to automate all remaining manual tests
-    const daysToAllAutomated = manualTestsRemaining > 0 
+    // Calculate runway in days to automate all remaining manual tests ONLY for ongoing releases
+    const daysToAllAutomated = (isOngoing && manualTestsRemaining > 0)
       ? Math.max(1, Math.ceil(manualTestsRemaining / currentDailyVelocity))
       : 0;
 
-    // Build future projection points
+    // Build future projection points ONLY for ongoing releases
     const forecastPoints: TrendPoint[] = [];
-    if (manualTestsRemaining > 0) {
+    if (isOngoing && manualTestsRemaining > 0) {
       const maxForecastDays = Math.min(30, Math.max(5, daysToAllAutomated));
       let projectedAutomated = historyPoints[historyPoints.length - 1]?.value2 ?? automatedSoFar;
 

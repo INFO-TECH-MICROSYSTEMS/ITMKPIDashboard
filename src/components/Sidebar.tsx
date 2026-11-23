@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   Home, ShieldCheck, Activity, AlertTriangle, 
-  Cpu, TrendingUp, Gauge, Compass, Plus, Sparkles, Layers 
+  Cpu, TrendingUp, Gauge, Compass, Plus, Sparkles, Layers, Settings 
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -157,6 +157,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             );
           })}
+
+          {/* Administration & Configuration */}
+          <NavSectionHeader
+            label={isCollapsed ? 'Admin' : 'System Administration'}
+            isCollapsed={isCollapsed}
+          />
+          <NavItem
+            to="/settings"
+            icon={<Settings className="w-4 h-4 shrink-0" />}
+            label="Settings & Database"
+            badge="Admin"
+            isActive={location.pathname === '/settings'}
+            isCollapsed={isCollapsed}
+            onClick={() => setIsMobileOpen(false)}
+          />
         </div>
 
         {/* Modular Footer */}

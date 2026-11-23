@@ -18,6 +18,7 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { HomePage } from './pages/HomePage';
 import { KPICategoryPage } from './pages/KPICategoryPage';
 import { CustomCategoryPage } from './pages/CustomCategoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export function App() {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -75,6 +76,9 @@ export function App() {
 
                     {/* Dynamic Custom Category Workspace Page */}
                     <Route path="/custom/:categoryId" element={<CustomCategoryPage />} />
+
+                    {/* Settings & Data Infrastructure Page */}
+                    <Route path="/settings" element={<SettingsPage />} />
 
                     {/* Fallback to root */}
                     <Route path="*" element={<Navigate to="/" replace />} />

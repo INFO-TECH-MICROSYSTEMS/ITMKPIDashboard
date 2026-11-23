@@ -301,7 +301,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
 
           <button
             type="button"
-            onClick={resetToSampleData}
+            onClick={() => { resetToSampleData(); }}
             disabled={isSyncing}
             className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold text-xs border border-purple-200 dark:border-purple-500/30 transition-colors cursor-pointer"
             title={t('kpiPlatform.resetDemoDataTitle', 'Reset all metrics back to default baseline')}
@@ -352,7 +352,7 @@ export const KPICategoryPage: React.FC<KPICategoryPageProps> = ({ categoryId }) 
         configs={connectorConfigs}
         onSaveConfig={saveConnectorConfig}
         onTriggerSync={triggerSyncNow}
-        onResetSampleData={resetToSampleData}
+        onResetSampleData={async () => { await resetToSampleData(); }}
         isSyncing={isSyncing}
       />
 

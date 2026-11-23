@@ -6,14 +6,9 @@
  * via any medium, is strictly prohibited.
  */
 
-/**
- * Quality Engineering Data Access Layer (Repository Pattern)
- * Provides clean decoupling between database storage (Dexie IndexedDB) and business logic.
- * Enforces atomic Wipe-and-Replace semantics on every sync.
- */
-
 import { kpiDb } from '../db/kpiDatabase';
-import { generateSampleDataset } from '../db/seeder';
+import { generateDynamicKPIEnterpriseDataset } from './dynamicDataGenerator';
+import { supabase, checkStorageHealth, type StorageStatus } from './supabaseClient';
 import type { 
   JiraWorkItem, 
   TestRailExecution, 
@@ -28,7 +23,8 @@ import { DEFAULT_CONNECTOR_CONFIGS } from '../constants/kpiConstants';
 
 export interface IKPIDataRepository {
   init(): Promise<void>;
-  resetToSampleDataset(): Promise<void>;
+  getStorageStatus(): Promise<StorageStatus>;
+  resetToSampleDataset(seed?: string | number): Promise<{ recordsCount: number; seed: string; timestamp: string }>;
   wipeAndReplaceSource(source: DataSourceType, newData: any[]): Promise<void>;
   wipeAndReplaceAll(
     jira: JiraWorkItem[], 
@@ -44,47 +40,56 @@ export interface IKPIDataRepository {
   saveConnectorConfig(config: DataSourceConfig): Promise<void>;
   getSyncLogs(): Promise<SyncAuditLog[]>;
   logSync(log: SyncAuditLog): Promise<void>;
+  getRecordCounts(): Promise<{ jira: number; testRail: number; githubPRs: number; githubCommits: number }>;
 }
 
-class KPIDataRepository implements IKPIDataRepository {
+class HybridKPIDataRepository implements IKPIDataRepository {
   private initialized = false;
+  private currentStorageStatus: StorageStatus | null = null;
+
+  async getStorageStatus(): Promise<StorageStatus> {
+    this.currentStorageStatus = await checkStorageHealth();
+    return this.currentStorageStatus;
+  }
 
   async init(): Promise<void> {
     if (this.initialized) return;
 
+    await this.getStorageStatus();
     const count = await kpiDb.jiraWorkItems.count();
     const firstItem = await kpiDb.jiraWorkItems.limit(1).first();
     const isLegacy = !firstItem || !['YouTube', 'GMail', 'LinkedIn', 'Shopify', 'Amazon'].includes(firstItem.product);
 
-    // Check if defect discoveryMethod telemetry is populated in current DB
-    const sampleBug = await kpiDb.jiraWorkItems.filter(i => i.type === 'Bug').first();
-    const hasDiscoveryMethod = Boolean(sampleBug && sampleBug.discoveryMethod);
+    // Dataset generation check
+    const DATASET_GENERATION_KEY = 'itm_kpi_dataset_dynamic_v1';
+    const hasGeneratedDynamic = typeof window !== 'undefined' ? localStorage.getItem(DATASET_GENERATION_KEY) : null;
 
-    const DATASET_VERSION = '2026-10-15-v4';
-    const currentVersion = typeof window !== 'undefined' ? localStorage.getItem('itm_kpi_dataset_version') : null;
-
-    if (count < 10000 || isLegacy || !hasDiscoveryMethod || currentVersion !== DATASET_VERSION) {
+    if (count < 10000 || isLegacy || !hasGeneratedDynamic) {
       await this.resetToSampleDataset();
       if (typeof window !== 'undefined') {
-        localStorage.setItem('itm_kpi_dataset_version', DATASET_VERSION);
+        localStorage.setItem(DATASET_GENERATION_KEY, new Date().toISOString());
       }
     } else {
-      // Ensure connector configs exist
       const configCount = await kpiDb.dataSourceConfigs.count();
       if (configCount === 0) {
         await kpiDb.dataSourceConfigs.bulkPut(DEFAULT_CONNECTOR_CONFIGS);
       }
     }
+
     this.initialized = true;
   }
 
   /**
-   * Resets database completely with high-volume sample data.
-   * Atomic Wipe & Replace.
+   * Generates completely fresh, realistic sample data dynamically anchored to `new Date()`.
+   * Purges database tables, persists to Dexie (and Supabase if connected),
+   * and logs atomic sync status.
    */
-  async resetToSampleDataset(): Promise<void> {
-    const { jiraItems, testRailExecutions, githubPRs, githubCommits } = generateSampleDataset();
+  async resetToSampleDataset(seed?: string | number): Promise<{ recordsCount: number; seed: string; timestamp: string }> {
+    const dataset = generateDynamicKPIEnterpriseDataset(seed);
+    const { jiraItems, testRailExecutions, githubPRs, githubCommits } = dataset;
+    const totalRecords = jiraItems.length + testRailExecutions.length + githubPRs.length + githubCommits.length;
 
+    // 1. Transactionally wipe and save in Dexie IndexedDB
     await kpiDb.transaction('rw', [
       kpiDb.jiraWorkItems,
       kpiDb.testRailExecutions,
@@ -93,44 +98,64 @@ class KPIDataRepository implements IKPIDataRepository {
       kpiDb.dataSourceConfigs,
       kpiDb.syncAuditLogs
     ], async () => {
-      // Clear existing records entirely
       await kpiDb.jiraWorkItems.clear();
       await kpiDb.testRailExecutions.clear();
       await kpiDb.githubPullRequests.clear();
       await kpiDb.githubCommits.clear();
 
-      // Repopulate with generated dataset
       await kpiDb.jiraWorkItems.bulkPut(jiraItems);
       await kpiDb.testRailExecutions.bulkPut(testRailExecutions);
       await kpiDb.githubPullRequests.bulkPut(githubPRs);
       await kpiDb.githubCommits.bulkPut(githubCommits);
 
-      // Re-seed default connectors if empty
       const existingConfigs = await kpiDb.dataSourceConfigs.toArray();
       if (existingConfigs.length === 0) {
         await kpiDb.dataSourceConfigs.bulkPut(DEFAULT_CONNECTOR_CONFIGS);
       }
 
-      // Record audit log
       const auditLog: SyncAuditLog = {
         id: `SYNC-${Date.now()}`,
         timestamp: new Date().toISOString(),
         source: 'all',
-        recordsReplaced: jiraItems.length + testRailExecutions.length + githubPRs.length + githubCommits.length,
-        durationMs: 340,
+        recordsReplaced: totalRecords,
+        durationMs: 380,
         status: 'success'
       };
       await kpiDb.syncAuditLogs.put(auditLog);
     });
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('itm_kpi_dataset_version', '2026-10-15-v4');
+    // 2. If Supabase is reachable, asynchronously update cloud tables
+    const status = await this.getStorageStatus();
+    if (status.activeProvider === 'supabase' && supabase) {
+      try {
+        // Log to cloud audit log / sync table
+        await supabase.from('connectors').upsert(
+          DEFAULT_CONNECTOR_CONFIGS.map(c => ({
+            id: c.id,
+            name: c.name,
+            frequency: c.frequency,
+            last_sync_timestamp: new Date().toISOString(),
+            last_sync_status: 'success',
+            record_count: totalRecords
+          }))
+        );
+      } catch (cloudErr) {
+        console.warn('[Repository] Cloud push notification:', cloudErr);
+      }
     }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('itm_kpi_dataset_dynamic_v1', dataset.generatedAt);
+      localStorage.setItem('itm_kpi_last_seed', dataset.seed);
+    }
+
+    return {
+      recordsCount: totalRecords,
+      seed: dataset.seed,
+      timestamp: dataset.generatedAt
+    };
   }
 
-  /**
-   * Atomic Wipe & Replace for a specific data source.
-   */
   async wipeAndReplaceSource(source: DataSourceType, newData: any[]): Promise<void> {
     const startTime = Date.now();
     await kpiDb.transaction('rw', [
@@ -150,10 +175,8 @@ class KPIDataRepository implements IKPIDataRepository {
       } else if (source === 'github') {
         await kpiDb.githubPullRequests.clear();
         await kpiDb.githubCommits.clear();
-        // Assuming array containing { prs, commits } or handled appropriately
       }
 
-      // Update connector lastSync timestamp
       const connector = await kpiDb.dataSourceConfigs.get(source);
       if (connector) {
         connector.lastSyncTimestamp = new Date().toISOString();
@@ -162,7 +185,6 @@ class KPIDataRepository implements IKPIDataRepository {
         await kpiDb.dataSourceConfigs.put(connector);
       }
 
-      // Record audit log
       await kpiDb.syncAuditLogs.put({
         id: `SYNC-${Date.now()}`,
         timestamp: new Date().toISOString(),
@@ -174,9 +196,6 @@ class KPIDataRepository implements IKPIDataRepository {
     });
   }
 
-  /**
-   * Atomic Wipe & Replace for all sources simultaneously.
-   */
   async wipeAndReplaceAll(
     jira: JiraWorkItem[], 
     testRail: TestRailExecution[], 
@@ -216,7 +235,6 @@ class KPIDataRepository implements IKPIDataRepository {
 
   async getJiraItems(filter?: KPIFilterState): Promise<JiraWorkItem[]> {
     let collection = kpiDb.jiraWorkItems.toCollection();
-
     if (filter) {
       if (filter.product && filter.product !== 'All') {
         collection = collection.filter(item => item.product === filter.product);
@@ -231,13 +249,11 @@ class KPIDataRepository implements IKPIDataRepository {
         collection = collection.filter(item => item.releaseVersion === filter.releaseVersion);
       }
     }
-
     return await collection.toArray();
   }
 
   async getTestRailExecutions(filter?: KPIFilterState): Promise<TestRailExecution[]> {
     let collection = kpiDb.testRailExecutions.toCollection();
-
     if (filter) {
       if (filter.product && filter.product !== 'All') {
         collection = collection.filter(t => t.product === filter.product);
@@ -252,33 +268,28 @@ class KPIDataRepository implements IKPIDataRepository {
         collection = collection.filter(t => t.releaseVersion === filter.releaseVersion);
       }
     }
-
     return await collection.toArray();
   }
 
   async getGitHubPullRequests(filter?: KPIFilterState): Promise<GitHubPullRequest[]> {
     let collection = kpiDb.githubPullRequests.toCollection();
-
     if (filter) {
       if (filter.product && filter.product !== 'All') {
         const repoPrefix = filter.product.toLowerCase();
         collection = collection.filter(pr => pr.repository.toLowerCase().includes(repoPrefix));
       }
     }
-
     return await collection.toArray();
   }
 
   async getGitHubCommits(filter?: KPIFilterState): Promise<GitHubCommit[]> {
     let collection = kpiDb.githubCommits.toCollection();
-
     if (filter) {
       if (filter.product && filter.product !== 'All') {
         const repoPrefix = filter.product.toLowerCase();
         collection = collection.filter(c => c.repository.toLowerCase().includes(repoPrefix));
       }
     }
-
     return await collection.toArray();
   }
 
@@ -302,6 +313,16 @@ class KPIDataRepository implements IKPIDataRepository {
   async logSync(log: SyncAuditLog): Promise<void> {
     await kpiDb.syncAuditLogs.put(log);
   }
+
+  async getRecordCounts(): Promise<{ jira: number; testRail: number; githubPRs: number; githubCommits: number }> {
+    const [jira, testRail, githubPRs, githubCommits] = await Promise.all([
+      kpiDb.jiraWorkItems.count(),
+      kpiDb.testRailExecutions.count(),
+      kpiDb.githubPullRequests.count(),
+      kpiDb.githubCommits.count()
+    ]);
+    return { jira, testRail, githubPRs, githubCommits };
+  }
 }
 
-export const kpiRepository: IKPIDataRepository = new KPIDataRepository();
+export const kpiRepository: IKPIDataRepository = new HybridKPIDataRepository();
