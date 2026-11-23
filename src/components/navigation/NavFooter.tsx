@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { MapPin, Phone, Mail, Sun, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 export interface NavFooterProps {
   theme: string;
@@ -58,8 +58,19 @@ export const NavFooter: React.FC<NavFooterProps> = ({
       <div className={`space-y-1.5 pt-1 text-[11px] text-slate-500 dark:text-slate-400 ${
         isCollapsed ? 'lg:hidden' : 'block'
       }`}>
-        <div className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-semibold font-mono">
-          <MapPin className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+        <a 
+          href="https://www.infotechmicrosystems.com/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-semibold hover:text-cyan-900 dark:hover:text-cyan-200 transition-colors"
+          title="Visit Info Tech Microsystems Official Website"
+        >
+          <span className="truncate">Info Tech Microsystems</span>
+          <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+        </a>
+
+        <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-mono text-[10px]">
+          <MapPin className="w-3 h-3 text-cyan-600 dark:text-cyan-400 shrink-0" />
           <span className="truncate">{hqLocationLabel}</span>
         </div>
         
@@ -72,12 +83,12 @@ export const NavFooter: React.FC<NavFooterProps> = ({
         </a>
 
         <a 
-          href="mailto:info.tech.microsystems.ca@gmail.com" 
+          href="mailto:kpi.contact@infotechmicrosystems.com" 
           className="flex items-center gap-1.5 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors truncate"
-          title="info.tech.microsystems.ca@gmail.com"
+          title="kpi.contact@infotechmicrosystems.com"
         >
           <Mail className="w-3 h-3 text-cyan-600 dark:text-cyan-400 shrink-0" />
-          <span className="truncate">info.tech.microsystems.ca...</span>
+          <span className="truncate">kpi.contact@infotechmicrosystems.com</span>
         </a>
       </div>
 

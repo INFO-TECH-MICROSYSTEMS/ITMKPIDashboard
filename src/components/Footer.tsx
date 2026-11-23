@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 
@@ -34,9 +34,20 @@ export const Footer: React.FC = () => {
                 alt="ITM Logo" 
                 className="h-9 w-auto object-contain"
               />
-              <span className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent font-['Outfit']">
-                INFO TECH MICROSYSTEMS — KPI PLATFORM
-              </span>
+              <div className="flex flex-col">
+                <span className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent font-['Outfit']">
+                  INFO TECH MICROSYSTEMS — KPI PLATFORM
+                </span>
+                <a 
+                  href="https://www.infotechmicrosystems.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-200 transition-colors"
+                >
+                  <span>An Info Tech Microsystems Product</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </div>
             </div>
             <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed max-w-xl">
               Enterprise Quality Engineering, Automated Defect Governance, Gating, and Predictive Data Mining Platform.
@@ -57,8 +68,8 @@ export const Footer: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <a href="mailto:info.tech.microsystems.ca@gmail.com" className="hover:text-cyan-700 dark:hover:text-cyan-400 transition-colors">
-                info.tech.microsystems.ca@gmail.com
+              <a href="mailto:kpi.contact@infotechmicrosystems.com" className="hover:text-cyan-700 dark:hover:text-cyan-400 transition-colors font-medium">
+                kpi.contact@infotechmicrosystems.com
               </a>
             </div>
           </div>

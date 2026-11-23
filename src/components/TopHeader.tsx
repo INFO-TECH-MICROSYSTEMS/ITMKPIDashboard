@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Mail, Sun, Moon } from 'lucide-react';
+import { Menu, Phone, Mail, Sun, Moon, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
@@ -57,14 +57,29 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
           </div>
 
           {/* Desktop View: Corporate Status & Quick Direct Contact */}
-          <div className="hidden lg:flex items-center space-x-6 text-xs text-slate-600 dark:text-slate-400">
+          <div className="hidden lg:flex items-center space-x-5 text-xs text-slate-600 dark:text-slate-400">
+            <a 
+              href="https://www.infotechmicrosystems.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-cyan-500/30 bg-cyan-50/50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 hover:border-cyan-400 font-semibold transition-all group"
+              title="Visit Info Tech Microsystems Official Website"
+            >
+              <span>An Info Tech Microsystems Product</span>
+              <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
+            </a>
+
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="font-semibold text-cyan-700 dark:text-cyan-400 font-mono">
                 {t('header.hqLocation', 'Ottawa HQ, Ontario, Canada (EST/EDT)')}
               </span>
             </div>
+
             <span className="text-slate-300 dark:text-slate-700">|</span>
+
             <div className="flex items-center space-x-4">
               <a 
                 href="tel:+16132665285" 
@@ -77,12 +92,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({ onMenuClick }) => {
                 </span>
               </a>
               <a 
-                href="mailto:info.tech.microsystems.ca@gmail.com" 
+                href="mailto:kpi.contact@infotechmicrosystems.com" 
                 className="flex items-center space-x-1.5 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
                 aria-label="Email"
               >
                 <Mail className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                <span>info.tech.microsystems.ca@gmail.com</span>
+                <span>kpi.contact@infotechmicrosystems.com</span>
               </a>
             </div>
           </div>
