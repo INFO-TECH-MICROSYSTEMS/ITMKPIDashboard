@@ -13,10 +13,11 @@
  * Supports both Standard Single-Scope and Dual-Scope Comparison Modes.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { kpiRepository } from '../services/kpiRepository';
 import { KPICalculatorService } from '../services/kpiCalculatorService';
 import type { StorageStatus } from '../services/supabaseClient';
+import type { ProgressState } from '../components/common/KPIProgressModal';
 import type { 
   JiraWorkItem, 
   TestRailExecution, 
@@ -78,11 +79,36 @@ export function useKPIData() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(() => new Date());
 
+  // Global Progress State for UI dialogs
+  const [progressState, setProgressState] = useState<ProgressState>({
+    isOpen: true,
+    title: 'Initializing Quality Engine',
+    subtitle: 'Connecting to database storage and preparing KPI models...',
+    type: 'loading',
+    progressPercent: 20,
+    stage: 'Verifying database connectivity'
+  });
+
+  const isInitialMount = useRef(true);
+
   // Initialize DB and load data for Scope A and conditionally Scope B
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (customProgress?: { title: string; subtitle: string; type: ProgressState['type'] }) => {
     try {
       setIsLoading(true);
+      if (customProgress) {
+        setProgressState({
+          isOpen: true,
+          title: customProgress.title,
+          subtitle: customProgress.subtitle,
+          type: customProgress.type,
+          progressPercent: 35,
+          stage: 'Querying database tables'
+        });
+      }
+
       await kpiRepository.init();
+
+      setProgressState(prev => prev.isOpen ? { ...prev, progressPercent: 65, stage: 'Calculating KPI indices & trends' } : prev);
 
       const [status, counts] = await Promise.all([
         kpiRepository.getStorageStatus(),
@@ -142,15 +168,32 @@ export function useKPIData() {
       }
 
       setLastRefreshedAt(new Date());
+
+      setProgressState(prev => prev.isOpen ? { ...prev, progressPercent: 100, stage: 'Complete' } : prev);
+      // Brief aesthetic pause to show completion before dismissing
+      setTimeout(() => {
+        setProgressState(prev => ({ ...prev, isOpen: false }));
+      }, 350);
+
     } catch (err) {
       console.error('Failed to load KPI platform data:', err);
+      setProgressState(prev => ({ ...prev, isOpen: false }));
     } finally {
       setIsLoading(false);
     }
   }, [filters, isCompareMode, filtersB]);
 
   useEffect(() => {
-    loadData();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      loadData({
+        title: 'Loading Quality Engineering KPIs',
+        subtitle: 'Retrieving initial telemetry, calculating velocity models, and populating scorecards...',
+        type: 'loading'
+      });
+    } else {
+      loadData();
+    }
   }, [loadData]);
 
   // Trigger sync (Atomic Wipe & Replace)
@@ -170,12 +213,33 @@ export function useKPIData() {
   // Reset to initial rich sample dataset (supports optional deterministic seed)
   const resetToSampleData = useCallback(async (seed?: string | number) => {
     setIsSyncing(true);
+    setProgressState({
+      isOpen: true,
+      title: 'Purging & Generating Fresh Sample Data',
+      subtitle: 'Wiping database tables and generating realistic work items and test executions...',
+      type: 'generating',
+      progressPercent: 20,
+      stage: 'Purging existing telemetry tables'
+    });
+
     try {
+      await new Promise(r => setTimeout(r, 200));
+      setProgressState(prev => ({ ...prev, progressPercent: 45, stage: 'Generating multi-product release datasets' }));
+      
       const result = await kpiRepository.resetToSampleDataset(seed);
+
+      setProgressState(prev => ({ ...prev, progressPercent: 80, stage: 'Committing to storage & indexing' }));
       await loadData();
+      
+      setProgressState(prev => ({ ...prev, progressPercent: 100, stage: 'Dataset successfully generated!' }));
+      setTimeout(() => {
+        setProgressState(prev => ({ ...prev, isOpen: false }));
+      }, 400);
+
       return result;
     } catch (err) {
       console.error('Error resetting sample dataset:', err);
+      setProgressState(prev => ({ ...prev, isOpen: false }));
       throw err;
     } finally {
       setIsSyncing(false);
@@ -191,6 +255,20 @@ export function useKPIData() {
 
   // Update Scope A filter property
   const updateFilter = useCallback(<K extends keyof KPIFilterState>(key: K, value: KPIFilterState[K]) => {
+    let filterLabel = `${String(key)}: ${String(value)}`;
+    if (key === 'product') filterLabel = `Product: ${String(value)}`;
+    else if (key === 'component') filterLabel = `Component: ${String(value)}`;
+    else if (key === 'releaseVersion') filterLabel = `Release: ${String(value)}`;
+
+    setProgressState({
+      isOpen: true,
+      title: 'Updating Quality Telemetry',
+      subtitle: `Recalculating scorecards, burnout curves, and quality metrics for ${filterLabel}...`,
+      type: 'filtering',
+      progressPercent: 30,
+      stage: `Filtering dataset by ${filterLabel}`
+    });
+
     setFilters(prev => {
       if (key === 'product') {
         const prod = value as AppProduct;
@@ -211,6 +289,20 @@ export function useKPIData() {
 
   // Update Scope B filter property
   const updateFilterB = useCallback(<K extends keyof KPIFilterState>(key: K, value: KPIFilterState[K]) => {
+    let filterLabel = `${String(key)}: ${String(value)}`;
+    if (key === 'product') filterLabel = `Comparative Product: ${String(value)}`;
+    else if (key === 'component') filterLabel = `Comparative Component: ${String(value)}`;
+    else if (key === 'releaseVersion') filterLabel = `Comparative Release: ${String(value)}`;
+
+    setProgressState({
+      isOpen: true,
+      title: 'Updating Comparative Scope',
+      subtitle: `Recalculating comparative quality metrics for ${filterLabel}...`,
+      type: 'filtering',
+      progressPercent: 30,
+      stage: `Filtering comparative dataset by ${filterLabel}`
+    });
+
     setFiltersB(prev => {
       if (key === 'product') {
         const prod = value as AppProduct;
@@ -404,6 +496,7 @@ export function useKPIData() {
     recordCounts,
     isLoading,
     isSyncing,
+    progressState,
     lastRefreshedAt,
     triggerSyncNow,
     resetToSampleData,

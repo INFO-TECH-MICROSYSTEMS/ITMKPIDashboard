@@ -19,6 +19,69 @@ import { HomePage } from './pages/HomePage';
 import { KPICategoryPage } from './pages/KPICategoryPage';
 import { CustomCategoryPage } from './pages/CustomCategoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { KPIProgressModal } from './components/common/KPIProgressModal';
+import { useKPIDataContext } from './context/KPIDataContext';
+
+function AppContent({
+  isCollapsed,
+  setIsCollapsed,
+  isMobileOpen,
+  setIsMobileOpen
+}: {
+  isCollapsed: boolean;
+  setIsCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
+  isMobileOpen: boolean;
+  setIsMobileOpen: (open: boolean) => void;
+}) {
+  const { progressState } = useKPIDataContext();
+
+  return (
+    <>
+      <KPIProgressModal progress={progressState} />
+      <div className="min-h-screen flex bg-slate-50 text-slate-900 dark:bg-[#070913] dark:text-slate-100 transition-colors duration-300">
+        {/* Collapsible Left Side Navigation Pane */}
+        <Sidebar
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          isMobileOpen={isMobileOpen}
+          setIsMobileOpen={setIsMobileOpen}
+        />
+
+        {/* Main Viewport Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+          <TopHeader onMenuClick={() => setIsMobileOpen(true)} />
+          
+          <main className="flex-grow">
+            <Routes>
+              {/* Root Route: Informative Landing Page */}
+              <Route path="/" element={<HomePage />} />
+
+              {/* Dedicated Standard Category Pages */}
+              <Route path="/executive" element={<KPICategoryPage categoryId="executive" />} />
+              <Route path="/quality" element={<KPICategoryPage categoryId="quality" />} />
+              <Route path="/risk" element={<KPICategoryPage categoryId="risk" />} />
+              <Route path="/automation" element={<KPICategoryPage categoryId="automation" />} />
+              <Route path="/productivity" element={<KPICategoryPage categoryId="productivity" />} />
+              <Route path="/governance" element={<KPICategoryPage categoryId="governance" />} />
+              <Route path="/leading-lagging" element={<KPICategoryPage categoryId="leadingLagging" />} />
+
+              {/* Dynamic Custom Category Workspace Page */}
+              <Route path="/custom/:categoryId" element={<CustomCategoryPage />} />
+
+              {/* Settings & Data Infrastructure Page */}
+              <Route path="/settings" element={<SettingsPage />} />
+
+              {/* Fallback to root */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+
+          <Footer />
+        </div>
+      </div>
+    </>
+  );
+}
 
 export function App() {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -46,49 +109,12 @@ export function App() {
         <KPIDataProvider>
           <BrowserRouter>
             <ScrollToTop />
-            <div className="min-h-screen flex bg-slate-50 text-slate-900 dark:bg-[#070913] dark:text-slate-100 transition-colors duration-300">
-              
-              {/* Collapsible Left Side Navigation Pane */}
-              <Sidebar
-                isCollapsed={isCollapsed}
-                setIsCollapsed={setIsCollapsed}
-                isMobileOpen={isMobileOpen}
-                setIsMobileOpen={setIsMobileOpen}
-              />
-
-              {/* Main Viewport Content Area */}
-              <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
-                <TopHeader onMenuClick={() => setIsMobileOpen(true)} />
-                
-                <main className="flex-grow">
-                  <Routes>
-                    {/* Root Route: Informative Landing Page */}
-                    <Route path="/" element={<HomePage />} />
-
-                    {/* Dedicated Standard Category Pages */}
-                    <Route path="/executive" element={<KPICategoryPage categoryId="executive" />} />
-                    <Route path="/quality" element={<KPICategoryPage categoryId="quality" />} />
-                    <Route path="/risk" element={<KPICategoryPage categoryId="risk" />} />
-                    <Route path="/automation" element={<KPICategoryPage categoryId="automation" />} />
-                    <Route path="/productivity" element={<KPICategoryPage categoryId="productivity" />} />
-                    <Route path="/governance" element={<KPICategoryPage categoryId="governance" />} />
-                    <Route path="/leading-lagging" element={<KPICategoryPage categoryId="leadingLagging" />} />
-
-                    {/* Dynamic Custom Category Workspace Page */}
-                    <Route path="/custom/:categoryId" element={<CustomCategoryPage />} />
-
-                    {/* Settings & Data Infrastructure Page */}
-                    <Route path="/settings" element={<SettingsPage />} />
-
-                    {/* Fallback to root */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </main>
-
-                <Footer />
-              </div>
-
-            </div>
+            <AppContent
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
+              isMobileOpen={isMobileOpen}
+              setIsMobileOpen={setIsMobileOpen}
+            />
           </BrowserRouter>
         </KPIDataProvider>
       </UserProvider>
