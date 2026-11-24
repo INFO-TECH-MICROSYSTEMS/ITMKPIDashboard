@@ -451,31 +451,28 @@ class HybridKPIDataRepository implements IKPIDataRepository {
   }
 
   async saveUser(user: UserAccount): Promise<void> {
-    await kpiDb.users.put(user);
-
-    // If Supabase is connected, persist directly to cloud users table
+    // If Supabase is connected, persist directly to cloud users table first
     const status = await this.getStorageStatus();
     if (status.activeProvider === 'supabase' && supabase) {
-      try {
-        const { error } = await supabase.from('users').upsert({
-          id: user.id,
-          name: user.name,
-          email: user.email.toLowerCase(),
-          role: user.role,
-          password_hash: user.passwordHash,
-          password_salt: user.passwordSalt,
-          department: user.department || 'Quality Engineering',
-          created_at: user.createdAt,
-          updated_at: user.updatedAt,
-          last_login_at: user.lastLoginAt
-        });
-        if (error) {
-          console.warn('[Repository] Supabase user upsert error:', error.message);
-        }
-      } catch (err) {
-        console.warn('[Repository] Supabase user sync exception:', err);
+      const { error } = await supabase.from('users').upsert({
+        id: user.id,
+        name: user.name,
+        email: user.email.toLowerCase(),
+        role: user.role,
+        password_hash: user.passwordHash,
+        password_salt: user.passwordSalt,
+        created_at: user.createdAt,
+        updated_at: user.updatedAt,
+        last_login_at: user.lastLoginAt
+      });
+      if (error) {
+        console.error('[Repository] Supabase user upsert error:', error.message);
+        throw new Error(`Failed to save user to Supabase cloud database: ${error.message}`);
       }
     }
+
+    // Keep Dexie in sync as an offline cache
+    await kpiDb.users.put(user);
   }
 
   async updateUserRole(userId: string, newRole: UserRole): Promise<void> {
