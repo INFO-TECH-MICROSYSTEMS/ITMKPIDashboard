@@ -88,11 +88,14 @@ class HybridKPIDataRepository implements IKPIDataRepository {
       }
     }
 
-    // Clean legacy placeholder user in Dexie if it exists without password hash
+    // Clean legacy placeholder user in Dexie if it exists without password hash or with invalid non-UUID format
     try {
-      const legacyUser = await kpiDb.users.get('usr_sudarsha_001');
-      if (legacyUser && !legacyUser.passwordHash) {
-        await kpiDb.users.delete('usr_sudarsha_001');
+      const allDexieUsers = await kpiDb.users.toArray();
+      for (const u of allDexieUsers) {
+        // If it starts with usr_ or doesn't match standard UUID format, prune invalid local cache
+        if (u.id.startsWith('usr_')) {
+          await kpiDb.users.delete(u.id);
+        }
       }
     } catch {
       // ignore
@@ -356,7 +359,7 @@ class HybridKPIDataRepository implements IKPIDataRepository {
       try {
         const { data, error } = await supabase.from('users').select('*');
         if (!error && data) {
-          return data.map((d: any) => ({
+          const cloudUsers: UserAccount[] = data.map((d: any) => ({
             id: d.id,
             name: d.name,
             email: d.email,
@@ -368,6 +371,12 @@ class HybridKPIDataRepository implements IKPIDataRepository {
             updatedAt: d.updated_at,
             lastLoginAt: d.last_login_at
           }));
+          
+          // Replicate to local Dexie for fast offline cache
+          if (cloudUsers.length > 0) {
+            await kpiDb.users.bulkPut(cloudUsers);
+          }
+          return cloudUsers;
         }
       } catch (err) {
         console.warn('[Repository] Falling back to local users:', err);
@@ -387,7 +396,7 @@ class HybridKPIDataRepository implements IKPIDataRepository {
           .ilike('email', normalized)
           .maybeSingle();
         if (!error && data) {
-          return {
+          const user: UserAccount = {
             id: data.id,
             name: data.name,
             email: data.email,
@@ -399,6 +408,8 @@ class HybridKPIDataRepository implements IKPIDataRepository {
             updatedAt: data.updated_at,
             lastLoginAt: data.last_login_at
           };
+          await kpiDb.users.put(user);
+          return user;
         }
       } catch (err) {
         console.warn('[Repository] Supabase user query error:', err);
@@ -417,7 +428,7 @@ class HybridKPIDataRepository implements IKPIDataRepository {
           .eq('id', id)
           .maybeSingle();
         if (!error && data) {
-          return {
+          const user: UserAccount = {
             id: data.id,
             name: data.name,
             email: data.email,
@@ -429,6 +440,8 @@ class HybridKPIDataRepository implements IKPIDataRepository {
             updatedAt: data.updated_at,
             lastLoginAt: data.last_login_at
           };
+          await kpiDb.users.put(user);
+          return user;
         }
       } catch (err) {
         console.warn('[Repository] Supabase user query error:', err);
@@ -451,6 +464,7 @@ class HybridKPIDataRepository implements IKPIDataRepository {
           role: user.role,
           password_hash: user.passwordHash,
           password_salt: user.passwordSalt,
+          department: user.department || 'Quality Engineering',
           created_at: user.createdAt,
           updated_at: user.updatedAt,
           last_login_at: user.lastLoginAt

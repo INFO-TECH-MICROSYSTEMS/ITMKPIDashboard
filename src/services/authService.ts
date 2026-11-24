@@ -68,7 +68,7 @@ export class AuthService {
     const assignedRole: UserRole = adminCount === 0 ? 'admin' : 'user';
 
     const newUser: UserAccount = {
-      id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: CryptoService.generateUUID(),
       name: dto.name.trim(),
       email: emailNormalized,
       role: assignedRole,

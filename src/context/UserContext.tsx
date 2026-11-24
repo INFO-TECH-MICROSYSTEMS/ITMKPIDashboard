@@ -62,7 +62,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Verify and sync active session from DB
       const session = AuthService.getStoredSession();
       if (session) {
-        const freshUser = users.find(u => u.id === session.id);
+        // Match by ID or by email
+        const freshUser = users.find(u => u.id === session.id || u.email.toLowerCase() === session.email.toLowerCase());
         if (freshUser) {
           setCurrentUser(freshUser);
           AuthService.setStoredSession(freshUser);
@@ -73,11 +74,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .equals(freshUser.id)
             .sortBy('orderIndex');
           setCustomCategories(categories);
-        } else {
-          // User was deleted from DB
+        } else if (users.length > 0) {
+          // Users list was loaded successfully from DB and user is not present
           setCurrentUser(null);
           AuthService.setStoredSession(null);
           setCustomCategories([]);
+        } else {
+          // If users list is empty due to temporary fetch delay, keep the local session intact
+          setCurrentUser(session);
         }
       } else {
         setCurrentUser(null);
