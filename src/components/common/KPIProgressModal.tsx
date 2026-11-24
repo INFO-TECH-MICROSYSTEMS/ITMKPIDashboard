@@ -52,7 +52,7 @@ export const KPIProgressModal: React.FC<KPIProgressModalProps> = ({ progress }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-md p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/20 shadow-2xl shadow-cyan-500/10 space-y-5 transform transition-all scale-100">
         
         {/* Top Header & Visual Badge */}

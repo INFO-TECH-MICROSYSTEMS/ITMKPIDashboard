@@ -59,9 +59,9 @@ export const SettingsPage: React.FC = () => {
   const handleRegenerate = async (useRandomSeed: boolean) => {
     try {
       setSuccessMessage(null);
+      setIsConfirmModalOpen(false); // Close confirmation modal immediately before triggering progress modal
       const chosenSeed = useRandomSeed ? undefined : (seedInput.trim() || undefined);
       const res = await resetToSampleData(chosenSeed);
-      setIsConfirmModalOpen(false);
       setSuccessMessage(
         `Successfully purged database and generated ${res?.recordsCount.toLocaleString() || '10,000+'} realistic records! Seed used: "${res?.seed}". Timestamp: ${new Date(res?.timestamp || Date.now()).toLocaleTimeString()}`
       );
