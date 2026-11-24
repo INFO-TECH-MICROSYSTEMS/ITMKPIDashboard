@@ -11,7 +11,6 @@ import type { UserAccount, UserCustomCategory, UserRole } from '../types/kpiPlat
 import { AuthService, type RegisterDTO, type LoginDTO } from '../services/authService';
 import { CryptoService } from '../services/cryptoService';
 import { kpiRepository } from '../services/kpiRepository';
-import { kpiDb } from '../db/kpiDatabase';
 
 interface UserContextType {
   currentUser: UserAccount | null;
@@ -67,13 +66,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (freshUser) {
           setCurrentUser(freshUser);
           AuthService.setStoredSession(freshUser);
-          
-          // Load custom categories for logged in user
-          const categories = await kpiDb.userCustomCategories
-            .where('userId')
-            .equals(freshUser.id)
-            .sortBy('orderIndex');
-          setCustomCategories(categories);
+          setCustomCategories([]);
         } else if (users.length > 0) {
           // Users list was loaded successfully from DB and user is not present
           setCurrentUser(null);
@@ -170,24 +163,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updatedAt: new Date().toISOString()
     };
 
-    await kpiDb.userCustomCategories.put(newCategory);
-    await refreshUserData();
+    setCustomCategories(prev => [...prev, newCategory]);
     return newCategory;
   };
 
   const deleteCategory = async (categoryId: string) => {
-    await kpiDb.userCustomCategories.delete(categoryId);
-    await refreshUserData();
+    setCustomCategories(prev => prev.filter(c => c.id !== categoryId));
   };
 
   const reorderKPIs = async (categoryId: string, kpiIds: string[]) => {
-    const cat = await kpiDb.userCustomCategories.get(categoryId);
-    if (cat) {
-      cat.kpiIds = [...kpiIds];
-      cat.updatedAt = new Date().toISOString();
-      await kpiDb.userCustomCategories.put(cat);
-      setCustomCategories(prev => prev.map(c => c.id === categoryId ? { ...c, kpiIds: [...kpiIds] } : c));
-    }
+    setCustomCategories(prev => prev.map(c => c.id === categoryId ? { ...c, kpiIds: [...kpiIds], updatedAt: new Date().toISOString() } : c));
   };
 
   const moveKPI = async (categoryId: string, kpiId: string, direction: 'up' | 'down' | 'left' | 'right', columns: number = 2) => {
@@ -213,28 +198,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addKPIsToCategory = async (categoryId: string, kpiIds: string[]) => {
-    const cat = await kpiDb.userCustomCategories.get(categoryId);
-    if (cat) {
-      const set = new Set(cat.kpiIds);
-      kpiIds.forEach(id => set.add(id));
-      cat.kpiIds = Array.from(set);
-      cat.updatedAt = new Date().toISOString();
-      await kpiDb.userCustomCategories.put(cat);
-      await refreshUserData();
-    }
+    setCustomCategories(prev => prev.map(c => {
+      if (c.id === categoryId) {
+        const set = new Set(c.kpiIds);
+        kpiIds.forEach(id => set.add(id));
+        return { ...c, kpiIds: Array.from(set), updatedAt: new Date().toISOString() };
+      }
+      return c;
+    }));
   };
 
   const removeKPIFromCategory = async (categoryId: string, kpiId: string) => {
-    const cat = await kpiDb.userCustomCategories.get(categoryId);
-    if (cat) {
-      cat.kpiIds = cat.kpiIds.filter(id => id !== kpiId);
-      cat.updatedAt = new Date().toISOString();
-      await kpiDb.userCustomCategories.put(cat);
-      setCustomCategories(prev => prev.map(c => c.id === categoryId ? {
-        ...c,
-        kpiIds: cat.kpiIds
-      } : c));
-    }
+    setCustomCategories(prev => prev.map(c => {
+      if (c.id === categoryId) {
+        return { ...c, kpiIds: c.kpiIds.filter(id => id !== kpiId), updatedAt: new Date().toISOString() };
+      }
+      return c;
+    }));
   };
 
   return (

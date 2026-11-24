@@ -23,7 +23,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
   : null;
 
 export interface StorageStatus {
-  activeProvider: 'supabase' | 'dexie';
+  activeProvider: 'supabase';
   displayName: string;
   url?: string;
   isCloud: boolean;
@@ -35,28 +35,26 @@ export interface StorageStatus {
 export async function checkStorageHealth(): Promise<StorageStatus> {
   if (!isSupabaseConfigured || !supabase) {
     return {
-      activeProvider: 'dexie',
-      displayName: 'Local Browser IndexedDB (Dexie.js)',
-      isCloud: false,
-      isOnline: true,
+      activeProvider: 'supabase',
+      displayName: 'Supabase Cloud (Unconfigured)',
+      isCloud: true,
+      isOnline: false,
       lastChecked: new Date().toISOString(),
-      details: 'Operating on client-side persistent IndexedDB storage.'
+      details: 'Supabase credentials missing or unconfigured.'
     };
   }
 
   try {
-    // Probe Supabase connectivity with a lightweight ping
     const { error } = await supabase.from('connectors').select('id').limit(1);
     if (error) {
-      console.warn('[Storage] Supabase reachable test failed, falling back to IndexedDB:', error.message);
       return {
-        activeProvider: 'dexie',
-        displayName: 'Local Browser IndexedDB (Dexie Fallback)',
+        activeProvider: 'supabase',
+        displayName: 'Supabase Cloud (Error)',
         url: supabaseUrl,
-        isCloud: false,
+        isCloud: true,
         isOnline: false,
         lastChecked: new Date().toISOString(),
-        details: `Supabase credentials present, but cloud table query reported: ${error.message}. Local storage active.`
+        details: `Cloud table query error: ${error.message}`
       };
     }
 
@@ -70,15 +68,14 @@ export async function checkStorageHealth(): Promise<StorageStatus> {
       details: 'Connected securely via Supabase client to managed PostgreSQL cloud instance.'
     };
   } catch (err: any) {
-    console.warn('[Storage] Supabase connection exception:', err);
     return {
-      activeProvider: 'dexie',
-      displayName: 'Local Browser IndexedDB (Dexie Fallback)',
+      activeProvider: 'supabase',
+      displayName: 'Supabase Cloud (Offline)',
       url: supabaseUrl,
-      isCloud: false,
+      isCloud: true,
       isOnline: false,
       lastChecked: new Date().toISOString(),
-      details: `Cloud connection error: ${err?.message || 'Network unreachable'}. Fallback to local IndexedDB active.`
+      details: `Cloud connection error: ${err?.message || 'Network unreachable'}`
     };
   }
 }

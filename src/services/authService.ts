@@ -8,8 +8,7 @@
 
 import { kpiRepository } from './kpiRepository';
 import { CryptoService } from './cryptoService';
-import { kpiDb } from '../db/kpiDatabase';
-import type { UserAccount, UserCustomCategory, UserRole } from '../types/kpiPlatform';
+import type { UserAccount, UserRole } from '../types/kpiPlatform';
 
 export interface RegisterDTO {
   name: string;
@@ -81,28 +80,6 @@ export class AuthService {
     };
 
     await kpiRepository.saveUser(newUser);
-
-    // Create default starter custom deck for the new user
-    const defaultDeck: UserCustomCategory = {
-      id: `cat_${Date.now()}_watchlist`,
-      userId: newUser.id,
-      title: 'My Critical Quality Watchlist',
-      badge: 'Custom Deck',
-      description: 'Curated watchlist tracking release readiness, gating bugs, and defect trends.',
-      iconName: 'Sparkles',
-      kpiIds: [
-        'executive-readiness-gauge',
-        'executive-blocker-card',
-        'quality-defect-burnout-chart',
-        'automation-suite-pass-rate',
-        'risk-no-unit-tests',
-        'governance-sla-adherence'
-      ],
-      orderIndex: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    await kpiDb.userCustomCategories.put(defaultDeck);
 
     this.setStoredSession(newUser);
     return newUser;
